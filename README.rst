@@ -1,16 +1,17 @@
 
 
-Welcome to maykin-django-utils's documentation!
+Welcome to maykin-common's documentation!
 =================================================
 
 :Version: 0.1.0
-:Source: https://github.com/maykinmedia/maykin-django-utils
+:Source: https://github.com/maykinmedia/django-common
 :Keywords: ``<keywords>``
-:PythonVersion: 3.10
+:PythonVersion: 3.12
 
-|build-status| |code-quality| |black| |coverage| |docs|
+|build-status| |code-quality| |ruff| |coverage| |docs|
 
 |python-versions| |django-versions| |pypi-version|
+
 
 <One liner describing the project>
 
@@ -30,7 +31,7 @@ Installation
 Requirements
 ------------
 
-* Python 3.10 or above
+* Python 3.12 or above
 * Django 4.2 or newer
 
 
@@ -39,7 +40,7 @@ Install
 
 .. code-block:: bash
 
-    pip install maykin-django-utils
+    pip install maykin-common
 
 
 Usage
@@ -67,28 +68,29 @@ directory to the python path (or use ``python -m django <command>``):
     # django-admin makemessages -l nl
 
 
-.. |build-status| image:: https://github.com/maykinmedia/maykin-django-utils/workflows/Run%20CI/badge.svg
+.. |build-status| image:: https://github.com/maykinmedia/django-common/workflows/Run%20CI/badge.svg
     :alt: Build status
-    :target: https://github.com/maykinmedia/maykin-django-utils/actions?query=workflow%3A%22Run+CI%22
+    :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Run+CI%22
 
-.. |code-quality| image:: https://github.com/maykinmedia/maykin-django-utils/workflows/Code%20quality%20checks/badge.svg
+.. |code-quality| image:: https://github.com/maykinmedia/django-common/workflows/Code%20quality%20checks/badge.svg
      :alt: Code quality checks
-     :target: https://github.com/maykinmedia/maykin-django-utils/actions?query=workflow%3A%22Code+quality+checks%22
+     :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Code+quality+checks%22
 
-.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/psf/black
+.. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+    :target: https://github.com/astral-sh/ruff
+    :alt: Ruff
 
-.. |coverage| image:: https://codecov.io/gh/maykinmedia/maykin-django-utils/branch/main/graph/badge.svg
-    :target: https://codecov.io/gh/maykinmedia/maykin-django-utils
+.. |coverage| image:: https://codecov.io/gh/maykinmedia/django-common/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/maykinmedia/django-common
     :alt: Coverage status
 
-.. |docs| image:: https://readthedocs.org/projects/maykin-django-utils/badge/?version=latest
-    :target: https://maykin-django-utils.readthedocs.io/en/latest/?badge=latest
+.. |docs| image:: https://readthedocs.org/projects/django-common/badge/?version=latest
+    :target: https://maykin-django-common.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. |python-versions| image:: https://img.shields.io/pypi/pyversions/maykindjango_utils.svg
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/django-common.svg
 
-.. |django-versions| image:: https://img.shields.io/pypi/djversions/maykin-django-utils.svg
+.. |django-versions| image:: https://img.shields.io/pypi/djversions/django-common.svg
 
-.. |pypi-version| image:: https://img.shields.io/pypi/v/maykin-django-utils.svg
-    :target: https://pypi.org/project/maykin-django-utils/
+.. |pypi-version| image:: https://img.shields.io/pypi/v/django-common.svg
+    :target: https://pypi.org/project/django-common/

@@ -11,7 +11,7 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "maykin_django_utils.db",
+        "NAME": BASE_DIR / "maykin_common.db",
     }
 }
 
@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.admin",
-    "maykin_django_utils",
+    "maykin_common",
     "testapp",
 ]
 
@@ -50,5 +50,7 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = "/static/"
 
 ROOT_URLCONF = "testapp.urls"
