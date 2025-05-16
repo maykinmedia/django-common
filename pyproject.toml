@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "maykin-django-utils"
+name = "maykin-common"
 version = "0.1.0"
 description = "TODO"
 authors = [
@@ -16,25 +16,25 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Framework :: Django",
     "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
     "Operating System :: Unix",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "django>=4.2"
 ]
 
 [project.urls]
-Homepage = "https://github.com/maykinmedia/maykin-django-utils"
-Documentation = "http://maykin-django-utils.readthedocs.io/en/latest/"
-"Bug Tracker" = "https://github.com/maykinmedia/maykin-django-utils/issues"
-"Source Code" = "https://github.com/maykinmedia/maykin-django-utils"
+Homepage = "https://github.com/maykinmedia/django-common"
+Documentation = "http://maykin-django-common.readthedocs.io/en/latest/"
+"Bug Tracker" = "https://github.com/maykinmedia/django-common/issues"
+"Source Code" = "https://github.com/maykinmedia/django-common"
 
 [project.optional-dependencies]
 tests = [
@@ -42,9 +42,9 @@ tests = [
     "pytest-django",
     "pytest-cov",
     "tox",
-    "isort",
-    "black",
-    "flake8",
+    "ruff",
+    # "pyright",
+    # "django-stubs",
 ]
 docs = [
     "sphinx",
@@ -53,18 +53,20 @@ docs = [
 release = [
     "bump-my-version",
 ]
+pdf = [
+    "weasyprint"
+]
+mfa = [
+    "django-admin-index",
+    "maykin-2fa"
+]
+axes = [
+    "django-axes"
+]
 
 [tool.setuptools.packages.find]
-include = ["maykin_django_utils*"]
+include = ["maykin_common*"]
 namespaces = true
-
-[tool.isort]
-profile = "black"
-combine_as_imports = true
-skip = ["env", ".tox", ".history", ".eggs"]
-known_django = "django"
-known_first_party="maykin_django_utils"
-sections=["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -80,7 +82,7 @@ files = [
 
 [tool.coverage.run]
 branch = true
-source = ["maykin_django_utils"]
+source = ["maykin_common"]
 omit = [
     # migrations run while django initializes the test db
     "*/migrations/*",
@@ -94,5 +96,42 @@ exclude_also = [
     "@(abc\\.)?abstractmethod",
     "raise NotImplementedError",
     "\\.\\.\\.",
-    "pass",
+    "\\bpass$",
 ]
+
+[tool.pyright]
+include = [
+    "{{ project_name|lower }}",
+    "testapp",
+    "tests",
+]
+ignore = []
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+
+[tool.ruff.lint]
+extend-select = [
+    "UP",  # pyupgrade
+    "DJ",  # django
+    "LOG", # logging
+    "G",
+    "I",   # isort
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "PERF",# perflint
+    "B",   # flake8-bugbear
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+section-order = [
+    "future",
+    "standard-library",
+    "django",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+"django" = ["django"]
