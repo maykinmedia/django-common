@@ -1,14 +1,11 @@
-.. maykin-django-utils documentation master file, created by startproject.
+.. maykin-django-common documentation master file, created by startproject.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to maykin-django-utils's documentation!
+Welcome to maykin-django-common's documentation!
 =================================================
 
-|build-status| |code-quality| |black| |coverage| 
-
-.. 
-    |docs|
+|build-status| |code-quality| |ruff| |coverage| |docs|
 
 |python-versions| |django-versions| |pypi-version|
 
@@ -25,7 +22,15 @@ Features
    :caption: Contents:
 
    quickstart
-
+   maykin_common/settings
+   maykin_common/checks
+   maykin_common/context_processors
+   maykin_common/django_two_factor_auth
+   maykin_common/migration_operations
+   maykin_common/mixins
+   maykin_common/pdf
+   maykin_common/views
+   maykin_common/templatetags
 
 
 Indices and tables
@@ -36,28 +41,29 @@ Indices and tables
 * :ref:`search`
 
 
-.. |build-status| image:: https://github.com/maykinmedia/maykin-django-utils/workflows/Run%20CI/badge.svg
+.. |build-status| image:: https://github.com/maykinmedia/django-common/workflows/Run%20CI/badge.svg
     :alt: Build status
-    :target: https://github.com/maykinmedia/maykin-django-utils/actions?query=workflow%3A%22Run+CI%22
+    :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Run+CI%22
 
-.. |code-quality| image:: https://github.com/maykinmedia/maykin-django-utils/workflows/Code%20quality%20checks/badge.svg
+.. |code-quality| image:: https://github.com/maykinmedia/django-common/workflows/Code%20quality%20checks/badge.svg
      :alt: Code quality checks
-     :target: https://github.com/maykinmedia/maykin-django-utils/actions?query=workflow%3A%22Code+quality+checks%22
+     :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Code+quality+checks%22
 
-.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/psf/black
+.. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+    :target: https://github.com/astral-sh/ruff
+    :alt: Ruff
 
-.. |coverage| image:: https://codecov.io/gh/maykinmedia/maykin-django-utils/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/maykinmedia/maykin-django-utils
+.. |coverage| image:: https://codecov.io/gh/maykinmedia/django-common/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/maykinmedia/django-common
     :alt: Coverage status
-..
-   .. |docs| image:: https://readthedocs.org/projects/django-json-schema-model/badge/?version=latest
-       :target: https://django-json-schema-model.readthedocs.io/en/latest/?badge=latest
-       :alt: Documentation Status
 
-.. |python-versions| image:: https://img.shields.io/pypi/pyversions/maykin-django-utils.svg
+.. |docs| image:: https://readthedocs.org/projects/django-common/badge/?version=latest
+    :target: https://maykin-django-common.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
-.. |django-versions| image:: https://img.shields.io/pypi/djversions/maykin-django-utils.svg
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/django-common.svg
 
-.. |pypi-version| image:: https://img.shields.io/pypi/v/maykin-django-utils.svg
-    :target: https://pypi.org/project/maykin-django-utils/
+.. |django-versions| image:: https://img.shields.io/pypi/djversions/django-common.svg
+
+.. |pypi-version| image:: https://img.shields.io/pypi/v/django-common.svg
+    :target: https://pypi.org/project/django-common/

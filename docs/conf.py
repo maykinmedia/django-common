@@ -13,15 +13,14 @@
 import sys
 from pathlib import Path
 
-current_dir = Path(__file__).parents[1]
-code_directory = current_dir / "maykin_django_utils"
+repo_root = Path(__file__).parents[1]
 
-sys.path.insert(0, str(code_directory))
+sys.path.insert(0, str(repo_root))
 
 
 # -- Project information -----------------------------------------------------
 
-project = "maykin_django_utils"
+project = "maykin-django-common"
 copyright = "2025, Maykin Media"
 author = "Maykin Media"
 
@@ -38,6 +37,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
 ]
+
+autodoc_mock_imports = ["django", "weasyprint", "django_admin_index", "axes"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
