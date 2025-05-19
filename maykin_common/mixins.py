@@ -1,7 +1,7 @@
 from time import time
 
 from django.core.cache import caches
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import HttpRequest
 
 from axes.helpers import get_client_ip_address
@@ -23,16 +23,16 @@ class ThrottleMixin:
 
     # get and options should always be fast. By default
     # do not throttle them.
-    throttle_methods = ["post", "put", "patch", "delete", "head", "trace"]
+    throttle_methods = ("post", "put", "patch", "delete", "head", "trace")
 
     request: HttpRequest
 
     def get_throttle_cache(self):
         return caches["default"]
 
-    def get_throttle_identifier(self):
+    def get_throttle_identifier(self) -> str:
         user = getattr(self, "user_cache", self.request.user)
-        return str(user.id)
+        return str(user.pk)
 
     def create_throttle_key(self):
         """
@@ -69,6 +69,7 @@ class ThrottleMixin:
     def should_be_throttled(self):
         if self.throttle_methods == "all":
             return True
+        assert isinstance(self.request.method, str)
         return self.request.method.lower() in self.throttle_methods
 
     def dispatch(self, request, *args, **kwargs):
@@ -79,7 +80,7 @@ class ThrottleMixin:
             ):
                 raise PermissionDenied
 
-        return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)  # pyright:ignore[reportAttributeAccessIssue]
 
 
 class IPThrottleMixin(ThrottleMixin):
@@ -89,4 +90,10 @@ class IPThrottleMixin(ThrottleMixin):
     """
 
     def get_throttle_identifier(self):
-        return get_client_ip_address(self.request)
+        ip_address = get_client_ip_address(self.request)
+        if ip_address is None:
+            raise ImproperlyConfigured(
+                "Could not determine IP address. "
+                "Check your reverse proxy configuration."
+            )
+        return ip_address
