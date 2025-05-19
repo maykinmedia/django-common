@@ -57,13 +57,13 @@ Indices and tables
     :target: https://codecov.io/gh/maykinmedia/django-common
     :alt: Coverage status
 
-.. |docs| image:: https://readthedocs.org/projects/django-common/badge/?version=latest
+.. |docs| image:: https://readthedocs.org/projects/maykin-django-common/badge/?version=latest
     :target: https://maykin-django-common.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. |python-versions| image:: https://img.shields.io/pypi/pyversions/django-common.svg
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/maykin-common.svg
 
-.. |django-versions| image:: https://img.shields.io/pypi/djversions/django-common.svg
+.. |django-versions| image:: https://img.shields.io/pypi/djversions/maykin-common.svg
 
-.. |pypi-version| image:: https://img.shields.io/pypi/v/django-common.svg
-    :target: https://pypi.org/project/django-common/
+.. |pypi-version| image:: https://img.shields.io/pypi/v/maykin-common.svg
+    :target: https://pypi.org/project/maykin-common/
