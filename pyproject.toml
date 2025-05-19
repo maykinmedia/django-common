@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "maykin-common"
 version = "0.1.0"
-description = "TODO"
+description = "Re-usable utilities for Maykin Django projects, centrally maintained instead of in default-project."
 authors = [
     {name = "Maykin Media", email = "support@maykinmedia.nl"}
 ]
 readme = "README.rst"
 license = {file = "LICENSE"}
-keywords = ["TODO"]
+keywords = ["django", "maykin", "boilerplate"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Framework :: Django",
