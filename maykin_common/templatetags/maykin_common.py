@@ -1,7 +1,8 @@
 from typing import Any
 
 from django import template
-from django.utils.html import escape, format_html, mark_safe
+from django.utils.html import escape, format_html
+from django.utils.safestring import mark_safe
 
 from maykin_common.settings import get_setting
 
