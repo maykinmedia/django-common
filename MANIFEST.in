@@ -1,8 +1,9 @@
 include *.rst
 include LICENSE
-include maykin_django_utils/py.typed
-recursive-include maykin_django_utils *.html
-recursive-include maykin_django_utils *.txt
-recursive-include maykin_django_utils *.po
+include maykin_common/py.typed
+recursive-include maykin_common *.html
+recursive-include maykin_common *.css
+recursive-include maykin_common *.txt
+recursive-include maykin_common *.po
 global-exclude __pycache__
 global-exclude *.py[co]

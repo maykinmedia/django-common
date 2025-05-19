@@ -9,7 +9,7 @@ Install from PyPI with pip:
 
 .. code-block:: bash
 
-    pip install maykin-django-utils
+    pip install maykin-common
 
 
 Usage

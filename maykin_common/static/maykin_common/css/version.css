@@ -1,0 +1,17 @@
+.version {
+  color: var(--body-fg);
+  padding: 0 30px;
+  font-size: smaller;
+  display: flex;
+  flex-direction: column;
+}
+
+.env-info {
+  display: block;
+  align-self: center;
+  padding-inline: 8px;
+  padding-block: 5px;
+  background-color: var(--admin-env-info-background-color, var(--secondary));
+  color: var(--admin-env-info-color, var(--primary-fg));
+  border-radius: 4px;
+}
