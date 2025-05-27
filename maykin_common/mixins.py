@@ -1,4 +1,6 @@
+from collections.abc import Container
 from time import time
+from typing import Literal
 
 from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
@@ -23,7 +25,14 @@ class ThrottleMixin:
 
     # get and options should always be fast. By default
     # do not throttle them.
-    throttle_methods = ("post", "put", "patch", "delete", "head", "trace")
+    throttle_methods: Container[str] | Literal["all"] = (
+        "post",
+        "put",
+        "patch",
+        "delete",
+        "head",
+        "trace",
+    )
 
     request: HttpRequest
 
