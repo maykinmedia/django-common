@@ -43,8 +43,8 @@ tests = [
     "pytest-cov",
     "tox",
     "ruff",
-    # "pyright",
-    # "django-stubs",
+    "pyright",
+    "django-stubs",
 ]
 docs = [
     "sphinx",
@@ -101,7 +101,7 @@ exclude_also = [
 
 [tool.pyright]
 include = [
-    "{{ project_name|lower }}",
+    "maykin_common",
     "testapp",
     "tests",
 ]
