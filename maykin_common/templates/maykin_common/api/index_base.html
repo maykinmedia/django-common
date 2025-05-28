@@ -1,5 +1,5 @@
 {% extends "master.html" %}
-{% load i18n %}
+{% load i18n static %}
 {% comment %}
 Base template for the landing page of an API project.
 
@@ -16,6 +16,11 @@ Example usage:
 {% endcomment %}
 
 {% block view_class %}{{ block.super }} landing-page{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link href="{% static 'maykin_common/css/api.css' %}" media="all" rel="stylesheet" />
+{% endblock %}
 
 {% block content %}
 
