@@ -1,0 +1,90 @@
+{% extends "master.html" %}
+{% load i18n %}
+{% comment %}
+Base template for the landing page of an API project.
+
+It assumes that the default-project `master.html` root template exists in the project.
+Example usage:
+
+    {% extends "maykin_common/api/index_base.html" %}
+
+    {% block page_title %}My awesome API{% endblock %}
+
+    {% block body_en %}
+        <p>This API is awesome because ...</p>
+    {% endblock %}
+{% endcomment %}
+
+{% block view_class %}{{ block.super }} landing-page{% endblock %}
+
+{% block content %}
+
+    <header class="page-title">
+        <h1 class="page-title__title">
+            {% block page_title %}Override block page_title{% endblock page_title %}
+        </h1>
+        <p class="page-title__description">
+            {% block page_subtitle %}Override block page_subtitle{% endblock page_subtitle %}
+        </p>
+    </header>
+
+    <article class="page-content page-content--centered">
+        <nav class="tabs">
+            <ul class="tabs__list">
+                <li class="tabs__item tabs__item--active" data-id="nl" aria-role="tab">Nederlands</li>
+                <li class="tabs__item" data-id="en" aria-role="tab">English</li>
+            </ul>
+
+            <div class="tabs__content">
+                <div class="tabs__pane tabs__pane--active" id="nl" lang="nl">
+                    {% block content_nl %}Override block content_nl{% endblock content_nl %}
+                </div>
+                <div class="tabs__pane" id="en" lang="en">
+                    {% block content_en %}Override block content_en{% endblock content_en %}
+                </div>
+            </div>
+        </nav>
+
+        <p>
+            <strong>
+                Licensed under the
+                <a
+                class="link"
+                href="{% block license_link %}Override block license_link{% endblock %}"
+                >{% block license_label %}European Union Public License (EUPL) 1.2{% endblock %}</a>
+            </strong>
+        </p>
+
+        <div class="landing-page__nav-buttons">
+
+            <div class="button-group">
+                {% block api_links %}
+                    {# Provide a default block, but if those URLs can't be reversed, it won't crash the template #}
+                    {% url 'api:api-docs' as api_docs_link %}
+                    {% url 'api:api-schema-json' as api_schema_link %}
+
+                    <a href="{{ api_docs_link }}" class="button">
+                        <i class="fas fa-wifi"></i>
+                        {% trans "API docs (ReDoc)" %}
+                    </a>
+                    <a href="{{ api_schema_link }}" class="button">
+                        <i class="fas fa-file-alt"></i>
+                        {% trans "Open API specification" %}
+                    </a>
+                {% endblock api_links %}
+            </div>
+
+            {% block admin_button_group %}
+                <div class="button-group">
+                    <a href="{% url 'admin:index' %}" class="button button--alert">
+                        <i class="fas fa-lock"></i>
+                        {% trans "Administration" %}
+                    </a>
+                </div>
+            {% endblock admin_button_group %}
+
+        </div>
+
+    </article>
+
+{% endblock content %}
