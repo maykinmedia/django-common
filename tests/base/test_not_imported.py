@@ -13,4 +13,4 @@ def test_2fa():
 
 def test_mixins():
     with pytest.raises(ImportError):
-        import maykin_common.mixins  # noqa: F401
+        import maykin_common.throttling  # noqa: F401
