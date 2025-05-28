@@ -1,3 +1,7 @@
+"""
+Provide mixins for throttling/rate limiting in views.
+"""
+
 from collections.abc import Container
 from time import time
 from typing import Literal
