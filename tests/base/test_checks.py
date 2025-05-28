@@ -1,29 +1,8 @@
 from pathlib import Path
 
-from django.core.checks import Error, Warning
-from django.forms import ModelForm
+from django.core.checks import Warning
 
-from maykin_common.checks import check_missing_init_files, check_modelform_exclude
-
-
-def test_check_modelform_exclude(settings):
-    settings.DJANGO_PROJECT_DIR = settings.BASE_DIR
-
-    class DummyForm(ModelForm):
-        class Meta:
-            exclude = ("id",)  # noqa DJ006
-
-    errors = check_modelform_exclude(None)
-
-    assert errors == [
-        Error(
-            "ModelForm tests.base.test_checks.DummyForm with Meta.exclude detected, "
-            "this is a bad practice",
-            hint="Use ModelForm.Meta.fields instead",
-            obj=DummyForm,
-            id="maykin.E001",
-        )
-    ]
+from maykin_common.checks import check_missing_init_files
 
 
 def test_check_missing_init_files(settings):
