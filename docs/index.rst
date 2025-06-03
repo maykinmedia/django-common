@@ -2,20 +2,43 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to maykin-django-common's documentation!
-=================================================
+Welcome to maykin-common's documentation!
+=========================================
 
 |build-status| |code-quality| |ruff| |coverage| |docs|
 
 |python-versions| |django-versions| |pypi-version|
 
-<One liner describing the project>
+Re-usable utilities for Maykin Django projects.
+
+Maykin's Django projects all share a common base: `default-project`_ to provide a
+consistent and recognizable structure accross projects. This library bundles some shared
+utilities that are common in (most) projects but are too small/specific to warrant a
+separate library.
+
+maykin-common acts as a vehicle to quickly propagate changes and useful helpers to a
+large number of projects that would otherwise all have to be updated manually and
+one-by-one, a labour-intensive task.
+
+**What's up with the name?**
+
+A similar utility for the client side exists: https://github.com/maykinmedia/client-common
+so we wanted to mimick this naming pattern. The NPM package has namespacing:
+``@maykinmedia/client-common``, but this doesn't exist on PyPI, while using
+``django-common`` as a PyPI package name *might* just be a bit arrogant.
+
+So, the repository ``maykinmedia/django-common`` perfectly covers the contents and
+purpose of the package, while the PyPI package keeps the imports short and focused:
+``maykin_common``, while leaving room for potential future non-Django packages.
 
 Features
 ========
 
-* ...
-* ...
+* Centralized maintenance of shared utilities, facilitating upgrades accross projects.
+* Clear changelog and notice of potential breaking changes.
+* Zero footprint (CPU and/or memory) for unused utilities.
+* Optional dependency groups to minimize attack surface and external dependencies.
+* Tailored to our typical Maykin setup with default-project.
 
 .. toctree::
    :maxdepth: 2
@@ -67,3 +90,5 @@ Indices and tables
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/maykin-common.svg
     :target: https://pypi.org/project/maykin-common/
+
+.. _default-project: https://bitbucket.org/maykinmedia/default-project
