@@ -50,7 +50,7 @@ Features
    maykin_common/context_processors
    maykin_common/django_two_factor_auth
    maykin_common/migration_operations
-   maykin_common/mixins
+   maykin_common/throttling
    maykin_common/pdf
    maykin_common/views
    maykin_common/templatetags
