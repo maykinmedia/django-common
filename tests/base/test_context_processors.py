@@ -13,6 +13,8 @@ def test_settings(settings):
         "settings": {
             "GOOGLE_ANALYTICS_ID": "abc",
             "PROJECT_NAME": "maykin_common",
+            "RELEASE": None,
+            "GIT_SHA": None,
         }
     }
 
@@ -20,7 +22,14 @@ def test_settings(settings):
 def test_settings_none():
     context = context_processors_settings(RequestFactory())
 
-    assert context == {"settings": {"GOOGLE_ANALYTICS_ID": None, "PROJECT_NAME": None}}
+    assert context == {
+        "settings": {
+            "GOOGLE_ANALYTICS_ID": None,
+            "PROJECT_NAME": None,
+            "RELEASE": None,
+            "GIT_SHA": None,
+        }
+    }
 
 
 def test_settings_with_sentry_config_without_public_dsn(settings):
