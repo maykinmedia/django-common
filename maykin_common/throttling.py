@@ -1,5 +1,7 @@
 """
 Provide mixins for throttling/rate limiting in views.
+
+Depends on ``django-axes``.
 """
 
 from collections.abc import Container
