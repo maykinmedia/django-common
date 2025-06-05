@@ -1,3 +1,5 @@
+.. _quickstart:
+
 ==========
 Quickstart
 ==========
@@ -66,6 +68,8 @@ a helper to get the remote IP address of the person trying to log in, which is u
 the throttling implementation.
 
 For more details, see :mod:`maykin_common.throttling`.
+
+.. _quickstart_pdf:
 
 PDF
 ---
