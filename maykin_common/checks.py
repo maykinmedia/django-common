@@ -1,3 +1,7 @@
+"""
+Custom Django system checks to prevent common mistakes.
+"""
+
 import os
 
 from django.conf import settings
