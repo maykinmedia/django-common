@@ -69,11 +69,11 @@ Example usage:
                     {% url 'api:api-schema-json' as api_schema_link %}
 
                     <a href="{{ api_docs_link }}" class="button">
-                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-wifi" aria-hidden="true"></i>
                         {% trans "API docs (ReDoc)" %}
                     </a>
                     <a href="{{ api_schema_link }}" class="button">
-                        <i class="fas fa-file-alt"></i>
+                        <i class="fas fa-file-alt" aria-hidden="true"></i>
                         {% trans "Open API specification" %}
                     </a>
                 {% endblock api_links %}
@@ -82,7 +82,7 @@ Example usage:
             {% block admin_button_group %}
                 <div class="button-group">
                     <a href="{% url 'admin:index' %}" class="button button--alert">
-                        <i class="fas fa-lock"></i>
+                        <i class="fas fa-lock" aria-hidden="true"></i>
                         {% trans "Administration" %}
                     </a>
                 </div>
@@ -93,3 +93,7 @@ Example usage:
     </article>
 
 {% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'maykin_common/js/nav-tabs.js' %}"></script>
+{% endblock %}
