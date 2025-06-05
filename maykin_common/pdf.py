@@ -136,7 +136,7 @@ class UrlFetcher:
         return None
 
 
-def render_to_pdf(template_name: str, context: dict) -> tuple[str, bytes]:
+def render_to_pdf(template_name: str, context: dict[str, object]) -> tuple[str, bytes]:
     """
     Render a (HTML) template to PDF with the given context.
     """
