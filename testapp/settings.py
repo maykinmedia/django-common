@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.staticfiles",
     "django.contrib.admin",
     "maykin_common",
     "testapp",
@@ -54,3 +55,8 @@ TEMPLATES = [
 STATIC_URL = "/static/"
 
 ROOT_URLCONF = "testapp.urls"
+
+#
+# CUSTOM SETTINGS
+#
+DJANGO_PROJECT_DIR = BASE_DIR
