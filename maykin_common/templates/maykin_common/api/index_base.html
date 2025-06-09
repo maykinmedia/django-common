@@ -13,6 +13,9 @@ Example usage:
     {% block content_en %}
         <p>This API is awesome because ...</p>
     {% endblock %}
+
+See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/tab_role
+for the accessible markup.
 {% endcomment %}
 
 {% block view_class %}{{ block.super }} landing-page{% endblock %}
@@ -35,16 +38,49 @@ Example usage:
 
     <article class="page-content page-content--centered">
         <nav class="tabs">
-            <ul class="tabs__list">
-                <li class="tabs__item tabs__item--active" data-id="nl" aria-role="tab">Nederlands</li>
-                <li class="tabs__item" data-id="en" aria-role="tab">English</li>
-            </ul>
+            <div role="tablist" class="tabs__list">
+                <button
+                    class="tabs__item tabs__item--active"
+                    id="tab-nl"
+                    role="tab"
+                    aria-controls="content-nl"
+                    aria-selected="true"
+                    tabindex="0"
+                >
+                    Nederlands
+                </button>
+                <button
+                    class="tabs__item"
+                    id="tab-en"
+                    role="tab"
+                    aria-controls="content-en"
+                    aria-selected="false"
+                    tabindex="-1"
+                >
+                    English
+                </button>
+            </div>
 
             <div class="tabs__content">
-                <div class="tabs__pane tabs__pane--active" id="nl" lang="nl">
+                <div
+                    class="tabs__pane"
+                    id="content-nl"
+                    lang="nl"
+                    role="tabpanel"
+                    tabindex="0"
+                    aria-labelledby="tab-nl"
+                >
                     {% block content_nl %}Override block content_nl{% endblock content_nl %}
                 </div>
-                <div class="tabs__pane" id="en" lang="en">
+                <div
+                    class="tabs__pane"
+                    id="content-en"
+                    lang="en"
+                    role="tabpanel"
+                    tabindex="0"
+                    aria-labelledby="tab-en"
+                    hidden
+                >
                     {% block content_en %}Override block content_en{% endblock content_en %}
                 </div>
             </div>

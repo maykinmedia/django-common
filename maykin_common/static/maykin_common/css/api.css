@@ -108,6 +108,7 @@
     padding-block: 0.5rem;
     padding-inline: 1rem;
     border: solid 1px transparent;
+    background-color: transparent;
     cursor: pointer;
     color: var(--tabs-item-color, var(--link-color));
 
@@ -133,9 +134,7 @@
   }
 
   .tabs__pane {
-    display: none;
-
-    &.tabs__pane--active {
+    &:not('[hidden]') {
       display: flex;
       flex-direction: column;
     }
