@@ -68,3 +68,29 @@ def test_resolves_assets_in_debug_mode(settings):
         render_to_pdf("testapp/pdf/local_url.html", {})
 
     mock_fetcher.assert_not_called()
+
+
+def test_fully_qualified_static_url(settings):
+    settings.STATIC_URL = "http://testserver/static/"
+
+    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+        render_to_pdf("testapp/pdf/local_url.html", {})
+
+    mock_fetcher.assert_not_called()
+
+
+def test_other_storages_than_file_system_storage(settings):
+    settings.STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.InMemoryStorage",
+        },
+        "staticfiles": {
+            # this causes the /static/ prefix to be absent (!)
+            "BACKEND": "django.core.files.storage.InMemoryStorage",
+        },
+    }
+
+    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+        render_to_pdf("testapp/pdf/local_url.html", {})
+
+    mock_fetcher.assert_called_with("http://testserver/testapp/some.css")
