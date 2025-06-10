@@ -45,6 +45,7 @@ Features
    :caption: Contents:
 
    quickstart
+   apis
    maykin_common/settings
    maykin_common/checks
    maykin_common/context_processors

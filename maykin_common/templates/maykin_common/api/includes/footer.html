@@ -1,0 +1,74 @@
+{% comment %}
+Base template for the footer inclusion template. Usage:
+
+    {% extends "maykin_common/api/includes/footer.html" %}
+    {# In src/<project>/templates/includes/footer.html #}
+
+    {% block footer %}
+        {% with website_link="https://maykinmedia.nl" issues_link=... %}
+            {{ block.super }}
+        {% endwith %}
+    {% endblock %}
+
+    {% block links %}
+        <li>
+            <a class="link link--muted" href="https://my-project.readthedocs.io/">
+                {% trans "Documentation" %}
+            </a>
+        </li>
+    {% endblock %}
+
+Use the ``{% with ... %}`` tag to override defaults.
+
+{% endcomment %}
+{% load i18n static %}
+
+{% block footer %}
+<footer class="footer">
+    <div class="footer__row footer__row--3-cols">
+        <section>
+            <img src="{% static logo|default:'ico/favicon-96x96.png' %}" alt="Maykin logo" height="48">
+            <p class="footer__plain-content footer__plain-content--small">
+                {% now "Y" as copyright_year %}
+                {% with website_link=website_link|default:'<a class="link" href="https://www.maykinmedia.nl">Maykin</a>' opengem_link=opengem_link|default:'<a class="link" href="https://opengem.nl">Open Gemeente Initiatief</a>' %}
+                    {% blocktrans trimmed %}
+                        Developed by {{ website_link }}<br>
+                        within the {{ opengem_link }} &copy; {{ copyright_year }}<br>
+                    {% endblocktrans %}
+                {% endwith %}
+            </p>
+        </section>
+
+        <section>
+            <header class="footer__column-header">{{ settings.PROJECT_NAME }}</header>
+            <ul class="footer__list">
+                {% block links %}Override block links{% endblock links %}
+            </ul>
+        </section>
+
+        <section>
+            <header class="footer__column-header">{% trans "Other" %}</header>
+            <ul class="footer__list">
+                {% block other_links %}
+                    <li>
+                        {% blocktrans with issues_link=issues_link|default:'ADD_ISSUES_LINK' trimmed %}
+                            Report {{ issues_link }} for questions, bugs or wishes
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans with cg_link=cg_link|default:'<a class="link link--muted" href="https://commonground.nl/">Common Ground</a>' trimmed %}
+                            Read more on {{ cg_link }}
+                        {% endblocktrans %}
+                    </li>
+                {% endblock other_links %}
+            </ul>
+        </section>
+    </div>
+
+    <div class="footer__row footer__row--2-cols">
+        <code>{{ settings.RELEASE }}</code>
+        <code class="content content--align-right">{{ settings.GIT_SHA|default:"" }}</code>
+    </div>
+
+</footer>
+{% endblock footer %}

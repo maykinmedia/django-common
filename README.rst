@@ -64,9 +64,6 @@ Run the tests with:
 
     tox
 
-Note that if you run ``pytest`` directly, some tests are expected to fail when you have
-all optional dependency groups installed.
-
 .. |build-status| image:: https://github.com/maykinmedia/django-common/workflows/Run%20CI/badge.svg
     :alt: Build status
     :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Run+CI%22

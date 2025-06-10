@@ -1,0 +1,224 @@
+/**
+ * Base styles for API projects.
+ *
+ * Uses native CSS nesting, which is supported by 90% of the browsers at the time of
+ * writing (May 28th 2025).
+ */
+
+/* page-title component */
+.page-title {
+  text-align: center;
+
+  .page-title__title {
+    color: var(--page-title-color, #333);
+    font-family: var(--page-title-font-family, inherit);
+    line-height: 1.2;
+    font-size: 3.5rem;
+    font-weight: 300;
+    margin-block: 0;
+    margin-inline: 0;
+  }
+
+  .page-title__description {
+    font-size: 1.25rem;
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    margin-inline: 0;
+  }
+}
+
+/* page-content component  */
+.page-content {
+  &.page-content--centered {
+    text-align: center;
+  }
+}
+
+/* footer component  */
+.footer {
+  padding-block: 3rem;
+  border-top: 1px solid var(--footer-border-color);
+
+  box-sizing: border-box;
+  inline-size: clamp(20%, 100%, 960px);
+  padding-inline: 15px;
+  margin-inline: auto;
+
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+
+  .footer__row {
+    display: grid;
+    column-gap: 15px;
+
+    &.footer__row--2-cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.footer__row--3-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .footer__column-header {
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 1.25rem;
+  }
+
+  .footer__plain-content {
+    margin-block: 0;
+    padding-block: 0;
+    padding-inline: 0;
+
+    &.footer__plain-content--small {
+      font-size: 80%;
+    }
+  }
+
+  .footer__list {
+    list-style: none;
+    margin-block: 0;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+
+/* Tab container component  */
+.tabs {
+  border-block-end: solid 1px var(--tabs-border-color);
+
+  .tabs__list {
+    display: flex;
+    column-gap: 0;
+    justify-content: center;
+    list-style: none;
+    border-block-end: solid 1px var(--tabs-border-color);
+    padding: 0;
+    margin: 0;
+  }
+
+  .tabs__item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    border: solid 1px transparent;
+    background-color: transparent;
+    cursor: pointer;
+    color: var(--tabs-item-color, var(--link-color));
+
+    margin-block-end: -1px;
+    border-block-end-color: var(--tabs-border-color);
+
+    &:hover {
+      color: var(--tabs-item-hover-color, var(--link-color-hover));
+      border-block-start-color: var(--tabs-item-hover-border-color);
+      border-inline-start-color: var(--tabs-item-hover-border-color);
+      border-inline-end-color: var(--tabs-item-hover-border-color);
+      text-decoration: underline;
+      text-underline-offset: 0.4rem;
+    }
+
+    &.tabs__item--active,
+    &.tabs__item--active:hover {
+      border-block-start-color: var(--tabs-border-color);
+      border-block-end-color: #ffffff;
+      border-inline-start-color: var(--tabs-border-color);
+      border-inline-end-color: var(--tabs-border-color);
+    }
+  }
+
+  .tabs__pane {
+    &:not('[hidden]') {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+/* List container comonent */
+.list {
+  margin: 0;
+  padding: 0;
+
+  /* requires a parent with flex/grid display (!) */
+  &.list--centered {
+    text-align: start;
+    display: block;
+    align-self: center;
+    max-inline-size: 75%;
+  }
+}
+
+/* button group container component  */
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  column-gap: 1rem;
+}
+
+/* button component  */
+.button {
+  display: flex;
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem;
+  border-radius: 0.2rem;
+  min-inline-size: 100px;
+
+  color: var(--button-color);
+  background-color: var(--button-background-color);
+  text-decoration: none;
+
+  &:has(.fas) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.5rem;
+  }
+
+  &:hover {
+    background-color: var(--button-hover-background-color);
+  }
+
+  &.button--alert {
+    background-color: var(--button-alert-background-color);
+
+    &:hover {
+      background-color: var(--button-alert-hover-background-color);
+    }
+  }
+}
+
+/* hyperlink component  */
+.link {
+  text-decoration: none;
+  color: var(--link-color);
+
+  &:hover {
+    text-decoration: underline;
+    color: var(--link-color-hover);
+  }
+
+  &.link--muted {
+    --link-color: var(--link-color-muted);
+    --link-color-hover: var(--link-color-muted);
+  }
+}
+
+/* landing page view */
+.landing-page {
+  .landing-page__nav-buttons {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    inline-size: clamp(400px, 50%, 800px);
+    margin-inline: auto;
+    margin-block-start: 2rem;
+  }
+}

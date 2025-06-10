@@ -41,6 +41,7 @@ tests = [
     "pytest",
     "pytest-django",
     "pytest-cov",
+    "pytest-playwright",
     "tox",
     "ruff",
     "pyright",
@@ -71,6 +72,9 @@ namespaces = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 DJANGO_SETTINGS_MODULE = "testapp.settings"
+markers = [
+    "e2e: mark tests as end-to-end tests, using playwright (deselect with '-m \"not e2e\"')",
+]
 
 [tool.bumpversion]
 current_version = "0.2.0"
