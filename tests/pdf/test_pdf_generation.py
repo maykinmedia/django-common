@@ -15,7 +15,7 @@ def get_base_url():
 def _collectstatic(settings, tmp_path):
     static_root = tmp_path / "static_root"
     settings.STATIC_ROOT = str(static_root)
-    call_command("collectstatic", interactive=False, link=True)
+    call_command("collectstatic", interactive=False, link=True, verbosity=0)
     yield
 
 
