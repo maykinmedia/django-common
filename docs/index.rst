@@ -48,6 +48,7 @@ Features
    apis
    settings
    reference/index
+   changelog
 
 
 Indices and tables
