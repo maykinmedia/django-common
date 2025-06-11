@@ -1,3 +1,9 @@
+"""
+Combine maykin-2fa and django-admin-index utilities.
+
+Depends on ``django-admin-index``.
+"""
+
 from django_admin_index.utils import (
     should_display_dropdown_menu as default_should_display_dropdown_menu,
 )

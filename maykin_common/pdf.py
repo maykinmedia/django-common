@@ -9,6 +9,8 @@ This module exposes the public function :func:`render_to_pdf` which renders a te
 with a context into a PDF document (bytes output). You can use "external" stylesheets
 in these templates, and they will be resolved through django's staticfiles machinery
 by the custom :class:`UrlFetcher`.
+
+Depends on ``weasyprint``.
 """
 
 import logging
