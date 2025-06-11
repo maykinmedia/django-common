@@ -111,6 +111,8 @@
     background-color: transparent;
     cursor: pointer;
     color: var(--tabs-item-color, var(--link-color));
+    font-size: inherit;
+    line-height: inherit;
 
     margin-block-end: -1px;
     border-block-end-color: var(--tabs-border-color);
@@ -134,7 +136,7 @@
   }
 
   .tabs__pane {
-    &:not('[hidden]') {
+    &:not([hidden]) {
       display: flex;
       flex-direction: column;
     }
