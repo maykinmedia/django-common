@@ -53,6 +53,7 @@ TEMPLATES = [
 ]
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "static_root"
 
 ROOT_URLCONF = "testapp.urls"
 
