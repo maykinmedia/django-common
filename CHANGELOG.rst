@@ -2,6 +2,13 @@
 Changelog
 =========
 
+0.3.1 (2025-06-11)
+==================
+
+Fixed packaging mistake.
+
+* Fixed missing Javascript assets in published package.
+
 0.3.0 (2025-06-11)
 ==================
 
