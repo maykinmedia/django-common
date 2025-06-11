@@ -100,7 +100,7 @@ them, and when you do use them, ensure you've installed the appropriate extra.
 API projects (team bron)
 ------------------------
 
-For API projects, see TODO.
+For API projects, see :ref:`apis`.
 
 Other
 -----
