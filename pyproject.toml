@@ -65,6 +65,11 @@ mfa = [
 axes = [
     "django-axes"
 ]
+vcr = [
+    "vcrpy",
+    "requests",
+    "types-requests",
+]
 
 [tool.setuptools.packages.find]
 include = ["maykin_common*"]
