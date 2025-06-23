@@ -1,6 +1,6 @@
 import requests
 
-from maykin_common.vcr import TestCase
+from maykin_common.vcr import VCRTestCase
 
 
 def get(url: str) -> Exception | requests.Response:
@@ -10,7 +10,7 @@ def get(url: str) -> Exception | requests.Response:
         return e
 
 
-class VCRTests(TestCase):
+class VCRTests(VCRTestCase):
     def test_vcr_raises_default(self):
         with self.vcr_raises():
             response = get("https://example.com")
