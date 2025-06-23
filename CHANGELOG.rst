@@ -2,6 +2,11 @@
 Changelog
 =========
 
+0.4.0 (2025-06-23)
+==================
+
+* Added ``vcr`` extra that adds VCRMixin and TestCases.
+
 0.3.2 (2025-06-11)
 ==================
 
