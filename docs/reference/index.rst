@@ -33,3 +33,9 @@ Python API reference.
    :caption: PDF
 
    pdf
+
+.. toctree::
+   :maxdepth: 1
+   :caption: VCR
+
+   vcr
