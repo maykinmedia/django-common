@@ -38,7 +38,7 @@ extensions = [
     "sphinx.ext.todo",
 ]
 
-autodoc_mock_imports = ["django", "weasyprint", "django_admin_index", "axes"]
+autodoc_mock_imports = ["django", "weasyprint", "django_admin_index", "axes", "vcr"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
