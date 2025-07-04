@@ -39,3 +39,9 @@ Python API reference.
    :caption: VCR
 
    vcr
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API documentation
+
+   drf_spectacular

@@ -99,6 +99,7 @@ omit = [
 ]
 
 [tool.coverage.report]
+skip_covered = true
 exclude_also = [
     "if (typing\\.)?TYPE_CHECKING:",
     "@(typing\\.)?overload",
