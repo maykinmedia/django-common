@@ -2,6 +2,8 @@
 Provide mixins for throttling/rate limiting in views.
 
 Depends on ``django-axes``.
+
+.. todo:: Decouple from django-axes - make IP address getter function configurable.
 """
 
 from collections.abc import Container
@@ -19,8 +21,8 @@ class ThrottleMixin:
     """
     A very simple throttling implementation with, hopefully, sane defaults.
 
-    You can specifiy the amount of visits (throttle_visits) a view can get,
-    for a specific period (in seconds) throttle_period.
+    You can specifiy the amount of visits (``throttle_visits``) a view can get,
+    for a specific period (in seconds) ``throttle_period``.
     """
 
     # n visits per period (in seconds)
@@ -87,13 +89,16 @@ class ThrottleMixin:
         assert isinstance(self.request.method, str)
         return self.request.method.lower() in self.throttle_methods
 
+    @property
+    def rate_limit_exceeded(self) -> bool:
+        enabled = self.should_be_throttled()
+        # deliberate method call after the *and* to benefit from short-circuiting and
+        # avoid hitting the cache if it's not needed
+        return enabled and self.get_visits_in_window() > self.throttle_visits
+
     def dispatch(self, request, *args, **kwargs):
-        if self.throttle_403:
-            if (
-                self.should_be_throttled()
-                and self.get_visits_in_window() > self.throttle_visits
-            ):
-                raise PermissionDenied
+        if self.throttle_403 and self.rate_limit_exceeded:
+            raise PermissionDenied
 
         return super().dispatch(request, *args, **kwargs)  # pyright:ignore[reportAttributeAccessIssue]
 
@@ -106,7 +111,7 @@ class IPThrottleMixin(ThrottleMixin):
 
     def get_throttle_identifier(self):
         ip_address = get_client_ip_address(self.request)
-        if ip_address is None:
+        if not ip_address:
             raise ImproperlyConfigured(
                 "Could not determine IP address. "
                 "Check your reverse proxy configuration."
