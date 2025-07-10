@@ -37,7 +37,7 @@ from maykin_common.settings import get_setting
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["render_to_pdf"]
+__all__ = ["render_to_pdf", "render_template_to_pdf"]
 
 
 def get_base_url() -> str:
@@ -175,16 +175,31 @@ class UrlFetcher:
             return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
 
 
-def render_to_pdf(template_name: str, context: dict[str, object]) -> tuple[str, bytes]:
+def render_to_pdf(html: str, variant: str | None = "pdf/ua-1") -> tuple[str, bytes]:
+    """
+    Render the provided HTML to PDF.
+
+    The default ``variant`` generates accessible PDFs. Technically it's still an
+    experimental feature in WeasyPrint, so if it's causing issues, you can pass
+    ``variant=None`` instead.
+    """
+    html_object = weasyprint.HTML(
+        string=html,
+        url_fetcher=UrlFetcher(),
+        base_url=get_base_url(),
+    )
+    pdf = html_object.write_pdf(pdf_variant=variant)
+    assert isinstance(pdf, bytes)
+    return html, pdf
+
+
+def render_template_to_pdf(
+    template_name: str,
+    context: dict[str, object],
+    variant: str | None = "pdf/ua-1",
+) -> tuple[str, bytes]:
     """
     Render a (HTML) template to PDF with the given context.
     """
     rendered_html = render_to_string(template_name, context=context)
-    html_object = weasyprint.HTML(
-        string=rendered_html,
-        url_fetcher=UrlFetcher(),
-        base_url=get_base_url(),
-    )
-    pdf = html_object.write_pdf()
-    assert isinstance(pdf, bytes)
-    return rendered_html, pdf
+    return render_to_pdf(rendered_html, variant=variant)
