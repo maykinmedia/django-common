@@ -2,6 +2,16 @@
 Changelog
 =========
 
+0.6.0 (2025-07-10)
+==================
+
+PDF utilities feature release.
+
+* 💥 Renamed ``render_to_pdf`` to ``render_template_to_pdf``.
+* Exposed helper ``render_to_pdf`` to render HTML to PDF without needing the template
+  engine.
+* Added ``variant`` option, defaulting to ``pdf/ua-1`` (accessible PDFs).
+
 0.5.0 (2025-07-04)
 ==================
 
