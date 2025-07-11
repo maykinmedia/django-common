@@ -27,12 +27,10 @@ class IPThrottleView(IPThrottleMixin, BaseView):
 
 
 class ThrottleResponseOverride(ThrottleView):
-    throttle_403 = False
+    throttle_403 = True
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.rate_limit_exceeded:
-            return HttpResponse("rate limit exceeded", status=429)
-        return super().dispatch(request, *args, **kwargs)
+    def handle_rate_limit_exceeded(self):
+        return HttpResponse("rate limit exceeded", status=499)
 
 
 urlpatterns = [

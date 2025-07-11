@@ -21,7 +21,7 @@ def test_throttle_view_respects_request_1_per_second_rate(client: Client):
 
     # a second request hits within the second and is expected to be throttled
     response = client.post("/throttle/1/second")
-    assert response.status_code == 403
+    assert response.status_code == 429
 
 
 def test_throttle_view_allows_all_requests_in_window(client: Client):
@@ -35,7 +35,7 @@ def test_throttle_all_methods(client: Client):
     for method in ("get", "head", "post", "put", "patch", "options", "head"):
         response = getattr(client, method)("/throttle/all")
 
-        assert response.status_code == 403, f"Failed on {method=}"
+        assert response.status_code == 429, f"Failed on {method=}"
 
 
 def test_view_overrides_throttled_response(client: Client):
@@ -44,7 +44,7 @@ def test_view_overrides_throttled_response(client: Client):
 
     # a second request hits within the second and is expected to be throttled
     response = client.post("/throttle/1/second/custom-handling")
-    assert response.status_code == 429
+    assert response.status_code == 499
 
 
 @pytest.mark.django_db
@@ -58,7 +58,7 @@ def test_thottled_user_does_not_affect_other_user(client: Client, django_user_mo
 
     # a second request hits within the second and is expected to be throttled
     response_2 = client.post("/throttle/1/second")
-    assert response_2.status_code == 403
+    assert response_2.status_code == 429
 
     # but user 2 should not be affected
     client.force_login(user=user_2)
@@ -72,7 +72,7 @@ def test_throttle_based_on_ip_address_does_not_throttle_other_address(client: Cl
 
     # a second request hits within the second and is expected to be throttled
     response = client.post("/ip-throttle/1/minute", REMOTE_ADDR="127.0.0.1")
-    assert response.status_code == 403
+    assert response.status_code == 429
 
     # another IP address is not throttled
     response = client.post("/ip-throttle/1/minute", REMOTE_ADDR="127.0.0.2")
