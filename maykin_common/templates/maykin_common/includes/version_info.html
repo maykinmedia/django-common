@@ -1,5 +1,5 @@
 {% load i18n static %}
-<link rel="stylesheet" href="{% static 'css/maykin_common.css' %}">
+<link rel="stylesheet" href="{% static 'maykin_common/css/version.css' %}">
 <div class="version" title="Git SHA: {{ GIT_SHA|default:'' }}">
     <span class="version__release">
         {% blocktrans %}version {{ RELEASE }}{% endblocktrans %}
