@@ -1,8 +1,7 @@
 import pytest
 
 
-def test_module_import(settings):
-    settings.INSTALLED_APPS = settings.INSTALLED_APPS + ["axes"]
+def test_module_import():
     try:
         import maykin_common.throttling  # noqa: F401
     except ImportError:

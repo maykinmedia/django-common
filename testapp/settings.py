@@ -1,5 +1,10 @@
 from pathlib import Path
 
+try:
+    import axes
+except ImportError:
+    axes = None
+
 BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
@@ -25,6 +30,10 @@ INSTALLED_APPS = [
     "maykin_common",
     "testapp",
 ]
+
+# ensure migrations run for some tests that rely on axes
+if axes is not None:
+    INSTALLED_APPS.insert(-2, "axes")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
