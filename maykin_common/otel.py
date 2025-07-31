@@ -1,3 +1,19 @@
+"""
+Open Telemetry integration in a Django project.
+
+The primary export of this module is :func:`setup_otel`, which is intended to be called
+from the ``setup_env`` function in projects.
+
+The Python OpenTelemetry SDK supports the standardized environment variables,
+see the `environment variables reference`_.
+
+We define one custom environment variable ``_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR``
+to opt-in to container resource detection when the application is being deployed on a
+non-kubernetes container runtime (such as Docker or Podman).
+
+.. _`environment variables reference`: https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
+"""
+
 import os
 from typing import Literal, assert_never
 from uuid import uuid4
@@ -48,13 +64,8 @@ def setup_otel() -> None:
     supports OpenTelemetryProtocol (OTLP), either over gRPC or HTTP/protobuf protocols.
     Often, this will be an OpenTelemetry Collector running somewhere.
 
-    The Python OpenTelemetery SDK supports the standardized environment variables,
-    see the `environment variables reference`.
-
     Part of the SDK initialization process is starting a background thread to
     periodically ship the telemetry to the configured endpoint.
-
-    .. _`environment variables reference`: https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
     """
     global _OTEL_INITIALIZED
     if _OTEL_INITIALIZED:

@@ -45,6 +45,7 @@ Features
    :caption: Contents:
 
    quickstart
+   otel
    apis
    settings
    reference/index
