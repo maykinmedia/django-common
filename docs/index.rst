@@ -59,11 +59,11 @@ Indices and tables
 * :ref:`search`
 
 
-.. |build-status| image:: https://github.com/maykinmedia/django-common/workflows/Run%20CI/badge.svg
+.. |build-status| image:: https://github.com/maykinmedia/django-common/actions/workflows/ci.yml/badge.svg
     :alt: Build status
     :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Run+CI%22
 
-.. |code-quality| image:: https://github.com/maykinmedia/django-common/workflows/Code%20quality%20checks/badge.svg
+.. |code-quality| image:: https://github.com/maykinmedia/django-common/actions/workflows/code_quality.yml/badge.svg
      :alt: Code quality checks
      :target: https://github.com/maykinmedia/django-common/actions?query=workflow%3A%22Code+quality+checks%22
 
@@ -71,7 +71,7 @@ Indices and tables
     :target: https://github.com/astral-sh/ruff
     :alt: Ruff
 
-.. |coverage| image:: https://codecov.io/gh/maykinmedia/django-common/branch/master/graph/badge.svg
+.. |coverage| image:: https://codecov.io/github/maykinmedia/django-common/graph/badge.svg?token=NXCPTBOL6N
     :target: https://codecov.io/gh/maykinmedia/django-common
     :alt: Coverage status
 
