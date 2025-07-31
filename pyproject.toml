@@ -87,6 +87,7 @@ testpaths = ["tests"]
 DJANGO_SETTINGS_MODULE = "testapp.settings"
 markers = [
     "e2e: mark tests as end-to-end tests, using playwright (deselect with '-m \"not e2e\"')",
+    "vcr: mark inferred from pytest-django @tag(\"vcr\") on a test case",
 ]
 
 [tool.bumpversion]
