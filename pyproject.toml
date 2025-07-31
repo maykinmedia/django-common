@@ -70,6 +70,13 @@ vcr = [
     "requests",
     "types-requests",
 ]
+otel = [
+    "opentelemetry-api",
+    "opentelemetry-exporter-otlp",
+    "opentelemetry-instrumentation-django",
+    "opentelemetry-resource-detector-containerid",
+    "opentelemetry-sdk",
+]
 
 [tool.setuptools.packages.find]
 include = ["maykin_common*"]
