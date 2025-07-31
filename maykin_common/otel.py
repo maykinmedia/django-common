@@ -37,6 +37,13 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from maykin_common.settings import get_setting
 
+# the uwsgi module is special - it's only available when the python code is loaded
+# through uwsgi. With regular ``manage.py`` usage, it does not exist.
+try:
+    import uwsgi  # pyright: ignore[reportMissingModuleSource] uwsgi magic...
+except ImportError:
+    uwsgi = None
+
 __all__ = [
     "setup_otel",
 ]
@@ -45,8 +52,6 @@ __all__ = [
 type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 DEFAULT_PROTOCOL: ExportProtocol = "grpc"
-
-_OTEL_INITIALIZED: bool = False
 
 
 def setup_otel() -> None:
@@ -67,17 +72,40 @@ def setup_otel() -> None:
     Part of the SDK initialization process is starting a background thread to
     periodically ship the telemetry to the configured endpoint.
     """
-    global _OTEL_INITIALIZED
-    if _OTEL_INITIALIZED:
+    # set up instrumenters that (usually) monkeypatch modules or inject the right
+    # wrappers/middleware etc.
+
+    # the instrumentor is a singleton, so it's effectively global
+    instrumentor = DjangoInstrumentor()
+    if not instrumentor.is_instrumented_by_opentelemetry:
+        instrumentor.instrument()
+
+    # in a uwsgi worker, defer the otel initialization until after the processes have
+    # forked
+    if uwsgi is not None:  # pragma: no cover - can't be tested outside of uwsgi
+        from uwsgidecorators import postfork
+
+        postfork(_setup_otel)
+    else:
+        _setup_otel()
+
+
+def _setup_otel() -> None:
+    """
+    Helper function for the actual initialization.
+
+    This helpers makes it possible to actually properly initialize in a non-uwsgi
+    context, while deferring the initialization until post-fork in a uwsgi context.
+    """
+    _already_initialized = isinstance(trace.get_tracer_provider(), TracerProvider)
+    if _already_initialized:
         return
 
     if "OTEL_SERVICE_NAME" not in os.environ:
         raise ImproperlyConfigured(
             "You must define the 'OTEL_SERVICE_NAME' environment variable."
         )
-
-    # service name is guaranteed to be set through envvars
-
+    # the service name now is guaranteed to be set through envvars
     resource = Resource.create(
         attributes={
             SERVICE_VERSION: get_setting("RELEASE") or "",
@@ -97,12 +125,6 @@ def setup_otel() -> None:
     reader = PeriodicExportingMetricReader(OTLPMetricExporter())
     meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
     metrics.set_meter_provider(meter_provider)
-
-    # set up instrumenters that (usually) monkeypatch modules or inject the right
-    # wrappers/middleware etc.
-    DjangoInstrumentor().instrument()
-
-    _OTEL_INITIALIZED = True
 
 
 def load_exporters():

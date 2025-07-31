@@ -14,6 +14,7 @@ from opentelemetry.exporter.otlp.proto.http.metric_exporter import (
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
     OTLPSpanExporter as HttpOTLPSpanExporter,
 )
+from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.metrics import NoOpMeterProvider, set_meter_provider
 from opentelemetry.sdk.metrics.export import MetricExporter
 from opentelemetry.sdk.resources import Resource
@@ -28,11 +29,14 @@ from maykin_common.otel import (
 )
 
 
-@pytest.fixture(autouse=True)
-def setup_teardown(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("OTEL_SERVICE_NAME", "maykin-common-tests")
+def _reset_otel():
+    # This code is absolutely filthy, but there does not appear to be another fork-safe
+    # way to test this behaviour.
+    from opentelemetry.metrics._internal import _METER_PROVIDER_SET_ONCE
+    from opentelemetry.trace import _TRACER_PROVIDER_SET_ONCE
 
-    yield
+    _METER_PROVIDER_SET_ONCE._done = False
+    _TRACER_PROVIDER_SET_ONCE._done = False
 
     tracer_provider = trace.get_tracer_provider()
     if hasattr(tracer_provider, "shutdown"):
@@ -42,9 +46,24 @@ def setup_teardown(monkeypatch: pytest.MonkeyPatch):
     if hasattr(meter_provider, "shutdown"):
         meter_provider.shutdown()  # pyright: ignore[reportAttributeAccessIssue]
 
+    DjangoInstrumentor().uninstrument()
+
     # reset to noop
     set_tracer_provider(NoOpTracerProvider())
     set_meter_provider(NoOpMeterProvider())
+
+    _METER_PROVIDER_SET_ONCE._done = False
+    _TRACER_PROVIDER_SET_ONCE._done = False
+
+
+@pytest.fixture(autouse=True)
+def setup_teardown(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("OTEL_SERVICE_NAME", "maykin-common-tests")
+    _reset_otel()
+
+    yield
+
+    _reset_otel()
 
 
 def test_requires_OTEL_SERVICE_NAME_envvar(monkeypatch: pytest.MonkeyPatch):

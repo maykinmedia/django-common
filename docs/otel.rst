@@ -184,8 +184,6 @@ pre-configured in maykin-common.
 The `examples <https://opentelemetry-python.readthedocs.io/en/stable/examples/>`__
 documentation can be interesting.
 
-.. todo:: handle https://opentelemetry-python.readthedocs.io/en/stable/examples/fork-process-model/README.html
-
 Defining metrics
 ----------------
 
@@ -279,6 +277,23 @@ additional headers via the standardized environment variable:
 .. code-block:: bash
 
     OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic <base64-username:password>"
+
+Troubleshooting
+===============
+
+Combining all this with pre-forking application servers like uwsgi and gunicorn is a
+challenge. Some issues were encountered and the code has been adapted for use with
+``uwsgi``, but we can't guarantee that all uwsgi configuration options will work out
+of the box.
+
+* ``--py-call-uwsgi-fork-hooks`` has been observed causing segfaults, even though this
+  is recommended/required by the Sentry SDK (which it only uses for its telemetry
+  features so *we think* it can be ignored)
+* ``--lazy-apps`` has been observed in the OTel setup not being executed. It's possible
+  that the ``@postfork`` is mutually exclusive with ``--lazy-apps``.
+* Calling an instrumenter (``SomeInstrumentor().instrument()``) in the postfork hook can
+  lead to no metrics being collected at all, which *looks* as if it's an exporter
+  problem.
 
 .. _Open Telemetry: https://opentelemetry.io/
 .. _OTLP: https://opentelemetry.io/docs/specs/otlp/
