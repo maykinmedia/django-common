@@ -131,8 +131,12 @@ def test_load_exporters_raises_for_unknown_protocol(monkeypatch: pytest.MonkeyPa
 
 def test_aggregate_resource_adds_container_detector(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", "True")
+    monkeypatch.setattr(
+        "opentelemetry.resource.detector.containerid._get_container_id", lambda: "1234"
+    )
     initial_resource = Resource(attributes={})
 
     aggregated_resource = aggregate_resource(initial_resource)
 
     assert "container.id" in aggregated_resource.attributes
+    assert aggregated_resource.attributes["container.id"] == "1234"
