@@ -38,7 +38,14 @@ extensions = [
     "sphinx.ext.todo",
 ]
 
-autodoc_mock_imports = ["django", "weasyprint", "django_admin_index", "axes", "vcr"]
+autodoc_mock_imports = [
+    "django",
+    "weasyprint",
+    "django_admin_index",
+    "axes",
+    "vcr",
+    "opentelemetry",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -60,3 +67,5 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
+
+todo_include_todos = True

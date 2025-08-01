@@ -45,3 +45,9 @@ Python API reference.
    :caption: API documentation
 
    drf_spectacular
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Open Telemetry
+
+   otel

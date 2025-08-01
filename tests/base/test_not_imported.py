@@ -26,8 +26,17 @@ def test_2fa():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("axes"), reason="The 'axes' seems to be installed"
+    _dependency_installed("axes"), reason="The 'axes' extra seems to be installed"
 )
 def test_mixins():
     with pytest.raises(ImportError):
         import maykin_common.throttling  # noqa: F401
+
+
+@pytest.mark.skipif(
+    _dependency_installed("opentelemetry"),
+    reason="The 'otel' extra seems to be installed",
+)
+def test_otel():
+    with pytest.raises(ImportError):
+        import maykin_common.otel  # noqa: F401
