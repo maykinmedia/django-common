@@ -137,6 +137,11 @@ API projects (team bron)
 
 For API projects, see :ref:`apis`.
 
+Open Telemetry
+--------------
+
+See :ref:`otel` to configure metrics, traces and logging.
+
 Other
 -----
 
