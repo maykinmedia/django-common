@@ -2,6 +2,16 @@
 Changelog
 =========
 
+0.7.0 (2025-08-05)
+==================
+
+Feature release for Open Telemetry support.
+
+* Added ``otel`` package extra and ``maykin_common.otel.setup_otel`` helper to
+  instrument projects with Open Telemetry. See the documentation for details.
+* Added test coverage for the throttling mixin and refactored it a bit.
+* Fixed a reference to a stylesheet that no longer exists.
+
 0.6.0 (2025-07-10)
 ==================
 
