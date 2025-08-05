@@ -36,6 +36,7 @@ release = "0.6.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
+    "sphinx.ext.intersphinx",
 ]
 
 autodoc_mock_imports = [
@@ -69,3 +70,10 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = []
 
 todo_include_todos = True
+
+intersphinx_mapping = {
+    "opentelemetry": (
+        "https://opentelemetry-python.readthedocs.io/en/latest/",
+        None,
+    ),
+}

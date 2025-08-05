@@ -15,7 +15,8 @@ the goal of making them observable.
     :local:
     :depth: 2
 
-Telemetry data covers three major types:
+Telemetry data covers a number of `signals <https://opentelemetry.io/docs/concepts/signals/>`_,
+of which we focus on three kinds:
 
 * **logs** - allow you to reconstruct what and why something happened
 * **metrics** - collect measurements from interesting state of the system
@@ -46,9 +47,10 @@ Call the initialization code:
 .. code-block:: python
    :linenos:
    :caption: src/my_awesome_project/setup.py
-   :emphasize-lines: 3,9,11
+   :emphasize-lines: 4,10-17
 
     import os
+    import warnings
 
     from maykin_common.otel import setup_otel
 
@@ -56,116 +58,33 @@ Call the initialization code:
         load_dotenv(...)
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", ...)
-        os.environ.setdefault("OTEL_SERVICE_NAME", "my-awesome-project")
+        if "OTEL_SERVICE_NAME" not in os.environ:
+            warnings.warn(
+                "No OTEL_SERVICE_NAME environment variable set, using a default. "
+                "You should set a (distinct) value for each component (web, worker...)",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            os.environ.setdefault("OTEL_SERVICE_NAME", "my-awesome-project")
 
         setup_otel()
 
         # other initialization...
 
-Architecture
-============
+See the :ref:`otel_best_practices` for more information about the ``OTEL_SERVICE_NAME``
+environment variable usage.
 
-The essence is simple: instrumented *services* produce telemetry data that gets *exported*
-to a telemetry *receiver* which ensures the data gets *persisted*. Visualisation and
-monitoring tooling queries the telemetry data, making the service observable and provides
-(automated) alerting options.
-
-We have made some decisions at the library level that correspond to the following
-diagram:
-
-.. code-block:: none
-
-                                                          +----------------+
-                                                          | metrics time   |
-                                                          | series storage | >---+
-                                                          +----------------+     |
-      +-----------+   telemetry                          ^                       | pull/query
-      | Service A |-------------+                       /                        |
-      +-----------+             |                      /                         |
-                                |   +----------------+                           |
-                                +-> |                |     +---------------+     |   +------------+
-                                    | OTel Collector |---> | spans storage | >---+---| Dashboards |
-                                +-> |                |     +---------------+     |   +------------+
-                                |   +----------------+                           |
-      +-----------+   telemetry |                     \                          |
-      | Service B |-------------+                      \                         |
-      +-----------+                                     v                        |
-                                                        +--------------+         |
-                                                        | logs storage | >-------+
-                                                        +--------------+
-
-
-Services
---------
-
-The services are the applications producing telemetry data. They can be different
-projects that each depend on ``maykin_common[otel]``, but they can also be different
-aspects of the same project, e.g.:
-
-* ``project`` - the django project that responds to HTTP requests
-* ``project-worker-celery``, ``project-worker-highprio`` - each (dedicated) celery
-  worker queue. If you have different queues set up, you each one is typially its
-  own service
-* ``project-flower`` - the celery monitoring service
-* ``project-scheduler`` - the celery beat task scheduler
-
-:func:`maykin_common.otel.setup_otel` sets up the application so that the produced
-telemetry data gets exported using the OTLP_ protocol. Telemetry gets pushed over
-``gRPC`` or ``http/protobuf`` to an endpoint that can receive OTLP data.
-
-.. _otel_architecture_collector:
-
-Open Telemetry receiver
------------------------
-
-The receivers are applications deployed/running somewhere that can accept telemetry
-data in the OTLP format. They receive the telemetry from the services.
-
-`Open Telemetry Collector`_ is a vendor-agnostic software that can receive, process and
-export telemetry data. It does not have a storage of its own, but instead exports the
-telemetry data according to configuration parameters.
-
-The collector is not a hard requirement - many storage backends support ingesting OTLP
-data directly, but having a centralised collector is very convenient and simplifies the
-service configuration.
-
-Storage
--------
-
-The storage backends are applications that can receive and persist the telemetry data.
-
-Typically, you can configure retention periods, and they used optimized databases for
-the nature of the telemetry data. They're usually also the applications that expose a
-query interface for the visualization tooling.
-
-Different vendors typically compete with each other at this level. Some well known
-examples are:
-
-* Prometheus, InfluxDB, Datadog, Splunk for time-series data (typically metrics)
-* Loki, Signoz, Logtail, Datadog, Splunk for logs
-* Jaeger, Elastic APM, Tempo, Datadog, Splunk for distributed traces
-
-Commercial offerings typically provide an all-in-one solution for all types of telemetry.
-
-Dashboards/visualisation/alerting
----------------------------------
-
-Software like Grafana and Kibana specialize in querying and displaying observability
-data. Typically you can define dashboards with visualisations to explore the data that
-was ingested.
-
-This is typically done by defining queries (in ``promql`` for Prometheus, ``logql`` for
-Loki etc.) which filter on labels of telemetry data (e.g. show only metrics from
-production and exclude test/acceptance environments) and may combine different metrics
-even, ultimately leading to easy-to-understand graphs to see what the state of the
-system is/was.
+.. note:: Seeing this working is not obvious - telemetry sending needs to be enabled (
+   it's initially disabled in default-project) *and* you need a sink to send the OTLP
+   data to. Check default-project or the Maykin docs with some reference instructions
+   if your project has not been prepared yet.
 
 Python Open Telemetry SDK
 =========================
 
 :func:`maykin_common.otel.setup_otel` calls the setup functions from the
 `python SDK <https://opentelemetry.io/docs/languages/python/>`_. The toolchain is
-roughly compromised of two core packages + some extensions:
+roughly comprised of two core packages + some extensions:
 
 * ``opentelemetry-api`` - for library authors, foundation for the SDK
 * ``opentelemetry-sdk`` - the concrete implementations and project-specific integrations
@@ -220,11 +139,15 @@ Defining and using a metric is pretty straightforward:
         return _create_export(pk=pk)
 
 
+.. warning:: Resist the temptation to use ``__name__`` for the meter definitions! See
+   :external:meth:`opentelemetry.sdk.metrics.MeterProvider.get_meter`
+
 .. note::
 
     Other packages that we maintain can also opt-in to defining and tracking metrics in
     the future.
 
+.. _otel_best_practices:
 
 Best practices
 ==============
@@ -255,6 +178,15 @@ service name.
       # Set defaults for OTEL
       : "${OTEL_SERVICE_NAME:=my-project-worker-"${QUEUE}"}"
 
+Suggested names to encourage consistency:
+
+* ``my-project`` - the django project that responds to HTTP requests
+* ``my-project-worker-celery``, ``my-project-worker-highprio`` - each (dedicated) celery
+  worker queue. If you have different queues set up, each one is typically its own
+  service
+* ``my-project-flower`` - the celery monitoring service
+* ``my-project-scheduler`` - the celery beat task scheduler
+
 **Extract resource attributes for containers**
 
 Usually our applications are deployed in one of two ways:
@@ -277,6 +209,98 @@ additional headers via the standardized environment variable:
 .. code-block:: bash
 
     OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic <base64-username:password>"
+
+Architecture
+============
+
+The essence is simple: instrumented *services* produce telemetry data that gets *exported*
+to a telemetry *receiver* which ensures the data gets *persisted*. Visualisation and
+monitoring tooling queries the telemetry data, making the service observable and provides
+(automated) alerting options.
+
+We have made some decisions at the library level that correspond to the following
+diagram:
+
+.. code-block:: none
+
+                                                          +----------------+
+                                                          | metrics time   |
+                                                          | series storage | >---+
+                                                          +----------------+     |
+      +-----------+   telemetry                          ^                       | pull/query
+      | Service A |-------------+                       /                        |
+      +-----------+             |                      /                         |
+                                |   +----------------+                           |
+                                +-> |                |     +---------------+     |   +------------+
+                                    | OTel Collector |---> | spans storage | >---+---| Dashboards |
+                                +-> |                |     +---------------+     |   +------------+
+                                |   +----------------+                           |
+      +-----------+   telemetry |                     \                          |
+      | Service B |-------------+                      \                         |
+      +-----------+                                     v                        |
+                                                        +--------------+         |
+                                                        | logs storage | >-------+
+                                                        +--------------+
+
+
+Services
+--------
+
+The services are the applications producing telemetry data. They can be different
+projects that each depend on ``maykin_common[otel]``, but they can also be different
+aspects of the same project - see the :ref:`otel_best_practices` about different service
+names.
+
+:func:`maykin_common.otel.setup_otel` sets up the application so that the produced
+telemetry data gets exported using the OTLP_ protocol. Telemetry gets pushed over
+``gRPC`` or ``http/protobuf`` to an endpoint that can receive OTLP data.
+
+.. _otel_architecture_collector:
+
+Open Telemetry receiver
+-----------------------
+
+The receivers are applications deployed/running somewhere that can accept telemetry
+data in the OTLP format. They receive the telemetry from the services.
+
+`Open Telemetry Collector`_ is a vendor-agnostic software that can receive, process and
+export telemetry data. It does not have a storage of its own, but instead exports the
+telemetry data according to configuration parameters.
+
+The collector is not a hard requirement - many storage backends support ingesting OTLP
+data directly, but having a centralised collector is very convenient and simplifies the
+service configuration.
+
+Storage
+-------
+
+The storage backends are applications that can receive and persist the telemetry data.
+
+Typically, you can configure retention periods, and they used optimized databases for
+the nature of the telemetry data. They're usually also the applications that expose a
+query interface for the visualization tooling.
+
+Different vendors typically compete with each other at this level. Some well known
+examples are:
+
+* Prometheus, InfluxDB, Datadog, Splunk for time-series data (typically metrics)
+* Loki, Signoz, Logtail, Datadog, Splunk for logs
+* Jaeger, Elastic APM, Tempo, Datadog, Splunk for distributed traces
+
+Commercial offerings typically provide an all-in-one solution for all types of telemetry.
+
+Dashboards/visualisation/alerting
+---------------------------------
+
+Software like Grafana and Kibana specialize in querying and displaying observability
+data. Typically you can define dashboards with visualisations to explore the data that
+was ingested.
+
+This is typically done by defining queries (in ``promql`` for Prometheus, ``logql`` for
+Loki etc.) which filter on labels of telemetry data (e.g. show only metrics from
+production and exclude test/acceptance environments) and may combine different metrics
+even, ultimately leading to easy-to-understand graphs to see what the state of the
+system is/was.
 
 Troubleshooting
 ===============
