@@ -77,3 +77,8 @@ intersphinx_mapping = {
         None,
     ),
 }
+
+linkcheck_ignore = [
+    # frequently doesn't connect within the 30s timeout
+    r"https://opentelemetry\.io/docs/.*",
+]
