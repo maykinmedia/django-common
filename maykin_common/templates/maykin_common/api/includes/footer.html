@@ -27,7 +27,7 @@ Use the ``{% with ... %}`` tag to override defaults.
 <footer class="footer">
     <div class="footer__row footer__row--3-cols">
         <section>
-            <img src="{% static logo|default:'ico/favicon-96x96.png' %}" alt="Maykin logo" height="48">
+            <img src="{% static logo|default:'maykin_common/ico/favicon-96x96.png' %}" alt="Maykin logo" height="48">
             <p class="footer__plain-content footer__plain-content--small">
                 {% now "Y" as copyright_year %}
                 {% with website_link=website_link|default:'<a class="link" href="https://www.maykinmedia.nl">Maykin</a>' opengem_link=opengem_link|default:'<a class="link" href="https://opengem.nl">Open Gemeente Initiatief</a>' %}

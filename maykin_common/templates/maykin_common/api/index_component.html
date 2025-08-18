@@ -1,0 +1,48 @@
+{% extends "maykin_common/api/index_base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+    {% block content_header %}
+        {{ block.super }}
+    {% endblock content_header %}
+
+    <article class="page-content page-content--centered">
+        <p class="page-title__description">
+            <h2>{% block title_component %}Override <code>{% verbatim %}{% block title_component %}{% endverbatim %}</code>{% endblock %}</h2>
+            {% block subtitle_component %}Override <code>{% verbatim %}{% block subtitle_component %}{% endverbatim %}</code>{% endblock %}
+        </p>
+        <div class="landing-page__nav-buttons">
+            <div class="button-group">
+                {% block api_docs_link %}
+                    {% url component|add:":schema-redoc-"|add:component version=api_version as api_docs_link %}
+                    <a href="{{ api_docs_link }}" class="button">
+                        <i class="fas fa-wifi" aria-hidden="true"></i>
+                        {% trans "API docs (ReDoc)" %}
+                    </a>
+                {% endblock api_docs_link %}
+                {% block api_schema_link %}
+                    {% url component|add:":schema-json-"|add:component version=api_version as api_schema_link %}
+                    <a href="{{ api_schema_link }}" class="button">
+                        <i class="fas fa-file-alt" aria-hidden="true"></i>
+                        {% trans "Open API specification" %}
+                    </a>
+                {% endblock api_schema_link %}
+            </div>
+            {% if notification_url %}
+                <div class="button-group">
+                <a href="{{ notification_url }}" class="button">
+                    <i class="fas fa-bullhorn" aria-hidden="true"></i>
+                    {% trans "Notifications" %}
+                </a>
+                </div>
+            {% endif %}
+            <div class="button-group">
+                <a href="{% url 'admin:index' %}" class="button button--alert">
+                    <i class="fas fa-lock" aria-hidden="true"></i>
+                    {% trans "Administration" %}
+                </a>
+            </div>
+        </div>
+    </article>
+{% endblock %}
