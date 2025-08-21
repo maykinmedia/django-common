@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.8.0 (2025-08-21)
+==================
+
+Feature release for better OTel support with Celery.
+
+* You can now defer the open telemetry setup with the ``_OTEL_DEFER_SETUP=True`` envvar.
+* When using Celery process pool workers (the default), the OTel setup now automatically
+  runs after the worker process has forked.
+
 0.7.0 (2025-08-05)
 ==================
 
