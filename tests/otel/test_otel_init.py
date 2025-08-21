@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.core.exceptions import ImproperlyConfigured
 
 import pytest
@@ -96,6 +98,27 @@ def test_initializer_can_run_multiple_times_without_problems(
     assert len(caplog.records) == 0, (
         "Running the initialization multiple times must not produce warnings"
     )
+
+
+def test_deferring_setup_via_envvar(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("_OTEL_DEFER_SETUP", "True")
+
+    with patch("maykin_common.otel._setup_otel") as mock_setup_otel:
+        setup_otel()
+
+    mock_setup_otel.assert_not_called()
+
+
+def test_failing_celery_import_does_not_raise(monkeypatch: pytest.MonkeyPatch):
+    def raise_importerror(*args, **kwargs):
+        raise ImportError("Can't be imported")
+
+    monkeypatch.setattr("maykin_common.otel.import_string", raise_importerror)
+
+    try:
+        setup_otel()
+    except Exception:
+        pytest.fail("Expected celery import issue not to crash the init code")
 
 
 @pytest.mark.parametrize(

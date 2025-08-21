@@ -79,6 +79,10 @@ environment variable usage.
    data to. Check default-project or the Maykin docs with some reference instructions
    if your project has not been prepared yet.
 
+If you use Celery with process pool (the default), then your worker invocation must set
+``_OTEL_DEFER_SETUP=True`` in the environment to defer the initialization until the
+worker process has forked.
+
 Python Open Telemetry SDK
 =========================
 
