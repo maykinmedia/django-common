@@ -19,6 +19,7 @@ from typing import Literal, assert_never
 from uuid import uuid4
 
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_string
 
 from opentelemetry import metrics, trace
 from opentelemetry.instrumentation.django import DjangoInstrumentor
@@ -80,14 +81,28 @@ def setup_otel() -> None:
     if not instrumentor.is_instrumented_by_opentelemetry:
         instrumentor.instrument()
 
+    # In some situations (similar to uwsgi, see below), initialization must be deferred,
+    # e.g. in celery workers with a process pool that fork other processes. Detecting
+    # if we're running in a celery master or worker process is not obvious, so instead
+    # we look at an explicit environment variable.
+    defer_setup = _check_envvar("_OTEL_DEFER_SETUP", default="false")
+
     # in a uwsgi worker, defer the otel initialization until after the processes have
     # forked
     if uwsgi is not None:  # pragma: no cover - can't be tested outside of uwsgi
         from uwsgidecorators import postfork
 
         postfork(_setup_otel)
-    else:
+    elif not defer_setup:
         _setup_otel()
+
+    # similar to uwsgi postfork, bind a handler when a worker process has initialized
+    try:
+        worker_process_init = import_string("celery.signals.worker_process_init")
+        worker_process_init.connect(weak=False)(lambda *args, **kwargs: _setup_otel())
+    # Celery is an optional dependency
+    except ImportError:
+        pass
 
 
 def _setup_otel() -> None:
@@ -157,11 +172,8 @@ def load_exporters():
 
 def aggregate_resource(resource: Resource) -> Resource:
     # TODO: replace with `config` helper once it's added to this library
-    _enable_resource_detector = (
-        os.getenv("_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", default="false")
-        .lower()
-        .strip()
-        == "true"
+    _enable_resource_detector = _check_envvar(
+        "_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", default="false"
     )
     if not _enable_resource_detector:
         return resource
@@ -171,3 +183,7 @@ def aggregate_resource(resource: Resource) -> Resource:
     return get_aggregated_resources(
         detectors=[ContainerResourceDetector()], initial_resource=resource
     )
+
+
+def _check_envvar(name: str, default: Literal["true", "false"]) -> bool:
+    return os.getenv(name, default=default).lower().strip() == "true"
