@@ -39,6 +39,8 @@ Documentation = "http://maykin-django-common.readthedocs.io/en/latest/"
 
 [project.optional-dependencies]
 tests = [
+    "psycopg",
+    "django-test-migrations",
     "pytest",
     "pytest-django",
     "pytest-cov",

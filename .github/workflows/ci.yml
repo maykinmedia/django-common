@@ -23,6 +23,16 @@ jobs:
 
     name: Run the test suite (Python ${{ matrix.python }}, Django ${{ matrix.django }})
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,6 +47,7 @@ jobs:
         env:
           PYTHON_VERSION: ${{ matrix.python }}
           DJANGO: ${{ matrix.django }}
+          PGUSER: postgres
 
       - name: Publish coverage report
         uses: codecov/codecov-action@v5
@@ -46,6 +57,16 @@ jobs:
   e2e_tests:
     runs-on: ubuntu-latest
     name: Run the end-to-end tests
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -60,6 +81,8 @@ jobs:
 
       - name: Run tests
         run: tox -e e2e
+        env:
+          PGUSER: postgres
 
   publish:
     name: Publish package to PyPI

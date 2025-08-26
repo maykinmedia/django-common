@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 try:
@@ -15,8 +16,12 @@ DEBUG = True
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "maykin_common.db",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("PGDATABASE", "maykin-common"),
+        "USER": os.getenv("PGUSER", "maykin-common"),
+        "PASSWORD": os.getenv("PGPASSWORD", "maykin-common"),
+        "HOST": os.getenv("PGHOST", "localhost"),
+        "PORT": int(os.getenv("PGHOST", "5432")),
     }
 }
 
