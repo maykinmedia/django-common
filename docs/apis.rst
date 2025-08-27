@@ -17,6 +17,10 @@ Two templates are provided from the library that you should extend:
 * ``maykin_common/api/includes/footer.html``, use it to extend your
   ``includes/footer.html`` from
 
+If your project has multiple API components, there is a third template you should extend to create the page for each component.
+
+* ``maykin_common/api/index_component.html``, use it in ``api_component.html`` for your API component page.
+
 You'll need to make some modifications to the root ``urls.py`` and ``master.html`` to
 wire up everything automatically.
 
@@ -38,6 +42,18 @@ project:
 * ``content_nl``
 * ``content_en``
 * ``license_link``
+
+``maykin_common/api/index_component.html``
+------------------------------------------
+
+Provides the standard initialization for an API component page and contains the links for ``api_docs``, ``api_schema`` and ``notifications``.
+
+In your child template, make sure to override the blocks that are specific to your API component:
+
+* ``page_title``
+* ``page_subtitle``
+* ``title_component``
+* ``subtitle_component``
 
 ``maykin_common/api/includes/footer.html``
 ------------------------------------------

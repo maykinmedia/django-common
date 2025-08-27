@@ -14,6 +14,7 @@ Python API reference.
    context_processors
    migration_operations
    views
+   api_reference
    templatetags
 
 .. toctree::

@@ -2,6 +2,16 @@
 Changelog
 =========
 
+0.9.0 (2025-08-27)
+==================
+
+Feature release.
+
+* [#6] Fixed missing test coverage for migration operations.
+* Added API ``index_component`` template.
+* Added Maykin logo/favicon static assets.
+* Added template block for header in ``index_base.html``.
+
 0.8.0 (2025-08-21)
 ==================
 
