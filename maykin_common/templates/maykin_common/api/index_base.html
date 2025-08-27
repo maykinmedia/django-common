@@ -27,14 +27,16 @@ for the accessible markup.
 
 {% block content %}
 
-    <header class="page-title">
-        <h1 class="page-title__title">
-            {% block page_title %}Override block page_title{% endblock page_title %}
-        </h1>
-        <p class="page-title__description">
-            {% block page_subtitle %}Override block page_subtitle{% endblock page_subtitle %}
-        </p>
-    </header>
+    {% block content_header %}
+        <header class="page-title">
+            <h1 class="page-title__title">
+                {% block page_title %}Override block page_title{% endblock page_title %}
+            </h1>
+            <p class="page-title__description">
+                {% block page_subtitle %}Override block page_subtitle{% endblock page_subtitle %}
+            </p>
+        </header>
+    {% endblock content_header %}
 
     <article class="page-content page-content--centered">
         <nav class="tabs">
