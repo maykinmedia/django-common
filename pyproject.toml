@@ -83,6 +83,10 @@ otel = [
 config-helpers = [
     "python-decouple>=3.8",
 ]
+docs-helpers = [
+    "python-decouple>=3.8",
+    "sphinx",
+]
 
 [tool.setuptools.packages.find]
 include = ["maykin_common*"]
