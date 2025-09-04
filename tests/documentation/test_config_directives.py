@@ -1,9 +1,8 @@
 import textwrap
 
 import pytest
-from docutils.frontend import OptionParser
-from docutils.parsers.rst import Parser, directives
-from docutils.utils import new_document
+from docutils.core import publish_doctree
+from docutils.parsers.rst import directives
 
 import maykin_common.config_helpers
 from maykin_common.config_helpers import config
@@ -18,13 +17,9 @@ directives.register_directive("config-group", ConfigGroupDirective)
 directives.register_directive("config-all-params", ConfigAllParamsDirective)
 
 
-def parse_rst(rst: str):
-    settings = OptionParser(components=(Parser,)).get_default_values()
-    document = new_document("<test doc>", settings=settings)
-    parser = Parser()
-
-    parser.parse(rst, document)
-    return document
+def parse_rst(rst: str) -> str:
+    document = publish_doctree(rst)
+    return document.astext()
 
 
 @pytest.fixture(autouse=True)
@@ -53,7 +48,7 @@ def test_config_param():
 
     expected = "* DISABLE_2FA: disable 2fa. Defaults to: False.<br>"
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_param_override_default():
@@ -68,7 +63,7 @@ def test_config_param_override_default():
 
     expected = "* DISABLE_2FA: disable 2fa. Defaults to: True.<br>"
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_param_do_not_display_default():
@@ -88,7 +83,7 @@ def test_config_param_do_not_display_default():
 
     expected = "* DISABLE_2FA: disable 2fa.<br>"
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_param_default_empty_string():
@@ -102,7 +97,46 @@ def test_config_param_default_empty_string():
 
     expected = "* SUBPATH: subpath. Defaults to: (empty string).<br>"
 
-    assert expected == doc.astext()
+    assert expected == doc
+
+
+def test_config_param_missing_help_text():
+    config("DISABLE_2FA", default=False)
+
+    rst = textwrap.dedent("""
+        .. config-param:: DISABLE_2FA
+    """)
+
+    doc = parse_rst(rst)
+
+    expected = "* DISABLE_2FA:  Defaults to: False.<br>"
+
+    assert expected == doc
+
+
+def test_config_param_no_default(monkeypatch):
+    monkeypatch.setenv("SOME_VAR", "foo")
+
+    config("SOME_VAR", help_text="some var")
+
+    rst = textwrap.dedent("""
+        .. config-param:: SOME_VAR
+    """)
+
+    doc = parse_rst(rst)
+
+    expected = "* SOME_VAR: some var.<br>"
+
+    assert expected == doc
+
+
+def test_config_param_variable_does_not_exist(monkeypatch):
+    rst = textwrap.dedent("""
+        .. config-param:: NON_EXISTENT_VAR
+    """)
+
+    with pytest.raises(ValueError):
+        parse_rst(rst)
 
 
 #
@@ -111,7 +145,7 @@ def test_config_param_default_empty_string():
 
 
 def test_config_group():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
+    config("DB_USER", help_text="db username.", group="Database", default="foo")
     config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
 
     rst = textwrap.dedent("""
@@ -125,7 +159,21 @@ def test_config_group():
         "* DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
+
+
+def test_config_group_cannot_use_members_groups_and_exclude_groups_together():
+    config("DB_USER", help_text="db username", group="Database", default="foo")
+    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+
+    rst = textwrap.dedent("""
+        .. config-group:: Database
+            :members: DB_USER
+            :exclude: DB_PASSWORD
+    """)
+
+    with pytest.raises(ValueError):
+        parse_rst(rst)
 
 
 def test_config_group_do_not_add_var_to_docs():
@@ -150,7 +198,7 @@ def test_config_group_do_not_add_var_to_docs():
         "* DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_group_members():
@@ -171,7 +219,7 @@ def test_config_group_members():
         "* DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_group_exclude_params():
@@ -192,7 +240,7 @@ def test_config_group_exclude_params():
         "* DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 #
@@ -228,7 +276,29 @@ def test_config_all_params():
         "* SESSION_COOKIE_AGE: session cookie age. Defaults to: 1234.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
+
+
+def test_config_all_params_cannot_use_members_groups_and_exclude_groups_together():
+    config("DB_USER", help_text="db username", group="Database", default="foo")
+    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "ALLOWED_HOSTS",
+        help_text="allowed hosts",
+        group="Required",
+        split=True,
+        default="",
+    )
+    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
+
+    rst = textwrap.dedent("""
+        .. config-all-params::
+            :members-groups: Database
+            :exclude-groups: Required
+    """)
+
+    with pytest.raises(ValueError):
+        parse_rst(rst)
 
 
 def test_config_all_params_exclude_groups():
@@ -257,7 +327,7 @@ def test_config_all_params_exclude_groups():
         "Required\n\n* ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_all_params_members_groups():
@@ -287,19 +357,12 @@ def test_config_all_params_members_groups():
         "* DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_all_params_exclude_params():
     config("DB_USER", help_text="db username", group="Database", default="foo")
     config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
-    config(
-        "ALLOWED_HOSTS",
-        help_text="allowed hosts",
-        group="Required",
-        split=True,
-        default="",
-    )
     config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
     config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
     config("PARAM_TO_EXCLUDE1", help_text="exclude", group="Database", default="bar")
@@ -313,8 +376,6 @@ def test_config_all_params_exclude_params():
     doc = parse_rst(rst)
 
     expected = (
-        "Required\n\n"
-        "* ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
         "Database\n\n"
         "* DB_USER: db username. Defaults to: foo.<br>"
         "* DB_PASSWORD: db password. Defaults to: bar.<br>\n\n"
@@ -322,7 +383,7 @@ def test_config_all_params_exclude_params():
         "* SESSION_COOKIE_AGE: session cookie age. Defaults to: 1234.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
 
 
 def test_config_all_params_do_not_add_param_to_docs():
@@ -357,4 +418,4 @@ def test_config_all_params_do_not_add_param_to_docs():
         "* DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
-    assert expected == doc.astext()
+    assert expected == doc
