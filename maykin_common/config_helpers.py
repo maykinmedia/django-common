@@ -3,19 +3,25 @@ from typing import Any
 
 from decouple import Csv, Undefined, config as _config, undefined
 
+ENVVAR_REQUIRED_GROUP = "Required"
+ENVVAR_OPTIONAL_GROUP = "Optional"
+
 
 @dataclass
 class EnvironmentVariable:
     name: str
     default: Any
     help_text: str
+    add_to_docs: bool
     group: str | None = None
     auto_display_default: bool = True
 
     def __post_init__(self):
         if not self.group:
             self.group = (
-                "Required" if isinstance(self.default, Undefined) else "Optional"
+                ENVVAR_REQUIRED_GROUP
+                if isinstance(self.default, Undefined)
+                else ENVVAR_OPTIONAL_GROUP
             )
 
     def __eq__(self, other):
@@ -61,20 +67,20 @@ def config(
         more explanation that can be added to the ``help_text`` (e.g. if it is computed
         or based on another variable). Default ``True``
     """
-    if add_to_docs:
-        variable = EnvironmentVariable(
-            name=option,
-            default=default,
-            help_text=help_text,
-            group=group,
-            auto_display_default=auto_display_default,
-        )
-        if variable not in ENVVAR_REGISTRY:
-            ENVVAR_REGISTRY.append(variable)
-        else:
-            # If the same variable is defined again (i.e. because a project defines a
-            # custom default), override it
-            ENVVAR_REGISTRY[ENVVAR_REGISTRY.index(variable)] = variable
+    variable = EnvironmentVariable(
+        name=option,
+        default=default,
+        help_text=help_text,
+        add_to_docs=add_to_docs,
+        group=group,
+        auto_display_default=auto_display_default,
+    )
+    if variable not in ENVVAR_REGISTRY:
+        ENVVAR_REGISTRY.append(variable)
+    else:
+        # If the same variable is defined again (i.e. because a project defines a
+        # custom default), override it
+        ENVVAR_REGISTRY[ENVVAR_REGISTRY.index(variable)] = variable
 
     if "split" in kwargs:
         kwargs.pop("split")
