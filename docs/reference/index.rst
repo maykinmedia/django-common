@@ -54,7 +54,19 @@ Python API reference.
    otel
 
 .. toctree::
+   :caption: Configuration helpers
+
+   config_helpers
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Documentation helpers
+
+   documentation_helpers
+
+.. toctree::
    :maxdepth: 1
    :caption: Tests
 
    tests
+
