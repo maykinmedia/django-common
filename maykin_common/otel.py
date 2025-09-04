@@ -36,6 +36,7 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
+# from maykin_common.config_helpers import config
 from maykin_common.settings import get_setting
 
 # the uwsgi module is special - it's only available when the python code is loaded
@@ -53,6 +54,38 @@ __all__ = [
 type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 DEFAULT_PROTOCOL: ExportProtocol = "grpc"
+
+# FIXME loading these envvars at module level causes the tests to fail
+# DEFER_SETUP = config(
+#     "_OTEL_DEFER_SETUP",
+#     default=False,
+#     group="Open Telemetry",
+#     help_text=(
+#         "In some situations (similar to uwsgi, see below), initialization must be "
+#         "deferred, e.g. in celery workers with a process pool that fork other "
+#         "processes. Detecting if we're running in a celery master or worker process
+#         "is not obvious, so instead we look at an explicit environment variable."
+#     ),
+# )
+# _ENABLE_RESOURCE_DETECTOR: bool = config(
+#     "_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR",
+#     default=False,
+#     group="Open Telemetry",
+#     help_text=(
+#         "Can be enabled to extract additional resource attributes when "
+#         "running in Docker. "
+#         "Don't do this on Kubernetes, as it may lead to conflicting information."
+#     ),
+# )
+# PROTOCOL: ExportProtocol = config(
+#     "OTEL_EXPORTER_OTLP_PROTOCOL",
+#     default=DEFAULT_PROTOCOL,
+#     group="Open Telemetry",
+#     help_text=(
+#         "The name of the protocol to use for OTel, possible options: ``grpc``, "
+#         "``http/protobuf``."
+#     ),
+# )
 
 
 def setup_otel() -> None:
