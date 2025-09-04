@@ -108,6 +108,9 @@ def document_group(group: list[EnvironmentVariable], state: RSTState) -> nodes.N
 class ConfigParamDirective(Directive):
     """
     Directive to generate documentation for a specific parameter (environment variable)
+
+    :arg default: override the default of the environment variable
+    :returns: the node with a list item to document the environment variable
     """
 
     has_content = False
@@ -132,6 +135,12 @@ class ConfigParamDirective(Directive):
 class ConfigGroupDirective(Directive):
     """
     Directive to generate documentation for a specific parameter group
+
+    :arg members: the names of the environment variables from the group that should be
+        displayed
+    :arg exclude: the names of the environment variables from the group that should not
+        be displayed
+    :returns: the node with list items to document the environment variables
     """
 
     has_content = False
@@ -160,6 +169,14 @@ class ConfigGroupDirective(Directive):
 class ConfigAllParamsDirective(Directive):
     """
     Directive to generate documentation for all parameter groups
+
+    :arg members-groups: the names of the environment variable groups that should be
+        displayed
+    :arg exclude-groups: the names of the environment variable groups that should not be
+        displayed
+    :arg exclude-groups: the names of the environment variables that should not be
+        displayed
+    :returns: the node with sections to document the environment variables per group
     """
 
     has_content = False

@@ -47,6 +47,7 @@ Features
    quickstart
    otel
    apis
+   env_config_and_docs
    settings
    reference/index
    changelog
