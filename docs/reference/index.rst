@@ -52,3 +52,15 @@ Python API reference.
    :caption: Open Telemetry
 
    otel
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Configuration helpers
+
+   config_helpers
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Documentation helpers
+
+   documentation_helpers
