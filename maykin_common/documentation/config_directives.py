@@ -69,6 +69,8 @@ def document_param(
         result += var.help_text
         if not var.help_text.endswith("."):
             result += "."
+    else:
+        warnings.warn(f"missing help_text for environment variable {var}", stacklevel=2)
 
     if var.auto_display_default:
         # Use explicitly provided default to override the default defined in code
@@ -212,10 +214,6 @@ class ConfigAllParamsDirective(Directive):
             if var.name in exclude_params or not var.add_to_docs:
                 continue
 
-            if not var.help_text:
-                warnings.warn(
-                    f"missing help_text for environment variable {var}", stacklevel=2
-                )
             grouped_vars[var.group].append(var)
 
         root = nodes.container()
@@ -243,7 +241,7 @@ class ConfigAllParamsDirective(Directive):
         return [root]
 
 
-def setup(app):
+def setup(app):  # pragma: no cover
     app.add_directive("config-param", ConfigParamDirective)
     app.add_directive("config-group", ConfigGroupDirective)
     app.add_directive("config-all-params", ConfigAllParamsDirective)
