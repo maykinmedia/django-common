@@ -2,6 +2,13 @@
 Changelog
 =========
 
+0.9.1 (2025-09-05)
+==================
+
+Bugfix release.
+
+* Fixed image data in HTML to PDF rendering being parsed as a URL.
+
 0.9.0 (2025-08-27)
 ==================
 
