@@ -142,6 +142,12 @@ Open Telemetry
 
 See :ref:`otel` to configure metrics, traces and logging.
 
+Environment variable configuration and documentation
+----------------------------------------------------
+
+See :ref:`env_config_and_docs` on how to load configuration from environment variables and how
+to easily document them
+
 Other
 -----
 

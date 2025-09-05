@@ -79,6 +79,14 @@ otel = [
     "opentelemetry-instrumentation-django",
     "opentelemetry-resource-detector-containerid",
     "opentelemetry-sdk",
+    "python-decouple>=3.8",
+]
+config-helpers = [
+    "python-decouple>=3.8",
+]
+docs-helpers = [
+    "python-decouple>=3.8",
+    "sphinx",
 ]
 
 [tool.setuptools.packages.find]
