@@ -124,8 +124,13 @@ class UrlFetcher:
         prefix matches, look up the relative asset path in the storage and serve it
         if it's found. If not, defer to the default URL fetcher of WeasyPrint.
         """
+        # We don't need to parse the url if data is included directly,
+        # e.g. base64-encoded images.
+        if url.startswith("data:"):
+            return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
+
         parsed_url = urlparse(url)
-        assert parsed_url.netloc and parsed_url.netloc, "Expected fully qualified URL"
+        assert parsed_url.netloc, "Expected fully qualified URL"
 
         # Try candidates, respecting the order of the candidate configuration.
         for base, storage in _get_candidate_storages().items():

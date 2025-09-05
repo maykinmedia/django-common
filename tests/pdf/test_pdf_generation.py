@@ -96,3 +96,12 @@ def test_other_storages_than_file_system_storage(settings):
         render_template_to_pdf("testapp/pdf/local_url.html", {})
 
     mock_fetcher.assert_called_with("http://testserver/testapp/some.css")
+
+
+def test_base64_encoded_image():
+    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+        render_template_to_pdf("testapp/pdf/base64_encoded_image.html", {})
+
+    mock_fetcher.assert_called_with(
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA"
+    )
