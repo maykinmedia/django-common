@@ -2,6 +2,13 @@
 Changelog
 =========
 
+0.10.0 (2025-09-09)
+===================
+
+Feature release.
+
+* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating metrics in tests (see :ref:`test-mixins-reference`)
+
 0.9.1 (2025-09-05)
 ==================
 
