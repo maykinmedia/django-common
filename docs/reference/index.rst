@@ -52,3 +52,9 @@ Python API reference.
    :caption: Open Telemetry
 
    otel
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Tests
+
+   tests
