@@ -3,7 +3,7 @@ from django.test import Client, override_settings
 from django.urls import reverse
 
 import pytest
-import pytest_django
+from pytest_django.asserts import assertRedirects
 
 
 @pytest.mark.django_db
@@ -13,7 +13,7 @@ def test_redirect_on_csrf_failure_if_logged_in(django_user_model):
     client.force_login(user)
     response = client.post(reverse("admin:login"), {})
 
-    pytest_django.asserts.assertRedirects(response, settings.LOGIN_REDIRECT_URL)
+    assertRedirects(response, settings.LOGIN_REDIRECT_URL)
 
 
 @pytest.mark.django_db
