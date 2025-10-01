@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 try:
     import axes
 except ImportError:
@@ -75,3 +77,11 @@ ROOT_URLCONF = "testapp.urls"
 # CUSTOM SETTINGS
 #
 DJANGO_PROJECT_DIR = BASE_DIR
+
+#
+# CSRF SETTINGS
+#
+
+LOGIN_URLS = [reverse_lazy("admin:login")]
+LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
+CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"
