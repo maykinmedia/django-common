@@ -101,21 +101,25 @@ for the accessible markup.
         <div class="landing-page__nav-buttons">
 
             <div class="button-group">
-                {% block api_links %}
-                    {# Provide a default block, but if those URLs can't be reversed, it won't crash the template #}
-                    {% url 'api:api-docs' as api_docs_link %}
-                    {% url 'api:api-schema-json' as api_schema_link %}
+                {# Provide a default block, but if those URLs can't be reversed, it won't crash the template #}
+                {% url 'api:api-docs' as default_api_docs_link %}
+                {% url 'api:api-schema-json' as default_api_schema_link %}
 
-                    <a href="{{ api_docs_link }}" class="button">
-                        <i class="fas fa-wifi" aria-hidden="true"></i>
-                        {% trans "API docs (ReDoc)" %}
-                    </a>
-                    <a href="{{ api_schema_link }}" class="button">
-                        <i class="fas fa-file-alt" aria-hidden="true"></i>
-                        {% trans "Open API specification" %}
-                    </a>
-                {% endblock api_links %}
+                {% block api_links %}
+                    {% with api_docs_link=api_docs_link|default:default_api_docs_link api_schema_link=api_schema_link|default:default_api_schema_link %}
+                        <a href="{{ api_docs_link }}" class="button">
+                            <i class="fas fa-wifi"></i>
+                            {% trans "API docs (ReDoc)" %}
+                        </a>
+                        <a href="{{ api_schema_link }}" class="button">
+                            <i class="fas fa-file-alt"></i>
+                            {% trans "Open API specification" %}
+                        </a>
+                    {% endwith %}
+                {% endblock %}
             </div>
+
+            {% block extra_buttons %}{% endblock extra_buttons %}
 
             {% block admin_button_group %}
                 <div class="button-group">

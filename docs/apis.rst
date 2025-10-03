@@ -42,6 +42,28 @@ project:
 * ``content_nl``
 * ``content_en``
 * ``license_link``
+* ``api_links``
+
+.. tip:: The base template defines a block called ``api_links`` that displays two links for the API interface: **API docs (ReDoc)** and
+  **Open API specification**. If the variables ``api_docs_link`` and ``api_schema_link`` are not provided to the template, the fallback values ``default_api_docs_link`` and ``default_api_schema_link`` are used instead. A child template can override the ``api_links`` block and explicitly provide the URLs.
+
+For example:
+
+.. code-block:: django
+
+    {% block api_links %}
+
+        {% url 'schema-redoc' version=version as api_docs_link %}
+        {% url 'schema-json' as api_schema_link %}
+
+        {% with api_docs_link=api_docs_link api_schema_link=api_schema_link %}
+            {{ block.super }}
+        {% endwith %}
+
+    {% endblock %}
+
+.. tip:: To add extra buttons next to the ``api_links`` in the template, use the ``extra_buttons`` block.
+    This allows you to include custom actions without modifying the base template.
 
 ``maykin_common/api/index_component.html``
 ------------------------------------------
@@ -54,6 +76,7 @@ In your child template, make sure to override the blocks that are specific to yo
 * ``page_subtitle``
 * ``title_component``
 * ``subtitle_component``
+* ``api_links``
 
 ``maykin_common/api/includes/footer.html``
 ------------------------------------------
@@ -74,6 +97,9 @@ values by clever usage of the ``with`` tag:
 
 .. tip:: Consider installing django-capture-tag for cleaner templates, like the example
    above.
+
+.. tip:: To add extra buttons next to the ``api_links`` in the template, use the ``extra_buttons`` block.
+    This allows you to include custom actions without modifying the base template.
 
 Blocks you'll typically want to override are:
 

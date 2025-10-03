@@ -14,35 +14,41 @@
         </p>
         <div class="landing-page__nav-buttons">
             <div class="button-group">
-                {% block api_docs_link %}
-                    {% url component|add:":schema-redoc-"|add:component version=api_version as api_docs_link %}
-                    <a href="{{ api_docs_link }}" class="button">
-                        <i class="fas fa-wifi" aria-hidden="true"></i>
-                        {% trans "API docs (ReDoc)" %}
-                    </a>
-                {% endblock api_docs_link %}
-                {% block api_schema_link %}
-                    {% url component|add:":schema-json-"|add:component version=api_version as api_schema_link %}
-                    <a href="{{ api_schema_link }}" class="button">
-                        <i class="fas fa-file-alt" aria-hidden="true"></i>
-                        {% trans "Open API specification" %}
-                    </a>
-                {% endblock api_schema_link %}
+                {% url component|add:":schema-redoc-"|add:component version=api_version as default_api_docs_link %}
+                {% url component|add:":schema-json-"|add:component version=api_version as default_api_schema_link %}
+
+                {% block api_links %}
+                    {% with api_docs_link=api_docs_link|default:default_api_docs_link api_schema_link=api_schema_link|default:default_api_schema_link %}
+                        <a href="{{ api_docs_link }}" class="button">
+                            <i class="fas fa-wifi" aria-hidden="true"></i>
+                            {% trans "API docs (ReDoc)" %}
+                        </a>
+                        <a href="{{ api_schema_link }}" class="button">
+                            <i class="fas fa-file-alt" aria-hidden="true"></i>
+                            {% trans "Open API specification" %}
+                        </a>
+                    {% endwith %}
+                {% endblock api_links %}
             </div>
+
+            {% block extra_buttons %}{% endblock extra_buttons %}
+
             {% if notification_url %}
                 <div class="button-group">
-                <a href="{{ notification_url }}" class="button">
-                    <i class="fas fa-bullhorn" aria-hidden="true"></i>
-                    {% trans "Notifications" %}
-                </a>
+                    <a href="{{ notification_url }}" class="button">
+                        <i class="fas fa-bullhorn" aria-hidden="true"></i>
+                        {% trans "Notifications" %}
+                    </a>
                 </div>
             {% endif %}
-            <div class="button-group">
-                <a href="{% url 'admin:index' %}" class="button button--alert">
-                    <i class="fas fa-lock" aria-hidden="true"></i>
-                    {% trans "Administration" %}
-                </a>
-            </div>
+            {% block admin_button_group %}
+                <div class="button-group">
+                    <a href="{% url 'admin:index' %}" class="button button--alert">
+                        <i class="fas fa-lock" aria-hidden="true"></i>
+                        {% trans "Administration" %}
+                    </a>
+                </div>
+            {% endblock admin_button_group %}
         </div>
     </article>
 {% endblock %}
