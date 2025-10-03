@@ -69,6 +69,25 @@ the throttling implementation.
 
 For more details, see :mod:`maykin_common.throttling`.
 
+Password reset
+""""""""""""""
+
+To support password resets for the Django admin, make sure to add the admin password
+reset path to your existing ``urlpatterns``.
+
+.. code-block:: python
+
+    urlpatterns = [
+        path(
+            "admin/password_reset/",
+            PasswordResetView.as_view(),
+            name="admin_password_reset",
+        ),
+    ] + urlpatterns
+
+.. warning:: Make sure to install the optional *axes* dependency group if you want to use the admin login
+    rate-limiting and lockout features provided by ``django-axes``
+
 .. _quickstart_pdf:
 
 PDF
@@ -141,6 +160,20 @@ Open Telemetry
 --------------
 
 See :ref:`otel` to configure metrics, traces and logging.
+
+Views
+-----
+
+CSRF settings
+"""""""""""""
+
+CSRF failures because of double-clicking the login button are common. Our custom CSRF failure
+view detects this, but it requires configuring custom settings:
+
+- ``LOGIN_URLS`` is a collection of URLs where the user can log in (e.g. ``/admin/login/``
+  and ``/account/login``).
+- Set ``CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"`` to install our custom
+  CSRF failure handler view.
 
 Other
 -----

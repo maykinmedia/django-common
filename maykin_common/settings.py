@@ -56,10 +56,10 @@ Required for the :ref:`quickstart_pdf` extra.
 
 LOGIN_URLS = []
 """
-List of login URLs.
+Collection of login URLs.
 
-This setting is used in the `csrf_failure` view to handle CSRF errors that occur
-when attempting to log in a second time.
+This setting is used in the :func:`maykin_common.views.csrf_failure` view to handle CSRF
+errors that occur when attempting to log in a second time.
 """
 
 type SettingName = Literal[

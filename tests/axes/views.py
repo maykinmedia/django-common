@@ -2,7 +2,9 @@ from django.http import HttpRequest, HttpResponse
 from django.urls import path
 from django.views import View
 
+from maykin_common.accounts.views import PasswordResetView
 from maykin_common.throttling import IPThrottleMixin, ThrottleMixin
+from testapp.urls import urlpatterns
 
 
 class BaseView(View):
@@ -74,4 +76,11 @@ urlpatterns = [
             throttle_methods=("post",),
         ),
     ),
-]
+    # Add the admin password reset path to the existing urlpatterns
+    # This way, the password reset URL is checked before other routes.
+    path(
+        "admin/password_reset/",
+        PasswordResetView.as_view(),
+        name="admin_password_reset",
+    ),
+] + urlpatterns
