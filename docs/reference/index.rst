@@ -15,6 +15,7 @@ Python API reference.
    migration_operations
    views
    api_reference
+   accounts
    templatetags
 
 .. toctree::

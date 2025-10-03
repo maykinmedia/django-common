@@ -54,6 +54,14 @@ image URLs included in the document to render.
 Required for the :ref:`quickstart_pdf` extra.
 """
 
+LOGIN_URLS = []
+"""
+Collection of login URLs.
+
+This setting is used in the :func:`maykin_common.views.csrf_failure` view to handle CSRF
+errors that occur when attempting to log in a second time.
+"""
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -64,6 +72,7 @@ type SettingName = Literal[
     "RELEASE",
     "GIT_SHA",
     "PDF_BASE_URL_FUNCTION",
+    "LOGIN_URLS",
 ]
 
 
