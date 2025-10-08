@@ -5,10 +5,11 @@ Changelog
 0.11.0 (2025-10-08)
 ===================
 
-.. warning::
-    Please review the installation guide, as some new (custom) settings should be defined and new entries in the ``urlpatterns`` are expected.
-
 Feature release.
+
+.. warning::
+    Please review the installation guide, as some new (custom) settings should be 
+    defined and new entries in the ``urlpatterns`` are expected.
 
 * Improved the base blocks and templates for API projects (see :ref:`apis`).
 * Moved the common views from default project:
@@ -21,7 +22,8 @@ Feature release.
 
 Feature release.
 
-* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating metrics in tests (see :ref:`test-mixins-reference`)
+* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating 
+  metrics in tests (see :ref:`test-mixins-reference`)
 
 0.9.1 (2025-09-05)
 ==================
