@@ -2,12 +2,28 @@
 Changelog
 =========
 
+0.11.0 (2025-10-08)
+===================
+
+Feature release.
+
+.. warning::
+    Please review the installation guide, as some new (custom) settings should be 
+    defined and new entries in the ``urlpatterns`` are expected.
+
+* Improved the base blocks and templates for API projects (see :ref:`apis`).
+* Moved the common views from default project:
+
+    * ``PasswordResetView`` with built-in throttling support.
+    * Custom ``csrf_failure`` view to handle double-click login issues.
+
 0.10.0 (2025-09-09)
 ===================
 
 Feature release.
 
-* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating metrics in tests (see :ref:`test-mixins-reference`)
+* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating 
+  metrics in tests (see :ref:`test-mixins-reference`)
 
 0.9.1 (2025-09-05)
 ==================
