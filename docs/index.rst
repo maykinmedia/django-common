@@ -45,9 +45,9 @@ Features
    :caption: Contents:
 
    quickstart
+   env_config_and_docs
    otel
    apis
-   env_config_and_docs
    settings
    reference/index
    changelog

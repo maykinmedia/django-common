@@ -151,6 +151,12 @@ All modules in maykin-common either only require Django to be available, or requ
 optional dependencies. Optional modules have zero footprint as long as you don't import
 them, and when you do use them, ensure you've installed the appropriate extra.
 
+Environment variable configuration and documentation
+----------------------------------------------------
+
+See :ref:`env_config_and_docs` on how to load configuration from environment variables and how
+to easily document them.
+
 API projects (team bron)
 ------------------------
 
@@ -174,12 +180,6 @@ view detects this, but it requires configuring custom settings:
   and ``/account/login``).
 - Set ``CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"`` to install our custom
   CSRF failure handler view.
-
-Environment variable configuration and documentation
-----------------------------------------------------
-
-See :ref:`env_config_and_docs` on how to load configuration from environment variables and how
-to easily document them
 
 Other
 -----

@@ -10,6 +10,7 @@ Python API reference.
    :maxdepth: 1
    :caption: Core utilities
 
+   config_helpers
    checks
    context_processors
    migration_operations
@@ -23,6 +24,12 @@ Python API reference.
    :caption: MFA
 
    django_two_factor_auth
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Documentation helpers
+
+   documentation_helpers
 
 .. toctree::
    :maxdepth: 1
@@ -53,17 +60,6 @@ Python API reference.
    :caption: Open Telemetry
 
    otel
-
-.. toctree::
-   :caption: Configuration helpers
-
-   config_helpers
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Documentation helpers
-
-   documentation_helpers
 
 .. toctree::
    :maxdepth: 1

@@ -36,8 +36,8 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from maykin_common.config_helpers import config
-from maykin_common.settings import get_setting
+from .config_helpers import config
+from .settings import get_setting
 
 # the uwsgi module is special - it's only available when the python code is loaded
 # through uwsgi. With regular ``manage.py`` usage, it does not exist.
