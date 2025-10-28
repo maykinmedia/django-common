@@ -12,12 +12,6 @@ used in your project. The :func:`open_api_framework.conf.utils.config` can be us
 specify environment variable documentation. By default, all environment variables are added
 to the documentation (unless ``add_to_docs=False`` is passed to ``config``).
 
-To make use of this helper, make sure to install the ``config-helpers`` dependency group:
-
-.. code:: bash
-
-    uv pip install maykin-common[config-helpers]
-
 For more details, refer to :func:`maykin_common.config_helpers.config`.
 
 .. code:: python
@@ -40,12 +34,6 @@ Documentation helpers
 
 In order to document environment variables that are defined in this way, there are three
 Sphinx directives that can be used.
-
-To make use of these directives, make sure to install the ``docs-helpers`` dependency group:
-
-.. code:: bash
-
-    uv pip install maykin-common[docs-helpers]
 
 To document all groups of environment variables, the ``config-all-params`` directive
 (:class:`maykin_common.documentation.config_directives.ConfigAllParamsDirective`) can be used.
