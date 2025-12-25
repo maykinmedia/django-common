@@ -36,7 +36,8 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from maykin_common.settings import get_setting
+from .config import config
+from .settings import get_setting
 
 # the uwsgi module is special - it's only available when the python code is loaded
 # through uwsgi. With regular ``manage.py`` usage, it does not exist.
@@ -85,12 +86,14 @@ def setup_otel() -> None:
     # e.g. in celery workers with a process pool that fork other processes. Detecting
     # if we're running in a celery master or worker process is not obvious, so instead
     # we look at an explicit environment variable.
-    defer_setup = _check_envvar("_OTEL_DEFER_SETUP", default="false")
+    defer_setup: bool = config("_OTEL_DEFER_SETUP", default=False)
 
     # in a uwsgi worker, defer the otel initialization until after the processes have
     # forked
     if uwsgi is not None:  # pragma: no cover - can't be tested outside of uwsgi
-        from uwsgidecorators import postfork
+        from uwsgidecorators import (  # pyright: ignore[reportMissingModuleSource]
+            postfork,
+        )
 
         postfork(_setup_otel)
     elif not defer_setup:
@@ -143,8 +146,7 @@ def _setup_otel() -> None:
 
 
 def load_exporters():
-    # TODO: replace with `config` helper once it's added to this library
-    protocol: ExportProtocol = os.getenv(  # pyright: ignore[reportAssignmentType]
+    protocol: ExportProtocol = config(
         OTEL_EXPORTER_OTLP_PROTOCOL, default=DEFAULT_PROTOCOL
     )
     match protocol:
@@ -171,9 +173,8 @@ def load_exporters():
 
 
 def aggregate_resource(resource: Resource) -> Resource:
-    # TODO: replace with `config` helper once it's added to this library
-    _enable_resource_detector = _check_envvar(
-        "_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", default="false"
+    _enable_resource_detector: bool = config(
+        "_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", default=False
     )
     if not _enable_resource_detector:
         return resource
@@ -183,7 +184,3 @@ def aggregate_resource(resource: Resource) -> Resource:
     return get_aggregated_resources(
         detectors=[ContainerResourceDetector()], initial_resource=resource
     )
-
-
-def _check_envvar(name: str, default: Literal["true", "false"]) -> bool:
-    return os.getenv(name, default=default).lower().strip() == "true"
