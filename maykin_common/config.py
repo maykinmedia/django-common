@@ -4,31 +4,56 @@ Utilities to read and process configuration for a project.
 .. todo:: Incorporate the Team Bron documentation options for parameters.
 """
 
+from __future__ import annotations
+
+import os
 from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from typing import Literal, assert_never, overload
 
 from decouple import Csv, Undefined, config as _config, undefined
 
 __all__ = ["config"]
 
+_RECORD_SETTING_META: bool = os.getenv(
+    "_RECORD_SETTING_META", default="false"
+).lower() in ["true", "1"]
+
 
 @overload
-def config(option: str) -> str: ...
+def config(
+    option: str,
+    *,
+    meta: SettingMeta | None = None,
+) -> str: ...
 
 
 @overload
 def config[T](
-    option: str, *, default: Sequence[T] | Undefined = undefined, split: Literal[True]
+    option: str,
+    *,
+    default: Sequence[T] | Undefined = undefined,
+    split: Literal[True],
+    meta: SettingMeta | None = None,
 ) -> list[T]: ...
 
 
 @overload
-def config[T](option: str, *, default: T | Undefined = undefined) -> T: ...
+def config[T](
+    option: str,
+    *,
+    default: T | Undefined = undefined,
+    meta: SettingMeta | None = None,
+) -> T: ...
 
 
 @overload
 def config[U](
-    option: str, *, default: object = undefined, cast: Callable[[str], U]
+    option: str,
+    *,
+    default: object = undefined,
+    cast: Callable[[str], U],
+    meta: SettingMeta | None = None,
 ) -> U: ...
 
 
@@ -38,6 +63,7 @@ def config[T, U](
     default: T | None | Undefined = undefined,
     split: bool = False,
     cast: Callable[[str], U] | Undefined = undefined,
+    meta: SettingMeta | None = None,
 ) -> str | None | T | Sequence[T] | U:
     """
     Pull a config parameter from the environment.
@@ -70,6 +96,14 @@ def config[T, U](
         ...     cast=lambda v: int(v) if v is not None else None,
         ... )  # typed as int | None
     """
+    if _RECORD_SETTING_META and meta:
+        AVAILBLE_SETINGS.append(
+            AvailableSetting(
+                name=option,
+                default=default if not meta.ignore_default else undefined,
+                meta=meta,
+            )
+        )
 
     if split:
         assert isinstance(default, Undefined | Sequence), (
@@ -113,3 +147,20 @@ def config[T, U](
             return _config(option, default=default, cast=cast)
         case _:  # pragma: no cover
             assert_never((cast, default))
+
+
+AVAILBLE_SETINGS: list[AvailableSetting] = []
+
+
+@dataclass(frozen=True)
+class AvailableSetting[T]:
+    name: str
+    default: T | Undefined
+    meta: SettingMeta
+
+
+@dataclass(frozen=True)
+class SettingMeta:
+    description: str
+    group: str = ""
+    ignore_default: bool = False

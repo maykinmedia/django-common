@@ -1,7 +1,8 @@
-import os
 from pathlib import Path
 
 from django.urls import reverse_lazy
+
+from maykin_common.config import SettingMeta, config
 
 try:
     import axes
@@ -10,7 +11,15 @@ except ImportError:
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
 
-SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
+SECRET_KEY = config(
+    "SECRET_KEY",
+    default="so-secret-i-cant-believe-you-are-looking-at-this",
+    meta=SettingMeta(
+        description="Secret key used for certain cryptographic utilities.",
+        group="Required",
+        ignore_default=True,
+    ),
+)
 
 USE_TZ = True
 
@@ -19,11 +28,15 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("PGDATABASE", "maykin-common"),
-        "USER": os.getenv("PGUSER", "maykin-common"),
-        "PASSWORD": os.getenv("PGPASSWORD", "maykin-common"),
-        "HOST": os.getenv("PGHOST", "localhost"),
-        "PORT": int(os.getenv("PGHOST", "5432")),
+        "NAME": config(
+            "PGDATABASE",
+            default="maykin-common",
+            meta=SettingMeta(description="Database name to connect to."),
+        ),
+        "USER": config("PGUSER", default="maykin-common"),
+        "PASSWORD": config("PGPASSWORD", default="maykin-common"),
+        "HOST": config("PGHOST", default="localhost"),
+        "PORT": config("PGHOST", default=5432),
     }
 }
 
