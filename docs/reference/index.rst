@@ -11,6 +11,7 @@ Python API reference.
    :caption: Core utilities
 
    checks
+   configuration
    context_processors
    migration_operations
    views
