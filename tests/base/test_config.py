@@ -95,3 +95,8 @@ def test_read_unset_setting_with_custom_cast_fallback_to_default():
     )
 
     assert result == date(2025, 1, 1)
+
+
+def test_raise_typeerror_when_non_string_default_is_specified_together_with_cast():
+    with pytest.raises(TypeError):
+        config("SOME_OPTIONAL_SETTING", default=123, cast=lambda x: x)
