@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.12.0 (2026-01-05)
+===================
+
+Feature release.
+
+* Ported the ``config`` helper for settings from default project - it's available from
+  the ``maykin_common.config`` module.
+
 0.11.0 (2025-10-08)
 ===================
 
