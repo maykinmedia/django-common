@@ -28,7 +28,8 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "django>=4.2"
+    "django>=4.2",
+    "python-decouple",
 ]
 
 [project.urls]
@@ -49,6 +50,7 @@ tests = [
     "ruff",
     "pyright",
     "django-stubs",
+    "decouple-types",
     "celery",
 ]
 docs = [

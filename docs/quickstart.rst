@@ -151,6 +151,11 @@ All modules in maykin-common either only require Django to be available, or requ
 optional dependencies. Optional modules have zero footprint as long as you don't import
 them, and when you do use them, ensure you've installed the appropriate extra.
 
+Reading settings from the environment
+-------------------------------------
+
+Use the :func:`maykin_common.config.config` helper.
+
 API projects (team bron)
 ------------------------
 
