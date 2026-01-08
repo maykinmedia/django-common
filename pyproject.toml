@@ -32,6 +32,9 @@ dependencies = [
     "python-decouple",
 ]
 
+[project.scripts]
+maykin-common = "maykin_common.cli:app"
+
 [project.urls]
 Homepage = "https://github.com/maykinmedia/django-common"
 Documentation = "http://maykin-django-common.readthedocs.io/en/latest/"
@@ -59,6 +62,10 @@ docs = [
 ]
 release = [
     "bump-my-version",
+]
+cli = [
+    "requests",
+    "typer",
 ]
 pdf = [
     "weasyprint"
@@ -112,6 +119,7 @@ source = ["maykin_common"]
 omit = [
     # migrations run while django initializes the test db
     "*/migrations/*",
+    "maykin_common/cli.py",
 ]
 
 [tool.coverage.report]

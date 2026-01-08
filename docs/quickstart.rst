@@ -31,7 +31,7 @@ However, the usefulness increases with each extra. Each one of them is described
 
    .. code-block:: bash
 
-       uv pip install maykin-common[axes,mfa,health-checks]
+       uv pip install maykin-common[axes,mfa,health-checks,cli]
 
 MFA
 ---
@@ -97,7 +97,7 @@ Install command:
 
 .. code-block:: bash
 
-    uv pip install maykin-common[health-checks]
+    uv pip install maykin-common[cli,health-checks]
 
 Used for programmatic Docker/Kubernetes health checks, which restart containers when the
 app appears to have crashed.

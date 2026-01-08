@@ -37,6 +37,24 @@ return an HTTP status code ``200`` if all is well, and ``500`` otherwise.
     and configure a higher failure treshold for the liveness probe to allow the
     application to recover before restarting it.
 
+Command line
+============
+
+You can use the ``maykin-common cli`` to probe the health check endpoint(s):
+
+.. code-block:: bash
+
+    maykin-common health-check --endpoint=/_healthz/livez/
+
+Which will exit with exit code ``0`` for success responses (HTTP status code between 200
+and 399).
+
+.. note:: Make sure the install the ``cli`` extra:
+
+    .. code-block:: bash
+
+        uv pip install maykin-common[cli]
+
 Django setting defaults
 =======================
 
