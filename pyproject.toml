@@ -82,6 +82,9 @@ otel = [
     "opentelemetry-resource-detector-containerid",
     "opentelemetry-sdk",
 ]
+health-checks = [
+    "django-health-check>=3.20",
+]
 
 [tool.setuptools.packages.find]
 include = ["maykin_common*"]
