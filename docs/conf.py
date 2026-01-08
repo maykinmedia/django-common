@@ -46,6 +46,7 @@ autodoc_mock_imports = [
     "axes",
     "vcr",
     "opentelemetry",
+    "health_check",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
