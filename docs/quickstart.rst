@@ -31,7 +31,7 @@ However, the usefulness increases with each extra. Each one of them is described
 
    .. code-block:: bash
 
-       uv pip install maykin-common[axes,mfa]
+       uv pip install maykin-common[axes,mfa,health-checks]
 
 MFA
 ---
@@ -89,6 +89,49 @@ reset path to your existing ``urlpatterns``.
     rate-limiting and lockout features provided by ``django-axes``
 
 .. _quickstart_pdf:
+
+Health checks
+-------------
+
+Install command:
+
+.. code-block:: bash
+
+    uv pip install maykin-common[health-checks]
+
+Used for programmatic Docker/Kubernetes health checks, which restart containers when the
+app appears to have crashed.
+
+Update your settings accordingly:
+
+.. code-block:: python
+
+    from maykin_common.health_checks import (
+        default_health_check_apps,
+        default_health_check_subsets,
+    )
+
+    INSTALLED_APPS = [
+        ...,
+        *default_health_check_apps,
+        ...
+    ]
+
+    HEALTH_CHECK = {
+        "SUBSETS": default_health_check_subsets,
+    }
+
+and your root ``urls.py``:
+
+.. code-block:: python
+
+    urlpatterns = [
+        ...,
+        path("", include("maykin_common.health_checks.urls")),
+        ...,
+    ]
+
+For more details, see :ref:`reference_health_checks`.
 
 PDF
 ---

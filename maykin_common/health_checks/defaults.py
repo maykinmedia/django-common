@@ -41,6 +41,6 @@ without becoming expensive.
 
 The startup probes can use the main health check without specifying any subset, which
 checks all the plugins, including possibly expensive checks.
-"""
 
-# See https://codingjoe.dev/django-health-check/container/#subsets for more details
+See https://codingjoe.dev/django-health-check/container/#subsets for more details
+"""
