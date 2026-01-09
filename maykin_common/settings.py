@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Literal
 
 from django.conf import settings
@@ -62,6 +63,17 @@ This setting is used in the :func:`maykin_common.views.csrf_failure` view to han
 errors that occur when attempting to log in a second time.
 """
 
+MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE: Path = Path("/tmp") / "celery_beat_live"
+"""
+Path to the file that acts as a liveness marker of Celery Beat.
+
+Used when :mod:`maykin_common.health_checks.celery` is installed, which registers health
+check mechanisms for Celery Beat. The intermediate directories will be created if
+absent. The file itself will be created when beat publishes its first task, and will
+be unlinked again when beat exits.
+"""
+
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -73,6 +85,7 @@ type SettingName = Literal[
     "GIT_SHA",
     "PDF_BASE_URL_FUNCTION",
     "LOGIN_URLS",
+    "MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE",
 ]
 
 
