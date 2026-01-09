@@ -23,6 +23,7 @@ from django.utils.module_loading import import_string
 
 from opentelemetry import metrics, trace
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
 from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
@@ -78,9 +79,10 @@ def setup_otel() -> None:
     # wrappers/middleware etc.
 
     # the instrumentor is a singleton, so it's effectively global
-    instrumentor = DjangoInstrumentor()
-    if not instrumentor.is_instrumented_by_opentelemetry:
-        instrumentor.instrument()
+    instrumentors = [DjangoInstrumentor(), PsycopgInstrumentor()]
+    for instrumentor in instrumentors:
+        if not instrumentor.is_instrumented_by_opentelemetry:
+            instrumentor.instrument()
 
     # In some situations (similar to uwsgi, see below), initialization must be deferred,
     # e.g. in celery workers with a process pool that fork other processes. Detecting
