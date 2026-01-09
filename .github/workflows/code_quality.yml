@@ -25,10 +25,14 @@ jobs:
           - typecheck
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Install OS packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gettext
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version-file: "pyproject.toml"
       - name: Install dependencies
         run: pip install tox
       - run: tox

@@ -6,6 +6,7 @@ recursive-include maykin_common *.css
 recursive-include maykin_common *.js *.mjs
 recursive-include maykin_common *.txt
 recursive-include maykin_common *.po
+recursive-include maykin_common *.mo
 recursive-include maykin_common *.png
 recursive-include maykin_common *.svg
 global-exclude __pycache__
