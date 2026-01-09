@@ -111,6 +111,7 @@ files = [
     {filename = "pyproject.toml"},
     {filename = "README.rst"},
     {filename = "docs/conf.py"},
+    {filename = "locale/nl/LC_MESSAGES/django.po"},
     {filename = "tests/cli/test_version_command.py"},
 ]
 
