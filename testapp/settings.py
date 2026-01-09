@@ -1,12 +1,24 @@
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 
 try:
     import axes
 except ImportError:
     axes = None
+
+# workaround necessary because patching settings "on the fly" is broken with
+# django-health-check, see https://github.com/codingjoe/django-health-check/issues/546
+try:
+    from maykin_common.health_checks import (
+        default_health_check_apps,
+        default_health_check_subsets,
+    )
+except ImproperlyConfigured:
+    default_health_check_apps = ()
+    default_health_check_subsets = {}
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
 
@@ -34,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.admin",
+    *default_health_check_apps,
     "maykin_common",
     "testapp",
 ]
@@ -85,3 +98,10 @@ DJANGO_PROJECT_DIR = BASE_DIR
 LOGIN_URLS = [reverse_lazy("admin:login")]
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"
+
+#
+# DJANGO-HEALTH-CHECK settings
+#
+HEALTH_CHECK = {
+    "SUBSETS": default_health_check_subsets,
+}

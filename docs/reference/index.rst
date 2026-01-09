@@ -51,8 +51,9 @@ Python API reference.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Open Telemetry
+   :caption: Logging and monitoring
 
+   health_checks
    otel
 
 .. toctree::
