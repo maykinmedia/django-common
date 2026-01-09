@@ -2,6 +2,16 @@
 Changelog
 =========
 
+0.13.0 (2026-01-09)
+===================
+
+Feature release.
+
+* [#42] Added Dutch translation assets.
+* Added ``maykin_common.health_checks`` package and ``health-checks`` extra with
+  defaults for container health checks.
+* Added a CLI ``maykin-common`` which knows how to execute the health checks.
+
 0.12.0 (2026-01-05)
 ===================
 
