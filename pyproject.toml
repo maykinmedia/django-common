@@ -86,6 +86,7 @@ otel = [
     "opentelemetry-api",
     "opentelemetry-exporter-otlp",
     "opentelemetry-instrumentation-django",
+    "opentelemetry-instrumentation-psycopg",
     "opentelemetry-resource-detector-containerid",
     "opentelemetry-sdk",
 ]
