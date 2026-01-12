@@ -65,7 +65,10 @@ and your root ``urls.py``:
 Command line
 ============
 
-You can use the ``maykin-common cli`` to probe the health check endpoint(s):
+HTTP health checks
+------------------
+
+You can use the ``maykin-common`` CLI to probe the health check endpoint(s):
 
 .. code-block:: bash
 
@@ -79,6 +82,26 @@ and 399).
     .. code-block:: bash
 
         uv pip install maykin-common[cli]
+
+Celery beat health checks
+-------------------------
+
+If you use Celery Beat and install the health checks (see below), you can test the
+Beat liveness too:
+
+.. code-block:: bash
+
+    maykin-common beat-health-check --file /app/tmp/celery/beat.live --max-age 120
+
+Which will exit with exit code ``0`` if the specified file exists and is last modified
+within the specified number of seconds. The file path should match the value of the
+``MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE`` setting.
+
+.. tip:: Use a ``--max-age`` that's 2x the interval of your most frequently scheduled
+   task. E.g. if you have a task that runs every minute, pick 120 seconds.
+
+.. tip:: Use startup probes if possible to give Beat time to load, start and schedule
+   a task for the first time.
 
 Celery
 ======
