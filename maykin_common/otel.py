@@ -22,8 +22,10 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 
 from opentelemetry import metrics, trace
-from opentelemetry.instrumentation.django import DjangoInstrumentor
-from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
+from opentelemetry.instrumentation.auto_instrumentation import (
+    _load_distro,
+    _load_instrumentors,
+)
 from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
@@ -75,14 +77,10 @@ def setup_otel() -> None:
     Part of the SDK initialization process is starting a background thread to
     periodically ship the telemetry to the configured endpoint.
     """
-    # set up instrumenters that (usually) monkeypatch modules or inject the right
-    # wrappers/middleware etc.
-
-    # the instrumentor is a singleton, so it's effectively global
-    instrumentors = [DjangoInstrumentor(), PsycopgInstrumentor()]
-    for instrumentor in instrumentors:
-        if not instrumentor.is_instrumented_by_opentelemetry:
-            instrumentor.instrument()
+    # instrument the code with otel auto-instrument
+    distro = _load_distro()
+    distro.configure()
+    _load_instrumentors(distro)
 
     # In some situations (similar to uwsgi, see below), initialization must be deferred,
     # e.g. in celery workers with a process pool that fork other processes. Detecting
