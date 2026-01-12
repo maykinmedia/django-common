@@ -90,49 +90,6 @@ reset path to your existing ``urlpatterns``.
 
 .. _quickstart_pdf:
 
-Health checks
--------------
-
-Install command:
-
-.. code-block:: bash
-
-    uv pip install maykin-common[cli,health-checks]
-
-Used for programmatic Docker/Kubernetes health checks, which restart containers when the
-app appears to have crashed.
-
-Update your settings accordingly:
-
-.. code-block:: python
-
-    from maykin_common.health_checks import (
-        default_health_check_apps,
-        default_health_check_subsets,
-    )
-
-    INSTALLED_APPS = [
-        ...,
-        *default_health_check_apps,
-        ...
-    ]
-
-    HEALTH_CHECK = {
-        "SUBSETS": default_health_check_subsets,
-    }
-
-and your root ``urls.py``:
-
-.. code-block:: python
-
-    urlpatterns = [
-        ...,
-        path("", include("maykin_common.health_checks.urls")),
-        ...,
-    ]
-
-For more details, see :ref:`reference_health_checks`.
-
 PDF
 ---
 
@@ -198,6 +155,11 @@ Reading settings from the environment
 -------------------------------------
 
 Use the :func:`maykin_common.config.config` helper.
+
+Health checks
+-------------
+
+See :ref:`health-checks` on how to setup health checks.
 
 API projects (team bron)
 ------------------------

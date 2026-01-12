@@ -42,7 +42,7 @@ def dummy():
 def install_celery_health_checks(settings):
     settings.INSTALLED_APPS = [
         *settings.INSTALLED_APPS,
-        "maykin_common.health_checks.celery.apps.CeleryHealthChecksAppConfig",
+        "maykin_common.health_checks.celery",
     ]
 
 
