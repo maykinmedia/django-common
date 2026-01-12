@@ -4,6 +4,8 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 
+from maykin_common.config import config
+
 try:
     import axes
 except ImportError:
@@ -105,3 +107,12 @@ CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"
 HEALTH_CHECK = {
     "SUBSETS": default_health_check_subsets,
 }
+
+#
+# CUSTOM health check settings
+#
+MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE: Path = config(
+    "MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE",
+    default="/tmp/celery_beat_live",
+    cast=Path,
+)
