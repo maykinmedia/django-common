@@ -45,6 +45,7 @@ Features
    :caption: Contents:
 
    quickstart
+   health_checks
    otel
    apis
    settings
