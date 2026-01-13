@@ -2,6 +2,13 @@
 Changelog
 =========
 
+0.14.0 (2026-01-13)
+===================
+
+Feature release.
+
+* [#48] Added health check tooling for Celery Beat.
+
 0.13.0 (2026-01-09)
 ===================
 
