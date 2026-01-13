@@ -37,6 +37,14 @@ return an HTTP status code ``200`` if all is well, and ``500`` otherwise.
     and configure a higher failure treshold for the liveness probe to allow the
     application to recover before restarting it.
 
+All health check endpoints return an overview of the checks that have passed or failed.
+The response format depends on the ``Accept`` header:
+
+* ``text/html``: Human-readable overview (default for browsers)
+* ``application/json``: Machine-readable format (for monitoring tools)
+
+You can force JSON output by appending ``?format=json`` to any health check URL.
+
 Django setting defaults
 =======================
 
