@@ -159,7 +159,7 @@ Use the :func:`maykin_common.config.config` helper.
 Health checks
 -------------
 
-See :ref:`health-checks` on how to setup health checks.
+See :ref:`health_checks` on how to setup health checks.
 
 API projects (team bron)
 ------------------------

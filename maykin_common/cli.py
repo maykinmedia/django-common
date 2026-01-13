@@ -26,15 +26,24 @@ def version():
     typer.echo(f"maykin-common v{version}")
 
 
-@app.command(
-    name="health-check",
-    help=(
-        "Execute an HTTP health check call against the provided endpoint. If no "
-        "host or domain is provided in the endpoint, this will default to "
-        "'http://localhost:8000'."
-    ),
-)
-def health_check(endpoint: str = "/_healthz/livez/", timeout: int = 3):
+@app.command(name="health-check")
+def health_check(
+    endpoint: Annotated[
+        str,
+        typer.Option(help="Endpoint/path to test for connection and status code."),
+    ] = "/_healthz/livez/",
+    timeout: Annotated[
+        int,
+        typer.Option(help="Timeout for the GET request (in seconds)."),
+    ] = 3,
+):
+    """
+    Execute an HTTP health check call against the provided endpoint.
+
+    If no host or domain is provided with the ``endpoint`` option, a default of
+    ``http://localhost:8000`` will be used.
+    """
+
     # URLs must start with a scheme, otherwise urlparse chokes :-)
     if not (endpoint.startswith("http://") or endpoint.startswith("https://")):
         endpoint = f"http://{endpoint}"

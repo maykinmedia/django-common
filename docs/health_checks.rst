@@ -1,4 +1,4 @@
-.. _health-checks:
+.. _health_checks:
 
 =============
 Health checks
@@ -16,7 +16,7 @@ app and the Celery components, like the worker and beat.
 
 .. versionadded:: 0.14.0
 
-    Added support for Celery.
+    Added support for Celery Beat.
 
 .. contents:: Jump to
     :local:
@@ -31,7 +31,7 @@ Install the extra dependencies:
 
 .. code-block:: bash
 
-    uv pip install maykin-common[cli,health-checks]
+    uv pip install maykin-common[health-checks]
 
 Update your settings accordingly:
 
@@ -45,6 +45,7 @@ Update your settings accordingly:
     INSTALLED_APPS = [
         ...,
         *default_health_check_apps,
+        "maykin_common.health_checks.celery",  # optional, add if you use Celery
         ...
     ]
 
@@ -61,6 +62,53 @@ and your root ``urls.py``:
         path("", include("maykin_common.health_checks.urls")),
         ...,
     ]
+
+See the :ref:`health_checks_cli` details for how to test the health.
+
+Celery
+======
+
+If you use Celery in your project, there are health check tools for the Celery
+components too.
+
+Beat
+----
+
+We can monitor Beat's liveness by tracking when was the last time a task was scheduled.
+Instrumentation is done by adding a Django app and (optionally) specifying the file path
+to the liveness file:
+
+.. code-block:: python
+
+    from pathlib import Path
+
+    INSTALLED_APPS = [
+        ...,
+        "maykin_common.health_checks.celery",
+        ...
+    ]
+
+    MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE = Path("/tmp") / "celery_beat_live"
+
+The file specified through ``MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE`` will be touched
+every time Beat successfully schedules a task to the broker. The health check can then
+test how long ago the file was last touched. For example, if your Beat schedule runs a
+task every hour, you could run the health check that expects the file to be modified
+less than 2 hours ago.
+
+.. tip:: If your normal schedule has very infrequent tasks (e.g. once per week), you
+   may want to set up a smoke test task that runs more frequently (e.g. every hour).
+
+.. caution::
+
+   If you use the :class:`django_celery_beat.schedulers.DatabaseScheduler` scheduler, you should be aware that your schedules are editable at runtime through the admin, which may mean your ``max-age`` parameter no longer aligns with your actual schedule, leading to erroneously failed health checks. In such cases you might want to consider scheduling an explicit heartbeat task, using the task description to make clear that the task should be enabled and should not be re-scheduled.
+
+Worker
+------
+
+.. todo:: To be implemented.
+
+.. _health_checks_cli:
 
 Command line
 ============
@@ -91,7 +139,7 @@ Beat liveness too:
 
 .. code-block:: bash
 
-    maykin-common beat-health-check --file /app/tmp/celery/beat.live --max-age 120
+    maykin-common beat-health-check --file /tmp/celery_beat_live --max-age 120
 
 Which will exit with exit code ``0`` if the specified file exists and is last modified
 within the specified number of seconds. The file path should match the value of the
@@ -102,42 +150,3 @@ within the specified number of seconds. The file path should match the value of 
 
 .. tip:: Use startup probes if possible to give Beat time to load, start and schedule
    a task for the first time.
-
-Celery
-======
-
-If you use Celery in your project, there are health check tools for the Celery
-components too.
-
-Beat
-----
-
-We can monitor Beat's liveness by tracking when was the last time a task was scheduled.
-Instrumentation is done by adding a Django app and (optionally) specifying the file path
-to the liveness file:
-
-.. code-block:: python
-
-    from pathlib import Path
-
-    INSTALLED_APPS = [
-        ...,
-        "maykin_common.health_checks.celery",
-        ...
-    ]
-
-    MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE = Path("/tmp/celery_beat_live")
-
-The file specified through ``MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE`` will be touched
-every time Beat successfully schedules a task to the broker. The health check can then
-test how long ago the file was last touched. For example, if your Beat schedule runs a
-task every hour, you could run the health check that expects the file to be modified
-less than 2 hours ago.
-
-.. tip:: If your normal schedule has very infrequent tasks (e.g. once per week), you
-   may want to set up a smoke test task that runs more frequently (e.g. every hour).
-
-Worker
-------
-
-.. todo:: To be implemented.
