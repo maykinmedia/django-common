@@ -85,8 +85,10 @@ vcr = [
 ]
 otel = [
     "opentelemetry-api",
+    "opentelemetry-distro",
     "opentelemetry-exporter-otlp",
     "opentelemetry-instrumentation-django",
+    "opentelemetry-instrumentation-psycopg",
     "opentelemetry-resource-detector-containerid",
     "opentelemetry-sdk",
 ]
