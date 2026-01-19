@@ -22,8 +22,11 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 
 from opentelemetry import metrics, trace
+from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
@@ -79,7 +82,13 @@ def setup_otel() -> None:
     # wrappers/middleware etc.
 
     # the instrumentor is a singleton, so it's effectively global
-    instrumentors = [DjangoInstrumentor(), PsycopgInstrumentor()]
+    instrumentors = [
+        DjangoInstrumentor(),
+        PsycopgInstrumentor(),
+        CeleryInstrumentor(),
+        RedisInstrumentor(),
+        RequestsInstrumentor(),
+    ]
     for instrumentor in instrumentors:
         if not instrumentor.is_instrumented_by_opentelemetry:
             instrumentor.instrument()
