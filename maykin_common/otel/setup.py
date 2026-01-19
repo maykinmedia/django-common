@@ -39,7 +39,7 @@ from opentelemetry.sdk.resources import (
 )
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
+from .processors import CustomAttributeSpanProcessor
 from ..config import config
 from ..settings import get_setting
 
@@ -147,8 +147,9 @@ def _setup_otel() -> None:
     OTLPMetricExporter, OTLPSpanExporter = load_exporters()
 
     tracer_provider = TracerProvider(resource=resource)
-    processor = BatchSpanProcessor(OTLPSpanExporter())
-    tracer_provider.add_span_processor(processor)
+    batch_processor = BatchSpanProcessor(OTLPSpanExporter())
+    tracer_provider.add_span_processor(batch_processor)
+    tracer_provider.add_span_processor(CustomAttributeSpanProcessor())
     trace.set_tracer_provider(tracer_provider)
 
     reader = PeriodicExportingMetricReader(OTLPMetricExporter())
