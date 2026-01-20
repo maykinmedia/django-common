@@ -127,6 +127,7 @@ class UrlFetcher:
         # We don't need to parse the url if data is included directly,
         # e.g. base64-encoded images.
         if url.startswith("data:"):
+            # TODO: deprecated since weasyprint 68, replace with URLFetcher
             return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
 
         parsed_url = urlparse(url)
@@ -161,6 +162,7 @@ class UrlFetcher:
                         "storage": storage,
                     },
                 )
+                # TODO: deprecated since weasyprint 68, replace with URLFetcher
                 return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
 
             content_type, encoding = mimetypes.guess_type(absolute_path)
