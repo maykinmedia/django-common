@@ -18,22 +18,33 @@ def reset_span_exporter(span_exporter):
     span_exporter.clear()
 
 
-def test_processor_redis(span_exporter):
+@pytest.mark.parametrize(
+    "instrumentor,expected",
+    [
+        ("opentelemetry.instrumentation.redis", ("db", "redis")),
+        ("opentelemetry.instrumentation.psycopg", ("db", "postgresql")),
+        ("opentelemetry.instrumentation.requests", ("external", "requests")),
+        ("opentelemetry.instrumentation.celery", ("async", "celery")),
+        ("new", ("unknown", "unknown")),
+    ],
+)
+def test_processor_libs(span_exporter, instrumentor: str, expected: tuple[str, str]):
     provider = TracerProvider()
     provider.add_span_processor(CustomAttributeSpanProcessor())
     provider.add_span_processor(SimpleSpanProcessor(span_exporter))
 
     # Create tracer with redis instrumentation scope
-    tracer = provider.get_tracer("opentelemetry.instrumentation.redis")
+    tracer = provider.get_tracer(instrumentor)
 
-    with tracer.start_as_current_span("redis.get"):
+    with tracer.start_as_current_span("some-span"):
         pass
 
     spans = span_exporter.get_finished_spans()
     span = spans[0]
 
-    assert span.attributes.get("span.type") == "db"
-    assert span.attributes.get("span.subtype") == "redis"
+    span_type = span.attributes.get("span.type")
+    span_subtype = span.attributes.get("span.subtype")
+    assert span_type, span_subtype == expected
 
 
 def test_processor_django(span_exporter):
