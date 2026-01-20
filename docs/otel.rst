@@ -30,8 +30,6 @@ Open Telemetry has *things to say* about all this data.
    persisted in some monitoring backend. In the future, we will include the helpers for
    this in maykin-common.
 
-.. note:: Tracing is set up, but not fully fleshed out yet.
-
 
 Quickstart (tl;dr)
 ==================
@@ -150,6 +148,52 @@ Defining and using a metric is pretty straightforward:
 
     Other packages that we maintain can also opt-in to defining and tracking metrics in
     the future.
+
+
+Tracing
+-------
+
+:func:`maykin_common.otel.setup_otel` calls opentelemetry instrumentors which automatically
+add traces for Django requests, Redis and PostgreSQL queries, Celery tasks and external HTTP
+requests performed with the ``requests`` library.
+
+It's also possible to add manual spans for any part of the code.
+Opentelemetry provides a context manager ``tracer.start_as_current_span`` for it:
+
+.. code-block:: python
+   :linenos:
+
+    from opentelemetry import trace
+
+    tracer = trace.get_tracer("my_awesome_project.my_module")
+
+
+    def do_work():
+        print("doing work outside of the span")
+
+        with tracer.start_as_current_span("span-name") as span:
+            print("doing some work, that span will track")
+
+        print("doing more work outside of the span")
+
+
+It's also possible to use ``tracer.start_as_current_span`` as a decorator:
+
+.. code-block:: python
+   :linenos:
+
+    from opentelemetry import trace
+
+    tracer = trace.get_tracer("my_awesome_project.my_module")
+
+
+    @tracer.start_as_current_span("span-name")
+    def do_work():
+        print("doing some work, that span will track")
+
+Opentelemetry documentation provides more `examples <https://opentelemetry.io/docs/languages/python/instrumentation/#creating-spans>`_
+how to create spans.
+
 
 .. _otel_best_practices:
 
