@@ -24,7 +24,11 @@ class CustomAttributeSpanProcessor(SpanProcessor):
             span_subtype = "postgresql"
 
         elif "django" in library_name:
-            span_type = "web" if span.attributes.get("http.method") else "app"
+            span_type = (
+                "web"
+                if span.attributes and span.attributes.get("http.method")
+                else "app"
+            )
             span_subtype = "django"
 
         elif "requests" in library_name:

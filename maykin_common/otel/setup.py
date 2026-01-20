@@ -24,6 +24,7 @@ from django.utils.module_loading import import_string
 from opentelemetry import metrics, trace
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
@@ -59,6 +60,14 @@ type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 DEFAULT_PROTOCOL: ExportProtocol = "grpc"
 
+INSTRUMENTORS: list[BaseInstrumentor] = [
+    DjangoInstrumentor(),
+    PsycopgInstrumentor(),
+    CeleryInstrumentor(),
+    RedisInstrumentor(),
+    RequestsInstrumentor(),
+]
+
 
 def setup_otel() -> None:
     """
@@ -82,14 +91,7 @@ def setup_otel() -> None:
     # wrappers/middleware etc.
 
     # the instrumentor is a singleton, so it's effectively global
-    instrumentors = [
-        DjangoInstrumentor(),
-        PsycopgInstrumentor(),
-        CeleryInstrumentor(),
-        RedisInstrumentor(),
-        RequestsInstrumentor(),
-    ]
-    for instrumentor in instrumentors:
+    for instrumentor in INSTRUMENTORS:
         if not instrumentor.is_instrumented_by_opentelemetry:
             instrumentor.instrument()
 
