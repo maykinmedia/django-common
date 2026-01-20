@@ -1,3 +1,4 @@
+from io import BytesIO
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -24,6 +25,17 @@ def _settings(settings):
     settings.PDF_BASE_URL_FUNCTION = f"{__name__}.get_base_url"
 
 
+@pytest.fixture()
+def dummy_urlfetch_result():
+    return {
+        "mime_type": "text/plain",
+        "encoding": "utf-8",
+        "redirected_url": "dummy://",
+        "filename": "dummy",
+        "file_obj": BytesIO(),
+    }
+
+
 def test_raises_if_setting_not_configured_properly(settings):
     settings.PDF_BASE_URL_FUNCTION = None
 
@@ -41,47 +53,62 @@ def test_render_template_returns_html():
     assert isinstance(pdf, bytes)
 
 
-def test_external_url_uses_default_resolver():
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+def test_external_url_uses_default_resolver(dummy_urlfetch_result):
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/external_url.html", {})
 
     mock_fetcher.assert_called_once_with("https://example.com/index.css")
 
 
-def test_local_asset_does_not_use_default_resolver():
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+def test_local_asset_does_not_use_default_resolver(dummy_urlfetch_result):
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/local_url.html", {})
 
     mock_fetcher.assert_not_called()
 
 
-def test_render_with_missing_asset():
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+def test_render_with_missing_asset(dummy_urlfetch_result):
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/missing_asset.html", {})
 
     mock_fetcher.assert_called_once_with("http://testserver/static/non_existent.css")
 
 
-def test_resolves_assets_in_debug_mode(settings):
+def test_resolves_assets_in_debug_mode(settings, dummy_urlfetch_result):
     settings.STATIC_ROOT = "/bad/path"
     settings.DEBUG = True
 
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/local_url.html", {})
 
     mock_fetcher.assert_not_called()
 
 
-def test_fully_qualified_static_url(settings):
+def test_fully_qualified_static_url(settings, dummy_urlfetch_result):
     settings.STATIC_URL = "http://testserver/static/"
 
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/local_url.html", {})
 
     mock_fetcher.assert_not_called()
 
 
-def test_other_storages_than_file_system_storage(settings):
+def test_other_storages_than_file_system_storage(settings, dummy_urlfetch_result):
     settings.STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.InMemoryStorage",
@@ -92,14 +119,20 @@ def test_other_storages_than_file_system_storage(settings):
         },
     }
 
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/local_url.html", {})
 
     mock_fetcher.assert_called_with("http://testserver/testapp/some.css")
 
 
-def test_base64_encoded_image():
-    with patch("maykin_common.pdf.weasyprint.default_url_fetcher") as mock_fetcher:
+def test_base64_encoded_image(dummy_urlfetch_result):
+    with patch(
+        "maykin_common.pdf.weasyprint.default_url_fetcher",
+        return_value=dummy_urlfetch_result,
+    ) as mock_fetcher:
         render_template_to_pdf("testapp/pdf/base64_encoded_image.html", {})
 
     mock_fetcher.assert_called_with(
