@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -33,11 +32,11 @@ DEBUG = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("PGDATABASE", "maykin-common"),
-        "USER": os.getenv("PGUSER", "maykin-common"),
-        "PASSWORD": os.getenv("PGPASSWORD", "maykin-common"),
-        "HOST": os.getenv("PGHOST", "localhost"),
-        "PORT": int(os.getenv("PGHOST", "5432")),
+        "NAME": config("PGDATABASE", default="maykin-common"),
+        "USER": config("PGUSER", default="maykin-common"),
+        "PASSWORD": config("PGPASSWORD", default="maykin-common"),
+        "HOST": config("PGHOST", default="localhost"),
+        "PORT": config("PGPORT", default="5432", cast=lambda s: s and int(s)),
     }
 }
 

@@ -7,6 +7,7 @@ set up as expected.
 """
 
 from datetime import date
+from typing import assert_never, assert_type
 
 import decouple
 import pytest
@@ -45,10 +46,27 @@ def test_read_provided_setting_without_fallback_to_default_and_auto_cast(
     assert result == 67
 
 
-def test_read_setting_with_None_default():
-    result: str | None = config("SOME_OPTIONAL_SETTING", default=None)
+def test_read_setting_with_None_default(monkeypatch: pytest.MonkeyPatch):
+    result = config("SOME_OPTIONAL_SETTING", default=None)
 
-    assert result is None
+    monkeypatch.setenv("SOME_OPTIONAL_SETTING", "1")
+    set_result = config("SOME_OPTIONAL_SETTING", default=None)
+
+    assert_type(set_result, str | None)
+    # Because
+    assert result is None and isinstance(set_result, str)
+
+    # because casting None is not allowed by config
+    with pytest.raises(TypeError):
+        cast_result_unset = config(
+            "SOME_OPTIONAL_SETTING", default=None, cast=lambda s: s and int(s)
+        )
+        # we should infer
+        assert_never(cast_result_unset)
+
+        # and then pyright will mark all code that follows as unreachable
+        more_code = "unreachable"
+        assert more_code
 
 
 def test_read_unset_list_setting_fallback_to_default():
