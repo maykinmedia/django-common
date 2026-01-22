@@ -97,6 +97,41 @@ def test_read_provided_list_setting_without_default(monkeypatch: pytest.MonkeyPa
     assert result == ["first", "second"]
 
 
+def test_read_provided_list_casting_to_default(monkeypatch: pytest.MonkeyPatch):
+    result = config(
+        "SOME_REQUIRED_COMMA_SEPARATED_LIST", default=range(6, 8), split=True
+    )
+
+    assert_type(result, list[int])
+    assert result == [6, 7]
+
+    monkeypatch.setenv("SOME_REQUIRED_COMMA_SEPARATED_LIST", "1,2,3,4")
+    set_result = config("SOME_REQUIRED_COMMA_SEPARATED_LIST", default=[1], split=True)
+
+    assert set_result == [1, 2, 3, 4]
+
+
+def test_read_provided_list_casting(monkeypatch: pytest.MonkeyPatch):
+    result = config(
+        "SOME_REQUIRED_COMMA_SEPARATED_LIST", default=range(8, 8), split=True, cast=int
+    )
+
+    assert_type(result, list[int])
+    assert result == []
+
+    monkeypatch.setenv("SOME_REQUIRED_COMMA_SEPARATED_LIST", "1,2,3,4")
+    set_result = config(
+        "SOME_REQUIRED_COMMA_SEPARATED_LIST", default=range(8, 8), split=True, cast=int
+    )
+
+    assert set_result == [1, 2, 3, 4]
+
+    monkeypatch.setenv("SOME_REQUIRED_COMMA_SEPARATED_LIST", "1,2,3,4")
+    no_default = config("SOME_REQUIRED_COMMA_SEPARATED_LIST", split=True, cast=int)
+
+    assert no_default == [1, 2, 3, 4]
+
+
 def test_read_provided_setting_with_custom_cast(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("SOME_OPTIONAL_SETTING", "2025-12-25")
 

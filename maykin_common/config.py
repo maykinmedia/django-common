@@ -18,7 +18,31 @@ def config(option: str) -> str: ...
 
 @overload
 def config[T](
-    option: str, *, default: Sequence[T] | Undefined = undefined, split: Literal[True]
+    option: str,
+    *,
+    default: Sequence[T],
+    split: Literal[True],
+    cast: Callable[[str], T] | Undefined = undefined,
+) -> list[T]: ...
+
+
+@overload
+def config(
+    option: str,
+    *,
+    default: Undefined = undefined,
+    split: Literal[True],
+    cast: Undefined = undefined,
+) -> list[str]: ...
+
+
+@overload
+def config[T](
+    option: str,
+    *,
+    default: Undefined = undefined,
+    split: Literal[True],
+    cast: Callable[[str], T],
 ) -> list[T]: ...
 
 
@@ -36,18 +60,18 @@ def config(option: str, *, default: None, cast: Callable) -> Never: ...
 
 
 @overload
-def config[U](
-    option: str, *, default: object = undefined, cast: Callable[[str], U]
-) -> U: ...
+def config[T](
+    option: str, *, default: object = undefined, cast: Callable[[str], T]
+) -> T: ...
 
 
-def config[T, U](
+def config[T](
     option: str,
     *,
-    default: T | None | Undefined = undefined,
+    default: T | Sequence[T] | None | Undefined = undefined,
     split: bool = False,
-    cast: Callable[[str], U] | Undefined = undefined,
-) -> str | None | T | Sequence[T] | U:
+    cast: Callable[[str], T] | Undefined = undefined,
+) -> str | None | T | Sequence[T]:
     """
     Pull a config parameter from the environment.
 
@@ -85,11 +109,23 @@ def config[T, U](
             "You must provide a sequence default argument"
         )
         match default:
-            case Sequence():
-                # python-decouple Csv cast expects the default as a string -
-                # serialize it again.
-                return _config(option, cast=Csv(), default=",".join(default))
+            case [t, *rest]:
+                return _config(
+                    option,
+                    cast=Csv(cast=cast if callable(cast) else type(t)),
+                    # python-decouple Csv cast expects the default as a string -
+                    # serialize it again.
+                    default=",".join((str(t), *(str(v) for v in rest))),
+                )
+            case [] if callable(cast):
+                return _config(
+                    option,
+                    cast=Csv(cast=cast),
+                    default="",
+                )
             case _:
+                if callable(cast):
+                    return _config(option, cast=Csv(cast=cast))
                 return _config(option, cast=Csv())
 
     # infer the ``cast`` from the default if not provided explicitly
