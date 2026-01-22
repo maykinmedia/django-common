@@ -61,14 +61,14 @@ def config(option: str, *, default: None, cast: Callable) -> Never: ...
 
 @overload
 def config[T](
-    option: str, *, default: object = undefined, cast: Callable[[str], T]
+    option: str, *, default: str | Undefined = undefined, cast: Callable[[str], T]
 ) -> T: ...
 
 
 def config[T](
     option: str,
     *,
-    default: T | Sequence[T] | None | Undefined = undefined,
+    default: T | Sequence[T] | None | str | Undefined = undefined,
     split: bool = False,
     cast: Callable[[str], T] | Undefined = undefined,
 ) -> str | None | T | Sequence[T]:

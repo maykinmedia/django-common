@@ -152,4 +152,18 @@ def test_read_unset_setting_with_custom_cast_fallback_to_default():
 
 def test_raise_typeerror_when_non_string_default_is_specified_together_with_cast():
     with pytest.raises(TypeError):
-        config("SOME_OPTIONAL_SETTING", default=123, cast=lambda x: x)
+        config("SOME_OPTIONAL_SETTING", default=123, cast=lambda x: x)  # pyright: ignore  expecting TypeError :)
+
+
+def test_casting_to_union_type(monkeypatch: pytest.MonkeyPatch):
+    result = config("SOME_PORT_OR_SOCKET", default="5432", cast=lambda s: s and int(s))
+    assert_type(result, int | str)
+
+    assert result == 5432
+
+    monkeypatch.setenv("SOME_PORT_OR_SOCKET", "")
+
+    set_result = config(
+        "SOME_PORT_OR_SOCKET", default="5432", cast=lambda s: s and int(s)
+    )
+    assert set_result == ""
