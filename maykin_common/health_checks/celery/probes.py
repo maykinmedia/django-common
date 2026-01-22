@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from celery import bootsteps
 from celery.apps.worker import Worker as _Worker
 from celery.beat import Service as BeatService
-from celery.signals import after_task_publish, beat_init
+from celery.signals import after_task_publish, beat_init, worker_ready, worker_shutdown
+from celery.worker.consumer import Consumer
 from kombu.asynchronous.timer import Entry as TimerEntry, Timer
 
 from maykin_common.settings import get_setting
@@ -32,8 +33,6 @@ else:
 #
 # Utilities for checking the health of celery worker
 #
-
-EVENT_LOOP_PROBE_FREQUENCY_SECONDS = 60.0
 
 
 class EventLoopProbe(bootsteps.StartStopStep):
@@ -61,6 +60,11 @@ class EventLoopProbe(bootsteps.StartStopStep):
 
     See the `upstream <https://docs.celeryq.dev/en/stable/userguide/extending.html#blueprints>`_
     documentation for details about blueprints and bootstep mechanisms.
+
+    Usage::
+
+        >>> app = Celery("my-project")
+        >>> app.steps["worker"].add(EventLoopProbe)
     """
 
     # we need the Timer component before we can run this bootstep. Celery uses this to
@@ -70,21 +74,53 @@ class EventLoopProbe(bootsteps.StartStopStep):
     liveness_file: Path
 
     def start(self, parent: Worker):
-        self.liveness_file = get_setting(
+        self.liveness_file = liveness_file = get_setting(
             "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE"
         )
         # create intermediate directories if they don't yet exist
-        if not (parent_dir := self.liveness_file.parent).exists():
+        if not (parent_dir := liveness_file.parent).exists():
             parent_dir.mkdir(parents=True, exist_ok=True)
 
+        liveness_file.touch()
+        frequency: int = get_setting(
+            "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS"
+        )
         self.tref = parent.timer.call_repeatedly(
-            EVENT_LOOP_PROBE_FREQUENCY_SECONDS,
-            self.liveness_file.touch,
-            priority=10,
+            frequency, liveness_file.touch, priority=10
         )
 
     def stop(self, parent: Worker):
+        assert self.tref is not None
+        self.tref.cancel()
         self.liveness_file.unlink(missing_ok=True)
+
+
+def on_worker_ready(*, sender: Consumer, **kwargs):
+    """
+    Create/touch the readiness file when the worker is ready to accept work.
+    """
+    readiness_file: Path = get_setting("MKN_HEALTH_CHECKS_WORKER_READINESS_FILE")
+    # create intermediate directories if they don't yet exist
+    if not (parent_dir := readiness_file.parent).exists():
+        parent_dir.mkdir(parents=True, exist_ok=True)
+    readiness_file.touch()
+    logger.info("worker_ready")
+
+
+def on_worker_shutdown(*, sender: Worker, **kwargs):
+    """
+    Delete the readiness file when a worker shuts down.
+    """
+    logger.info("worker_shutdown")
+    readiness_file: Path = get_setting("MKN_HEALTH_CHECKS_WORKER_READINESS_FILE")
+    readiness_file.unlink(missing_ok=True)
+
+
+def connect_worker_signals():
+    worker_ready.connect(on_worker_ready, dispatch_uid="probes.on_worker_ready")
+    worker_shutdown.connect(
+        on_worker_shutdown, dispatch_uid="probes.on_worker_shutdown"
+    )
 
 
 #
