@@ -73,6 +73,19 @@ absent. The file itself will be created when beat publishes its first task, and 
 be unlinked again when beat exits.
 """
 
+MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE: Path = (
+    Path("/tmp") / "celery_worker_event_loop_live"
+)
+"""
+Path to the file that acts as a liveness marker of the Celery Worker event loop.
+
+Used when the :class:`maykin_common.health_checks.celery.probes.EventLoopProbe` is added
+as a Celery Worker bootstep, which periodically updates the liveness file with the last
+timer tick. The intermediate directories will be created if absent. The file itself will
+be created when the worker main process starts, and will be unlinked again when the
+worker exits.
+"""
+
 
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
@@ -86,6 +99,7 @@ type SettingName = Literal[
     "PDF_BASE_URL_FUNCTION",
     "LOGIN_URLS",
     "MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE",
+    "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE",
 ]
 
 

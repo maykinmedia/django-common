@@ -1,13 +1,91 @@
 import atexit
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
 
+from celery import bootsteps
+from celery.apps.worker import Worker as _Worker
 from celery.beat import Service as BeatService
 from celery.signals import after_task_publish, beat_init
+from kombu.asynchronous.timer import Entry as TimerEntry, Timer
 
 from maykin_common.settings import get_setting
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+
+    class Worker(_Worker):
+        """
+        Worker class with timer attribute.
+
+        Assigned through :meth:`celery.worker.components.Timer.create`, it's a dynamic
+        attribute that's not present in the base class definitions, so we have to
+        massage it a bit.
+        """
+
+        timer: Timer
+else:
+    Worker = _Worker
+
+
+#
+# Utilities for checking the health of celery worker
+#
+
+EVENT_LOOP_PROBE_FREQUENCY_SECONDS = 60.0
+
+
+class EventLoopProbe(bootsteps.StartStopStep):
+    """
+    Checks that the Celery worker event loop is alive.
+
+    When the Celery worker starts, it starts the event loop, timer and processing pool.
+    As a "final" step, it starts the Consumer blueprint, which is responsible for
+    establishing the broker connection and actually start processing/consuming messages
+    and tasks.
+
+    This event loop probe installs a boostep when the timer is available, and schedules
+    a periodic callback that touches a liveness file. If the timestamp of the last
+    modified moment of the liveness file is too long again, we can conclude/assume that
+    the event loop has crashed and the worker should be restarted, as it's likely that
+    ETA/countdown tasks and tasks in general are not being processed anymore by this
+    worker. This makes no guarantees about actually being able to consume tasks or a
+    live connection though. The timer runs in the main worker process (when using
+    the preforking/multi-processing pool).
+
+    Celery itself *should* re-establish broker connection on connection loss, by
+    restarting the Consumer blueprint, but bugs in Celery itself have been observed in
+    the past. We can implement connectivity checks by pinging the worker from itself,
+    which is set up elsewhere.
+
+    See the `upstream <https://docs.celeryq.dev/en/stable/userguide/extending.html#blueprints>`_
+    documentation for details about blueprints and bootstep mechanisms.
+    """
+
+    # we need the Timer component before we can run this bootstep. Celery uses this to
+    # figure out the step dependency graph.
+    requires = {"celery.worker.components:Timer"}
+    tref: TimerEntry | None = None
+    liveness_file: Path
+
+    def start(self, parent: Worker):
+        self.liveness_file = get_setting(
+            "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE"
+        )
+        # create intermediate directories if they don't yet exist
+        if not (parent_dir := self.liveness_file.parent).exists():
+            parent_dir.mkdir(parents=True, exist_ok=True)
+
+        self.tref = parent.timer.call_repeatedly(
+            EVENT_LOOP_PROBE_FREQUENCY_SECONDS,
+            self.liveness_file.touch,
+            priority=10,
+        )
+
+    def stop(self, parent: Worker):
+        self.liveness_file.unlink(missing_ok=True)
+
 
 #
 # Utilities for checking the health of celery beat
