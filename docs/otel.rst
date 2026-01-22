@@ -191,7 +191,7 @@ It's also possible to use ``tracer.start_as_current_span`` as a decorator:
     def do_work():
         print("doing some work, that span will track")
 
-Opentelemetry documentation provides more `examples <https://opentelemetry.io/docs/languages/python/instrumentation/#creating-spans>`_
+The Opentelemetry documentation provides more `examples <https://opentelemetry.io/docs/languages/python/instrumentation/#creating-spans>`_
 how to create spans.
 
 

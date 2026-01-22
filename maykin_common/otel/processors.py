@@ -3,9 +3,9 @@ from opentelemetry.sdk.trace import Span, SpanProcessor
 
 
 class CustomAttributeSpanProcessor(SpanProcessor):
-    def on_start(self, span: "Span", parent_context: Context | None = None) -> None:
+    def on_start(self, span: Span, parent_context: Context | None = None) -> None:
         """
-        Determine type and subtype based on instrumentation library
+        Determine type and subtype based on the active instrumentation library.
         """
         if span.attributes and span.attributes.get("span.type"):
             return
