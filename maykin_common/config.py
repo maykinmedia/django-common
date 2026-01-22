@@ -5,7 +5,7 @@ Utilities to read and process configuration for a project.
 """
 
 from collections.abc import Callable, Sequence
-from typing import Literal, assert_never, overload
+from typing import Literal, Never, assert_never, overload
 
 from decouple import Csv, Undefined, config as _config, undefined
 
@@ -23,7 +23,16 @@ def config[T](
 
 
 @overload
+def config(option: str, *, default: None) -> str | None: ...
+
+
+@overload
 def config[T](option: str, *, default: T | Undefined = undefined) -> T: ...
+
+
+# because we can't express difference / negation types: object \ None
+@overload
+def config(option: str, *, default: None, cast: Callable) -> Never: ...
 
 
 @overload
@@ -49,8 +58,8 @@ def config[T, U](
     parameter explicitly, you must provide any ``default`` as a string as it will be
     passed to the provided ``cast`` callback.
 
-    Note that ``default=None`` does not mean there's no default - omit the kwarg
-    entirely instead.
+    Note that ``default=None`` does not mean there's no default;
+    omitting the ``default`` kwarg entirely means there's no default.
 
     Pass ``split=True`` to split the comma-separated input into a list. If a default is
     provided, it must be a list.
