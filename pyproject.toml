@@ -109,6 +109,8 @@ markers = [
     "e2e: mark tests as end-to-end tests, using playwright (deselect with '-m \"not e2e\"')",
     "vcr: mark inferred from pytest-django @tag(\"vcr\") on a test case",
     "beat_liveness_file: options for the celery beat liveness fixture",
+    "worker_event_loop_liveness_file: options for the celery worker liveness fixture",
+    "worker_readiness_file: options for the celery worker readiness fixture",
 ]
 
 [tool.bumpversion]
