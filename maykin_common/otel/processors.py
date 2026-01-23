@@ -15,33 +15,32 @@ class CustomAttributeSpanProcessor(SpanProcessor):
             instrumentation_scope.name.lower() if instrumentation_scope else ""
         )
 
-        if "redis" in library_name:
-            span_type = "db"
-            span_subtype = "redis"
+        span_type: str
+        span_subtype: str
 
-        elif "psycopg" in library_name:
-            span_type = "db"
-            span_subtype = "postgresql"
-
-        elif "django" in library_name:
-            span_type = (
-                "web"
-                if span.attributes and span.attributes.get("http.method")
-                else "app"
-            )
-            span_subtype = "django"
-
-        elif "requests" in library_name:
-            span_type = "external"
-            span_subtype = "http"
-
-        elif "celery" in library_name:
-            span_type = "async"
-            span_subtype = "celery"
-
-        else:
-            span_type = "unknown"
-            span_subtype = "unknown"
+        match library_name:
+            case "opentelemetry.instrumentation.redis":
+                span_type = "db"
+                span_subtype = "redis"
+            case "opentelemetry.instrumentation.psycopg":
+                span_type = "db"
+                span_subtype = "postgresql"
+            case "opentelemetry.instrumentation.django":
+                span_type = (
+                    "web"
+                    if span.attributes and span.attributes.get("http.method")
+                    else "app"
+                )
+                span_subtype = "django"
+            case "opentelemetry.instrumentation.requests":
+                span_type = "external"
+                span_subtype = "http"
+            case "opentelemetry.instrumentation.celery":
+                span_type = "async"
+                span_subtype = "celery"
+            case _:
+                span_type = "unknown"
+                span_subtype = "unknown"
 
         span.set_attribute("span.type", span_type)
         span.set_attribute("span.subtype", span_subtype)

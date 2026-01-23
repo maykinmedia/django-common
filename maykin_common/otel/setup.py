@@ -14,6 +14,7 @@ non-kubernetes container runtime (such as Docker or Podman).
 .. _`environment variables reference`: https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
 """
 
+import importlib.util
 import os
 from typing import Literal, assert_never
 from uuid import uuid4
@@ -61,13 +62,13 @@ type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 DEFAULT_PROTOCOL: ExportProtocol = "grpc"
 
-INSTRUMENTORS: list[BaseInstrumentor] = [
-    DjangoInstrumentor(),
-    PsycopgInstrumentor(),
-    CeleryInstrumentor(),
-    RedisInstrumentor(),
-    RequestsInstrumentor(),
-]
+PACKAGE_INSTRUMENTOR_MAPPING: dict[str, type[BaseInstrumentor]] = {
+    "django": DjangoInstrumentor,
+    "psycopg": PsycopgInstrumentor,
+    "redis": RedisInstrumentor,
+    "celery": CeleryInstrumentor,
+    "requests": RequestsInstrumentor,
+}
 
 
 def setup_otel() -> None:
@@ -92,7 +93,11 @@ def setup_otel() -> None:
     # wrappers/middleware etc.
 
     # the instrumentor is a singleton, so it's effectively global
-    for instrumentor in INSTRUMENTORS:
+    for package, instrumentor_class in PACKAGE_INSTRUMENTOR_MAPPING.items():
+        if not is_available(package):
+            continue
+
+        instrumentor = instrumentor_class()
         if not instrumentor.is_instrumented_by_opentelemetry:
             instrumentor.instrument()
 
@@ -199,3 +204,8 @@ def aggregate_resource(resource: Resource) -> Resource:
     return get_aggregated_resources(
         detectors=[ContainerResourceDetector()], initial_resource=resource
     )
+
+
+def is_available(package_name: str) -> bool:
+    """Check if package is installed."""
+    return importlib.util.find_spec(package_name) is not None

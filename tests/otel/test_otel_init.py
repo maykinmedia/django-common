@@ -24,7 +24,7 @@ from opentelemetry.trace import NoOpTracerProvider, set_tracer_provider
 
 from maykin_common.otel import setup_otel
 from maykin_common.otel.setup import (
-    INSTRUMENTORS,
+    PACKAGE_INSTRUMENTOR_MAPPING,
     ExportProtocol,
     aggregate_resource,
     load_exporters,
@@ -48,8 +48,8 @@ def _reset_otel():
     if hasattr(meter_provider, "shutdown"):
         meter_provider.shutdown()  # pyright: ignore[reportAttributeAccessIssue]
 
-    for instrumentor in INSTRUMENTORS:
-        instrumentor.uninstrument()
+    for instrumentor in PACKAGE_INSTRUMENTOR_MAPPING.values():
+        instrumentor().uninstrument()
 
     # reset to noop
     set_tracer_provider(NoOpTracerProvider())
