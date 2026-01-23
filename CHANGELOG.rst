@@ -2,6 +2,14 @@
 Changelog
 =========
 
+0.15.0 (2026-01-23)
+===================
+
+Feature release.
+
+* Instrumented PostgreSQl, redis, celery and requests with Open Telemetry tracing.
+* Improved type annotations for ``config`` function.
+
 0.14.0 (2026-01-13)
 ===================
 
