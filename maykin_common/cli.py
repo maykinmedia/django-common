@@ -9,6 +9,7 @@ which tend to have timeouts of a couple of seconds.
 """
 
 import importlib.metadata
+import socket
 import time
 from pathlib import Path
 from typing import Annotated
@@ -18,6 +19,10 @@ import requests
 import typer
 
 app = typer.Typer()
+
+_WORKER_EXIT_CODE_EVENT_LOOP_BROKEN = 1
+_WORKER_EXIT_CODE_PING_FAILURE = 2
+_WORKER_EXIT_CODE_NOT_READY = 4
 
 
 @app.command()
@@ -80,6 +85,151 @@ def health_check(
 
     exit_code = 0 if up else 1
     exit(exit_code)
+
+
+@app.command(name="worker-health-check")
+def worker_health_check(
+    # liveness
+    liveness_file: Annotated[
+        Path,
+        typer.Option(
+            help="The event loop liveness file, created and updated by the "
+            "`EventLoopProbe`."
+        ),
+    ] = Path("/tmp") / "celery_worker_event_loop_live",
+    max_age: Annotated[
+        int,
+        typer.Option(
+            help="How long ago the last update of the event loop liveness file is "
+            "allowed to be, in seconds. You should match this to the "
+            "'MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS' setting."
+        ),
+    ] = 60 + 10,
+    skip_event_loop_liveness: Annotated[
+        bool,
+        typer.Option(
+            help="Opt-out from the event loop liveness check.",
+        ),
+    ] = False,
+    broker: Annotated[
+        str,
+        typer.Option(
+            help="Broker URL, should match the 'CELERY_BROKER' setting. Used for the "
+            "ping roundtrip check."
+        ),
+    ] = "redis://localhost:6379/0",
+    worker_name: Annotated[
+        str,
+        typer.Option(
+            envvar="CELERY_WORKER_NAME",
+            help="Worker name, typically composed from <queue>@<host>.",
+        ),
+    ] = f"celery@{socket.gethostname()}",
+    ping_timeout: Annotated[
+        int, typer.Option(help="Timeout after which the ping check fails.")
+    ] = 3,
+    skip_ping: Annotated[
+        bool, typer.Option(help="Opt-out from the ping roundtrip check.")
+    ] = False,
+    # readiness
+    readiness_file: Annotated[
+        Path,
+        typer.Option(
+            help="The readiness file, created when the worker is ready to process "
+            "tasks."
+        ),
+    ] = Path("/tmp") / "celery_worker_event_loop_live",
+    skip_readiness: Annotated[
+        bool, typer.Option(help="Opt-in to the readiness check.")
+    ] = True,
+):
+    """
+    Run health checks for the Celery worker.
+
+    The worker health checks consist of separate components. The defaults are geared
+    towards liveness checks, but you can disable/enable parts to adapt to your
+    situation.
+
+    * Check the `liveness-file` to detect issues in the worker event loop. If the event
+      loop is broken, the worker will definitely not be processing tasks and a restart
+      is necessary.
+    * Ping the worker using Celery's inspection machinery. Pinging verifies the broker
+      connection, as it performs a complete roundtrip. Broker connection loss can
+      sometimes be solved by restarting the worker.
+    * Check the presence of the `readiness-file`. Absence of the readiness file
+      indicates the worker is not (yet) ready to process tasks. It may have been stopped
+      or is still starting up.
+
+    If any check fails, the command exist with a non-zero exit code.
+    """
+    # always instantiate an app as a sanity check
+    try:
+        from celery import Celery
+    except ImportError:  # pragma: no cover
+        typer.secho(
+            "Could not import celery - please make sure to execute this in a celery"
+            "worker environment.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        exit(1)
+
+    celery_app = Celery(broker=broker)
+
+    if not skip_event_loop_liveness:
+        if not liveness_file.exists() or not liveness_file.is_file():
+            typer.secho(
+                f"File '{liveness_file}' does not exist or is not a file.",
+                fg=typer.colors.RED,
+                err=True,
+            )
+            exit(_WORKER_EXIT_CODE_EVENT_LOOP_BROKEN)
+
+        now = time.time()
+        last_modified = liveness_file.stat().st_mtime
+        age_in_seconds = int(now - last_modified)
+        if age_in_seconds > max_age:
+            typer.secho(
+                f"File '{liveness_file}' is older than max-age.",
+                fg=typer.colors.RED,
+                err=True,
+            )
+            exit(_WORKER_EXIT_CODE_EVENT_LOOP_BROKEN)
+        else:
+            typer.secho(
+                "The event loop appears to be running.",
+                fg=typer.colors.GREEN,
+            )
+
+    if not skip_ping:
+        replies = celery_app.control.ping(
+            destination=[worker_name], timeout=ping_timeout
+        )
+        if replies:
+            typer.secho(f"{worker_name}: PONG.", fg=typer.colors.GREEN)
+        else:
+            typer.secho(
+                f"No reply to ping from '{worker_name}' after {ping_timeout}s.",
+                fg=typer.colors.RED,
+                err=True,
+            )
+            exit(_WORKER_EXIT_CODE_PING_FAILURE)
+
+    if not skip_readiness:
+        if not readiness_file.exists() or not readiness_file.is_file():
+            typer.secho(
+                f"File '{readiness_file}' does not exist - worker is not ready.",
+                fg=typer.colors.RED,
+                err=True,
+            )
+            exit(_WORKER_EXIT_CODE_NOT_READY)
+        else:
+            typer.secho(
+                "The worker appears ready to process tasks.",
+                fg=typer.colors.GREEN,
+            )
+
+    exit(0)
 
 
 @app.command(name="beat-health-check")
