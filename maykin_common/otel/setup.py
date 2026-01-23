@@ -14,6 +14,7 @@ non-kubernetes container runtime (such as Docker or Podman).
 .. _`environment variables reference`: https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/
 """
 
+import importlib.util
 import os
 from typing import Literal, assert_never
 from uuid import uuid4
@@ -22,7 +23,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 
 from opentelemetry import metrics, trace
+from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
+from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
@@ -36,8 +42,9 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from .config import config
-from .settings import get_setting
+from ..config import config
+from ..settings import get_setting
+from .processors import CustomAttributeSpanProcessor
 
 # the uwsgi module is special - it's only available when the python code is loaded
 # through uwsgi. With regular ``manage.py`` usage, it does not exist.
@@ -54,6 +61,14 @@ __all__ = [
 type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 DEFAULT_PROTOCOL: ExportProtocol = "grpc"
+
+PACKAGE_INSTRUMENTOR_MAPPING: dict[str, type[BaseInstrumentor]] = {
+    "django": DjangoInstrumentor,
+    "psycopg": PsycopgInstrumentor,
+    "redis": RedisInstrumentor,
+    "celery": CeleryInstrumentor,
+    "requests": RequestsInstrumentor,
+}
 
 
 def setup_otel() -> None:
@@ -78,9 +93,13 @@ def setup_otel() -> None:
     # wrappers/middleware etc.
 
     # the instrumentor is a singleton, so it's effectively global
-    instrumentor = DjangoInstrumentor()
-    if not instrumentor.is_instrumented_by_opentelemetry:
-        instrumentor.instrument()
+    for package, instrumentor_class in PACKAGE_INSTRUMENTOR_MAPPING.items():
+        if not is_available(package):
+            continue
+
+        instrumentor = instrumentor_class()
+        if not instrumentor.is_instrumented_by_opentelemetry:
+            instrumentor.instrument()
 
     # In some situations (similar to uwsgi, see below), initialization must be deferred,
     # e.g. in celery workers with a process pool that fork other processes. Detecting
@@ -136,8 +155,9 @@ def _setup_otel() -> None:
     OTLPMetricExporter, OTLPSpanExporter = load_exporters()
 
     tracer_provider = TracerProvider(resource=resource)
-    processor = BatchSpanProcessor(OTLPSpanExporter())
-    tracer_provider.add_span_processor(processor)
+    batch_processor = BatchSpanProcessor(OTLPSpanExporter())
+    tracer_provider.add_span_processor(batch_processor)
+    tracer_provider.add_span_processor(CustomAttributeSpanProcessor())
     trace.set_tracer_provider(tracer_provider)
 
     reader = PeriodicExportingMetricReader(OTLPMetricExporter())
@@ -184,3 +204,8 @@ def aggregate_resource(resource: Resource) -> Resource:
     return get_aggregated_resources(
         detectors=[ContainerResourceDetector()], initial_resource=resource
     )
+
+
+def is_available(package_name: str) -> bool:
+    """Check if package is installed."""
+    return importlib.util.find_spec(package_name) is not None

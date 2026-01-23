@@ -16,18 +16,18 @@ from opentelemetry.exporter.otlp.proto.http.metric_exporter import (
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
     OTLPSpanExporter as HttpOTLPSpanExporter,
 )
-from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.metrics import NoOpMeterProvider, set_meter_provider
 from opentelemetry.sdk.metrics.export import MetricExporter
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SpanExporter
 from opentelemetry.trace import NoOpTracerProvider, set_tracer_provider
 
-from maykin_common.otel import (
+from maykin_common.otel import setup_otel
+from maykin_common.otel.setup import (
+    PACKAGE_INSTRUMENTOR_MAPPING,
     ExportProtocol,
     aggregate_resource,
     load_exporters,
-    setup_otel,
 )
 
 
@@ -48,7 +48,8 @@ def _reset_otel():
     if hasattr(meter_provider, "shutdown"):
         meter_provider.shutdown()  # pyright: ignore[reportAttributeAccessIssue]
 
-    DjangoInstrumentor().uninstrument()
+    for instrumentor in PACKAGE_INSTRUMENTOR_MAPPING.values():
+        instrumentor().uninstrument()
 
     # reset to noop
     set_tracer_provider(NoOpTracerProvider())
@@ -103,7 +104,7 @@ def test_initializer_can_run_multiple_times_without_problems(
 def test_deferring_setup_via_envvar(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("_OTEL_DEFER_SETUP", "True")
 
-    with patch("maykin_common.otel._setup_otel") as mock_setup_otel:
+    with patch("maykin_common.otel.setup._setup_otel") as mock_setup_otel:
         setup_otel()
 
     mock_setup_otel.assert_not_called()
@@ -113,7 +114,7 @@ def test_failing_celery_import_does_not_raise(monkeypatch: pytest.MonkeyPatch):
     def raise_importerror(*args, **kwargs):
         raise ImportError("Can't be imported")
 
-    monkeypatch.setattr("maykin_common.otel.import_string", raise_importerror)
+    monkeypatch.setattr("maykin_common.otel.setup.import_string", raise_importerror)
 
     try:
         setup_otel()
