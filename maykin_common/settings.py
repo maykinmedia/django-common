@@ -85,6 +85,7 @@ timer tick. The intermediate directories will be created if absent. The file its
 be created when the worker main process starts, and will be unlinked again when the
 worker exits.
 """
+
 MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS: int = 60
 """
 Frequency in seconds on how often the event loop should update the liveness file.

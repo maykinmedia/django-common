@@ -44,7 +44,7 @@ class EventLoopProbe(bootsteps.StartStopStep):
     establishing the broker connection and actually start processing/consuming messages
     and tasks.
 
-    This event loop probe installs a boostep when the timer is available, and schedules
+    This event loop probe installs a bootstep when the timer is available, and schedules
     a periodic callback that touches a liveness file. If the timestamp of the last
     modified moment of the liveness file is too long again, we can conclude/assume that
     the event loop has crashed and the worker should be restarted, as it's likely that

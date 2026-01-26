@@ -126,7 +126,7 @@ def worker_health_check(
         ),
     ] = f"celery@{socket.gethostname()}",
     ping_timeout: Annotated[
-        int, typer.Option(help="Timeout after which the ping check fails.")
+        int, typer.Option(help="Timeout in seconds after which the ping check fails.")
     ] = 3,
     skip_ping: Annotated[
         bool, typer.Option(help="Opt-out from the ping roundtrip check.")
@@ -138,7 +138,7 @@ def worker_health_check(
             help="The readiness file, created when the worker is ready to process "
             "tasks."
         ),
-    ] = Path("/tmp") / "celery_worker_event_loop_live",
+    ] = Path("/tmp") / "celery_worker_ready",
     skip_readiness: Annotated[
         bool, typer.Option(help="Opt-in to the readiness check.")
     ] = True,
