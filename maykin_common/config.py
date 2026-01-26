@@ -4,6 +4,10 @@ Utilities to read and process configuration for a project.
 .. todo:: Incorporate the Team Bron documentation options for parameters.
 """
 
+from __future__ import annotations
+
+import csv
+import io
 from collections.abc import Callable, Sequence
 from typing import Literal, Never, assert_never, overload
 
@@ -109,18 +113,16 @@ def config[T](
             "You must provide a sequence default argument"
         )
         match default:
-            case [t, *rest]:
+            case [t, *_]:
                 return _config(
                     option,
                     cast=Csv(cast=cast if callable(cast) else type(t)),
-                    # python-decouple Csv cast expects the default as a string -
-                    # serialize it again.
-                    default=",".join((str(t), *(str(v) for v in rest))),
+                    default=_dumps(default),
                 )
-            case [] if callable(cast):
+            case []:
                 return _config(
                     option,
-                    cast=Csv(cast=cast),
+                    cast=Csv(cast=cast if callable(cast) else lambda x: x),
                     default="",
                 )
             case _:
@@ -158,3 +160,15 @@ def config[T](
             return _config(option, default=default, cast=cast)
         case _:  # pragma: no cover
             assert_never((cast, default))
+
+
+def _dumps(given_default: Sequence) -> str:
+    # python-decouple Csv cast expects the default as a string -
+    # serialize it again.
+    fd = io.StringIO()
+    csv.writer(fd, lineterminator="", quoting=csv.QUOTE_NONNUMERIC).writerow(
+        given_default
+    )
+    fd.seek(0)
+    default = fd.read()
+    return default
