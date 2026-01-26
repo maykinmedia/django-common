@@ -167,3 +167,11 @@ def test_casting_to_union_type(monkeypatch: pytest.MonkeyPatch):
         "SOME_PORT_OR_SOCKET", default="5432", cast=lambda s: s and int(s)
     )
     assert set_result == ""
+
+
+def test_read_unset_list_setting_fallback_to_default_empty_list():
+    result: list[str] = config(
+        "SOME_OPTIONAL_COMMA_SEPARATED_LIST", default=[], split=True
+    )
+
+    assert result == []
