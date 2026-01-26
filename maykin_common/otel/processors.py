@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from opentelemetry.context import Context
 from opentelemetry.sdk.trace import Span, SpanProcessor
 
