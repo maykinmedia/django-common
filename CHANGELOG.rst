@@ -2,6 +2,12 @@
 Changelog
 =========
 
+0.15.1 (2026-01-26)
+===================
+
+* Fix a regression ``config`` function, where a ``default=[], split=True``
+  was interpreted as having no default.
+
 0.15.0 (2026-01-23)
 ===================
 
@@ -41,7 +47,7 @@ Feature release.
 Feature release.
 
 .. warning::
-    Please review the installation guide, as some new (custom) settings should be 
+    Please review the installation guide, as some new (custom) settings should be
     defined and new entries in the ``urlpatterns`` are expected.
 
 * Improved the base blocks and templates for API projects (see :ref:`apis`).
@@ -55,7 +61,7 @@ Feature release.
 
 Feature release.
 
-* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating 
+* Add testing utility ``MetricsAssertMixin`` that provides assertions for validating
   metrics in tests (see :ref:`test-mixins-reference`)
 
 0.9.1 (2025-09-05)
