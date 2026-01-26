@@ -54,7 +54,7 @@ jobs:
         run: pip install tox tox-gh-actions
 
       - name: Run tests
-        run: tox
+        run: tox --colored=yes
         env:
           PYTHON_VERSION: ${{ matrix.python }}
           DJANGO: ${{ matrix.django }}

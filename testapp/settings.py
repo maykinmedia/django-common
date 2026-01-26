@@ -115,3 +115,20 @@ MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE: Path = config(
     default="/tmp/celery_beat_live",
     cast=Path,
 )
+
+MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE = config(
+    "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE",
+    default="/tmp/celery_worker_live",
+    cast=Path,
+)
+
+MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS = config(
+    "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS",
+    default=60,
+)
+
+MKN_HEALTH_CHECKS_WORKER_READINESS_FILE = config(
+    "MKN_HEALTH_CHECKS_WORKER_READINESS_FILE",
+    default="/tmp/celery_worker_ready",
+    cast=Path,
+)

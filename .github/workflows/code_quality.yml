@@ -35,7 +35,7 @@ jobs:
           python-version-file: "pyproject.toml"
       - name: Install dependencies
         run: pip install tox
-      - run: tox
+      - run: tox --colored=yes
         env:
           TOXENV: ${{ matrix.toxenv }}
           FORCE_COLOR: '1'
