@@ -2,8 +2,28 @@
 Changelog
 =========
 
+0.16.0 (2026-01-26)
+===================
+
+Feature release.
+
+*This release accidentally got released as 0.15.1 too - it contains the same code*
+
+**New features**
+
+* [#48] Added health check tooling for Celery Worker.
+
+**Bugfixes**
+
+* [#56] Fixed a regression ``config`` function, where a ``default=[], split=True``
+  was interpreted as having no default.
+
 0.15.1 (2026-01-26)
 ===================
+
+(Incorrect) patch release.
+
+*This release accidentally includes the features from 0.16.0*.
 
 * Fix a regression ``config`` function, where a ``default=[], split=True``
   was interpreted as having no default.
@@ -13,7 +33,7 @@ Changelog
 
 Feature release.
 
-* Instrumented PostgreSQl, redis, celery and requests with Open Telemetry tracing.
+* Instrumented PostgreSQL, redis, celery and requests with Open Telemetry tracing.
 * Improved type annotations for ``config`` function.
 
 0.14.0 (2026-01-13)
