@@ -11,6 +11,7 @@ from typing import assert_never, assert_type
 
 import decouple
 import pytest
+from hypothesis import assume, example, given, strategies as st
 
 from maykin_common.config import config
 
@@ -167,3 +168,24 @@ def test_casting_to_union_type(monkeypatch: pytest.MonkeyPatch):
         "SOME_PORT_OR_SOCKET", default="5432", cast=lambda s: s and int(s)
     )
     assert set_result == ""
+
+
+@given(
+    st.one_of(
+        st.lists(st.integers()),
+        st.lists(st.text()),
+    )
+)
+@example([])
+@example(["default,with,comma"])
+def test_default_lists_unset_in_env(default):
+    "If not present in env, default should be returned"
+    if default and isinstance(default[0], str):
+        problematic = {'"', "\\"}  # XXX: should we raise warnings?
+        assume(not set("".join(default)) & problematic)
+        # we ask decouple to strip whitespace so ENV "1st, 2nd" becomes ["1st", "2nd"]
+        # and not ["1st", " 2nd"]
+        assume(all(s.strip() == s for s in default))
+    result = config("SOME_UNSET_ENVVAR", default=default, split=True)
+
+    assert result == default
