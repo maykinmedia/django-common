@@ -20,6 +20,17 @@ __all__ = ["config"]
 def config(option: str) -> str: ...
 
 
+# discourage passing a str default with split=True
+@overload
+def config[T](
+    option: str,
+    *,
+    default: str,
+    split: Literal[True],
+    cast: Callable[[str], T] | Undefined = undefined,
+) -> Never: ...
+
+
 @overload
 def config[T](
     option: str,
@@ -119,12 +130,14 @@ def config[T](
                     cast=Csv(cast=cast if callable(cast) else type(t)),
                     default=_dumps(default),
                 )
-            case []:
+            case [] | "":
                 return _config(
                     option,
                     cast=Csv(cast=cast if callable(cast) else lambda x: x),
                     default="",
                 )
+            case str(default):
+                return _config(option, cast=Csv(), default=default)
             case _:
                 if callable(cast):
                     return _config(option, cast=Csv(cast=cast))

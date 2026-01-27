@@ -7,7 +7,7 @@ set up as expected.
 """
 
 from datetime import date
-from typing import assert_never, assert_type
+from typing import Never, assert_never, assert_type
 
 import decouple
 import pytest
@@ -168,6 +168,22 @@ def test_casting_to_union_type(monkeypatch: pytest.MonkeyPatch):
         "SOME_PORT_OR_SOCKET", default="5432", cast=lambda s: s and int(s)
     )
     assert set_result == ""
+
+
+def test_split_string_default():
+    # Passing in string default returned list[str] in 0.14.0
+    # This tests that we retain the runtime behaviour while making it a
+    # type checker hint which was intened with the
+    # instance(default, Undefined | Sequence)
+    # str is a Sequence, so that TypeError isn't raised for default: str
+
+    result: Never = config("SOME_UNSET_ENVVAR", default="", split=True)
+
+    assert result == []  # this worked in 0.14.0
+
+    result: Never = config("SOME_UNSET_ENVVAR", default="1,2,3", split=True)
+
+    assert result == ["1", "2", "3"]  # 0.14.0 behaviour
 
 
 @given(
