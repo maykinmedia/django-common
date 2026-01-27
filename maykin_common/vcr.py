@@ -20,10 +20,10 @@ libraries`_ than requests.
 
 import inspect
 import os
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, Protocol, override
+from typing import Any, ClassVar, Protocol, override
 
 from django.test import SimpleTestCase, TestCase, TransactionTestCase, tag
 
@@ -85,6 +85,15 @@ class VCRMixin(_VCRMixin):
     will be used.
     """
 
+    VCR_FILTER_HEADERS: ClassVar[Collection[str]] = frozenset(
+        ("Authorization", "x-api-key")
+    )
+    """
+    Default set of request headers to filter out.
+
+    Passed to the ``filter_headers`` kwarg of VCR by default.
+    """
+
     @override
     def _get_cassette_library_dir(self):
         test_files = (
@@ -109,6 +118,7 @@ class VCRMixin(_VCRMixin):
             "record_mode": self.VCR_RECORD_MODE,
             # Decompress for human readable cassette diffs when re-recoding
             "decode_compressed_response": True,
+            "filter_headers": self.VCR_FILTER_HEADERS,
         } | super()._get_vcr_kwargs(**kwargs)
 
     def vcr_raises(

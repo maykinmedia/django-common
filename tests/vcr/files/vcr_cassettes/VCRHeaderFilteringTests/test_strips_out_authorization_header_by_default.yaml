@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.5
+    method: GET
+    uri: https://example.com/
+  response:
+    body:
+      string: '<!doctype html><html lang="en"><head><title>Example Domain</title><meta
+        name="viewport" content="width=device-width, initial-scale=1"><style>body{background:#eee;width:60vw;margin:15vh
+        auto;font-family:system-ui,sans-serif}h1{font-size:1.5em}div{opacity:0.8}a:link,a:visited{color:#348}</style><body><div><h1>Example
+        Domain</h1><p>This domain is for use in documentation examples without needing
+        permission. Avoid use in operations.<p><a href="https://iana.org/domains/example">Learn
+        more</a></div></body></html>
+
+        '
+    headers:
+      Age:
+      - '11518'
+      CF-RAY:
+      - 9c47ba495e991c83-AMS
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html
+      Date:
+      - Tue, 27 Jan 2026 10:57:10 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      allow:
+      - GET, HEAD
+      cf-cache-status:
+      - HIT
+      content-length:
+      - '513'
+      last-modified:
+      - Fri, 23 Jan 2026 20:54:05 GMT
+    status:
+      code: 200
+      message: OK
+version: 1

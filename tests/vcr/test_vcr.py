@@ -1,6 +1,6 @@
 import requests
 
-from maykin_common.vcr import VCRTestCase
+from maykin_common.vcr import SimpleVCRTestCase, VCRTestCase
 
 
 def get(url: str) -> Exception | requests.Response:
@@ -33,3 +33,39 @@ class VCRTests(VCRTestCase):
             response = get("https://example.com")
 
         assert response is my_exception
+
+
+class VCRHeaderFilteringTests(SimpleVCRTestCase):
+    def test_strips_out_authorization_header_by_default(self):
+        requests.get(
+            "https://example.com",
+            headers={
+                "Authorization": "supersecret",
+                "X-API-Key": "more-secret",
+            },
+        )
+
+        request = self.cassette.requests[0]
+
+        assert "user-agent" in request.headers
+        assert "authorization" not in request.headers
+        assert "x-api-key" not in request.headers
+
+
+class CustomVCRHeaderFilteringTests(SimpleVCRTestCase):
+    VCR_FILTER_HEADERS = ("x-api-key",)
+
+    def test_can_specify_which_headers_to_strip(self):
+        requests.get(
+            "https://example.com",
+            headers={
+                "Authorization": "supersecret",
+                "X-API-Key": "more-secret",
+            },
+        )
+
+        request = self.cassette.requests[0]
+
+        assert "user-agent" in request.headers
+        assert "authorization" in request.headers
+        assert "x-api-key" not in request.headers
