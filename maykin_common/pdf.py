@@ -16,7 +16,7 @@ Depends on ``weasyprint``.
 import functools
 import logging
 import mimetypes
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from io import BytesIO
 from pathlib import PurePosixPath
 from typing import NotRequired, TypedDict
@@ -38,6 +38,19 @@ from maykin_common.settings import get_setting
 logger = logging.getLogger(__name__)
 
 __all__ = ["render_to_pdf", "render_template_to_pdf"]
+
+
+DEFAULT_ALLOWED_PROTOCOLS: Collection[str] = (
+    "http",
+    "https",
+    "data",
+)
+"""
+A lowercase collection of URL protocols that Weasyprint may resolve.
+
+This is a security feature. Protocols like ``file://`` could be used to extract host
+level files into the PDF data through malicious URLs.
+"""
 
 
 def get_base_url() -> str:
@@ -116,6 +129,14 @@ class UrlFetcher:
     URL fetcher that skips the network for /static/* and /media/* files.
     """
 
+    def __init__(
+        self,
+        allowed_protocols: Collection[str] | None,
+        _fail_on_errors: bool = False,
+    ):
+        self.allowed_protocols = allowed_protocols
+        self._fail_on_errors = _fail_on_errors
+
     def __call__(self, url: str) -> UrlFetcherResult:
         """
         Check if the URL matches one of our candidates and use it if there's a match.
@@ -128,10 +149,11 @@ class UrlFetcher:
         # e.g. base64-encoded images.
         if url.startswith("data:"):
             # TODO: deprecated since weasyprint 68, replace with URLFetcher
-            return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
+            return weasyprint.default_url_fetcher(
+                url, allowed_protocols=self.allowed_protocols
+            )  # pyright:ignore[reportReturnType]
 
         parsed_url = urlparse(url)
-        assert parsed_url.netloc, "Expected fully qualified URL"
 
         # Try candidates, respecting the order of the candidate configuration.
         for base, storage in _get_candidate_storages().items():
@@ -163,7 +185,9 @@ class UrlFetcher:
                     },
                 )
                 # TODO: deprecated since weasyprint 68, replace with URLFetcher
-                return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
+                return weasyprint.default_url_fetcher(
+                    url, allowed_protocols=self.allowed_protocols
+                )  # pyright:ignore[reportReturnType]
 
             content_type, encoding = mimetypes.guess_type(absolute_path)
             result: UrlFetcherResult = {
@@ -179,10 +203,17 @@ class UrlFetcher:
         else:
             # all candidates were tried, none were a match -> defer to the weasyprint
             # default
-            return weasyprint.default_url_fetcher(url)  # pyright:ignore[reportReturnType]
+            return weasyprint.default_url_fetcher(
+                url, allowed_protocols=self.allowed_protocols
+            )  # pyright:ignore[reportReturnType]
 
 
-def render_to_pdf(html: str, variant: str | None = "pdf/ua-1") -> tuple[str, bytes]:
+def render_to_pdf(
+    html: str,
+    variant: str | None = "pdf/ua-1",
+    allowed_protocols: Collection[str] | None = DEFAULT_ALLOWED_PROTOCOLS,
+    _urlfetcher_fail_on_errors: bool = False,
+) -> tuple[str, bytes]:
     """
     Render the provided HTML to PDF.
 
@@ -192,7 +223,10 @@ def render_to_pdf(html: str, variant: str | None = "pdf/ua-1") -> tuple[str, byt
     """
     html_object = weasyprint.HTML(
         string=html,
-        url_fetcher=UrlFetcher(),
+        url_fetcher=UrlFetcher(
+            allowed_protocols=allowed_protocols,
+            _fail_on_errors=_urlfetcher_fail_on_errors,
+        ),
         base_url=get_base_url(),
     )
     pdf = html_object.write_pdf(pdf_variant=variant)
@@ -204,9 +238,16 @@ def render_template_to_pdf(
     template_name: str,
     context: dict[str, object],
     variant: str | None = "pdf/ua-1",
+    allowed_protocols: Collection[str] | None = DEFAULT_ALLOWED_PROTOCOLS,
+    _urlfetcher_fail_on_errors: bool = False,
 ) -> tuple[str, bytes]:
     """
     Render a (HTML) template to PDF with the given context.
     """
     rendered_html = render_to_string(template_name, context=context)
-    return render_to_pdf(rendered_html, variant=variant)
+    return render_to_pdf(
+        rendered_html,
+        variant=variant,
+        allowed_protocols=allowed_protocols,
+        _urlfetcher_fail_on_errors=_urlfetcher_fail_on_errors,
+    )
