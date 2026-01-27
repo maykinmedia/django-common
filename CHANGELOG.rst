@@ -2,6 +2,22 @@
 Changelog
 =========
 
+0.17.0 (2026-01-27)
+===================
+
+Feature release with minor security improvements.
+
+**New features**
+
+* PDF rendering with Weasyprint now (by default) only accepts the ``http(s)`` and
+  ``data`` URL schemes.
+* [#20] The VCR test mixin now filters out the ``Authorization`` and ``X-API-Key``
+  request headers by default.
+
+**Bugfixes**
+
+* Fixed confusing error being raised in ``config(..., default="", split=True)``.
+
 0.16.0 (2026-01-26)
 ===================
 
