@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.core.management import call_command
 
 import pytest
+from weasyprint.urls import FatalURLFetchingError
 
 from maykin_common.pdf import render_template_to_pdf
 
@@ -40,12 +41,18 @@ def test_raises_if_setting_not_configured_properly(settings):
     settings.PDF_BASE_URL_FUNCTION = None
 
     with pytest.raises(NotImplementedError):
-        render_template_to_pdf("testapp/pdf/hello_world.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/hello_world.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
 
 def test_render_template_returns_html():
     html, pdf = render_template_to_pdf(
-        "testapp/pdf/hello_world.html", {"world": "pytest"}
+        "testapp/pdf/hello_world.html",
+        {"world": "pytest"},
+        _urlfetcher_fail_on_errors=True,
     )
 
     assert isinstance(html, str)
@@ -58,9 +65,15 @@ def test_external_url_uses_default_resolver(dummy_urlfetch_result):
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/external_url.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/external_url.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
-    mock_fetcher.assert_called_once_with("https://example.com/index.css")
+    mock_fetcher.assert_called_once_with(
+        "https://example.com/index.css", allowed_protocols=("http", "https", "data")
+    )
 
 
 def test_local_asset_does_not_use_default_resolver(dummy_urlfetch_result):
@@ -68,7 +81,11 @@ def test_local_asset_does_not_use_default_resolver(dummy_urlfetch_result):
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/local_url.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/local_url.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
     mock_fetcher.assert_not_called()
 
@@ -78,9 +95,16 @@ def test_render_with_missing_asset(dummy_urlfetch_result):
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/missing_asset.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/missing_asset.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
-    mock_fetcher.assert_called_once_with("http://testserver/static/non_existent.css")
+    mock_fetcher.assert_called_once_with(
+        "http://testserver/static/non_existent.css",
+        allowed_protocols=("http", "https", "data"),
+    )
 
 
 def test_resolves_assets_in_debug_mode(settings, dummy_urlfetch_result):
@@ -91,7 +115,11 @@ def test_resolves_assets_in_debug_mode(settings, dummy_urlfetch_result):
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/local_url.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/local_url.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
     mock_fetcher.assert_not_called()
 
@@ -103,7 +131,11 @@ def test_fully_qualified_static_url(settings, dummy_urlfetch_result):
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/local_url.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/local_url.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
     mock_fetcher.assert_not_called()
 
@@ -123,9 +155,16 @@ def test_other_storages_than_file_system_storage(settings, dummy_urlfetch_result
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/local_url.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/local_url.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
-    mock_fetcher.assert_called_with("http://testserver/testapp/some.css")
+    mock_fetcher.assert_called_with(
+        "http://testserver/testapp/some.css",
+        allowed_protocols=("http", "https", "data"),
+    )
 
 
 def test_base64_encoded_image(dummy_urlfetch_result):
@@ -133,8 +172,22 @@ def test_base64_encoded_image(dummy_urlfetch_result):
         "maykin_common.pdf.weasyprint.default_url_fetcher",
         return_value=dummy_urlfetch_result,
     ) as mock_fetcher:
-        render_template_to_pdf("testapp/pdf/base64_encoded_image.html", {})
+        render_template_to_pdf(
+            "testapp/pdf/base64_encoded_image.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
 
     mock_fetcher.assert_called_with(
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA"
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA",
+        allowed_protocols=("http", "https", "data"),
     )
+
+
+def test_blocks_suspicious_protocols_by_default():
+    with pytest.raises(FatalURLFetchingError):
+        render_template_to_pdf(
+            "testapp/pdf/blocked_file_url.html",
+            {},
+            _urlfetcher_fail_on_errors=True,
+        )
