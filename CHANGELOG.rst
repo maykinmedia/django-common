@@ -2,7 +2,7 @@
 Changelog
 =========
 
-0.18.0 (2026-02-??)
+0.18.0 (2026-02-12)
 ===================
 
 Maintenance release.
@@ -23,6 +23,11 @@ for details. Note that version 3.21+ provides the new APIs already.
 **New features**
 
 * Added support for django-health-check 3.21+ and the upcoming v4+.
+
+**Bugfixes**
+
+* [#65] Fixed crash in OTel library instrumentation when celery/billiard aren't
+  installed in the environment.
 
 0.17.0 (2026-01-27)
 ===================
