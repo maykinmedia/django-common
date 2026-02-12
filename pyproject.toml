@@ -96,7 +96,7 @@ otel = [
     "opentelemetry-sdk",
 ]
 health-checks = [
-    "django-health-check>=3.21",
+    "django-health-check>=3.24",
 ]
 
 [tool.setuptools.packages.find]

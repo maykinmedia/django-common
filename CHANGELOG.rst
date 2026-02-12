@@ -2,6 +2,28 @@
 Changelog
 =========
 
+0.18.0 (2026-02-??)
+===================
+
+Maintenance release.
+
+**💥 Breaking changes**
+
+There are some breaking changes in the health checks due to upstream changes in
+django-health-check. See the `4.x migration guide <https://codingjoe.dev/django-health-check/migrate-to-v4/>`_
+for details. Note that version 3.21+ provides the new APIs already.
+
+* The ``HEALTH_CHECK`` setting is obsolete, remove it from your project.
+* ``maykin_common.health_checks.default_health_check_subsets`` is removed. Remove the
+  import in your project.
+* Upstream refactored the DB health check and the test model is gone. Drop the
+  ``health_check_db_testmodel`` table in your project.
+* django-health-check 3.21+ is now required.
+
+**New features**
+
+* Added support for django-health-check 3.21+ and the upcoming v4+.
+
 0.17.0 (2026-01-27)
 ===================
 
