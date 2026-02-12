@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_string as real_import_string
 
 import pytest
 from opentelemetry import metrics, trace
@@ -24,8 +25,8 @@ from opentelemetry.trace import NoOpTracerProvider, set_tracer_provider
 
 from maykin_common.otel import setup_otel
 from maykin_common.otel.setup import (
-    PACKAGE_INSTRUMENTOR_MAPPING,
     ExportProtocol,
+    _get_instrumentors,
     aggregate_resource,
     load_exporters,
 )
@@ -48,8 +49,10 @@ def _reset_otel():
     if hasattr(meter_provider, "shutdown"):
         meter_provider.shutdown()  # pyright: ignore[reportAttributeAccessIssue]
 
-    for instrumentor in PACKAGE_INSTRUMENTOR_MAPPING.values():
-        instrumentor().uninstrument()
+    for instrumentor_cls in _get_instrumentors():
+        instrumentor = instrumentor_cls()
+        if instrumentor.is_instrumented_by_opentelemetry:
+            instrumentor.uninstrument()
 
     # reset to noop
     set_tracer_provider(NoOpTracerProvider())
@@ -111,8 +114,12 @@ def test_deferring_setup_via_envvar(monkeypatch: pytest.MonkeyPatch):
 
 
 def test_failing_celery_import_does_not_raise(monkeypatch: pytest.MonkeyPatch):
-    def raise_importerror(*args, **kwargs):
-        raise ImportError("Can't be imported")
+    def raise_importerror(dotted_path: str):
+        match dotted_path:
+            case str() if dotted_path.startswith("celery."):
+                raise ImportError("Can't be imported")
+            case _:
+                return real_import_string(dotted_path)
 
     monkeypatch.setattr("maykin_common.otel.setup.import_string", raise_importerror)
 
