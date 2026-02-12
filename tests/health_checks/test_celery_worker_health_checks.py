@@ -129,8 +129,9 @@ def test_worker_hooks_create_probe_files(
     Check that when worker is running and scheduling tasks, it touches a heartheat file.
     """
     _wait_until(
-        lambda: worker_event_loop_liveness_file.exists()
-        and worker_readiness_file.exists(),
+        lambda: (
+            worker_event_loop_liveness_file.exists() and worker_readiness_file.exists()
+        ),
         timeout=5,
     )
 
@@ -160,8 +161,9 @@ def test_worker_removes_probe_files_on_exit(
     worker_readiness_file: Path,
 ):
     _wait_until(
-        lambda: worker_event_loop_liveness_file.exists()
-        and worker_readiness_file.exists(),
+        lambda: (
+            worker_event_loop_liveness_file.exists() and worker_readiness_file.exists()
+        ),
         timeout=5,
     )
 
@@ -183,8 +185,9 @@ def test_intermediate_directories_are_created(
     worker_readiness_file: Path,
 ):
     _wait_until(
-        lambda: worker_event_loop_liveness_file.exists()
-        and worker_readiness_file.exists(),
+        lambda: (
+            worker_event_loop_liveness_file.exists() and worker_readiness_file.exists()
+        ),
         timeout=5,
     )
 

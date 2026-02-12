@@ -1,9 +1,13 @@
+from django.contrib import admin
 from django.test import Client
 from django.urls import include, path
 
 import pytest
 
 urlpatterns = [
+    # admin is required on django 4.2 for the technical debug info, because we have
+    # settings that refer to the ``admin:index`` urls.
+    path("admin/", admin.site.urls),
     path("", include("maykin_common.health_checks.urls")),
 ]
 

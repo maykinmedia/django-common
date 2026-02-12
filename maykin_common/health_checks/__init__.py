@@ -24,9 +24,8 @@ if importlib.util.find_spec("health_check") is None:  # pragma: no cover
         "You must install the health-checks extra to use health checks."
     )
 
-from .defaults import default_health_check_apps, default_health_check_subsets
+from .defaults import default_health_check_apps
 
 __all__ = [
     "default_health_check_apps",
-    "default_health_check_subsets",
 ]

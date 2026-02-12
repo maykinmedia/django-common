@@ -1,5 +1,7 @@
+import importlib.util
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from .views import ApiLandingPageView, CustomComponentIndexView
 
@@ -16,3 +18,8 @@ urlpatterns = [
         name="index-component",
     ),
 ]
+
+if importlib.util.find_spec("health_check") is not None:
+    urlpatterns += [
+        path("", include("maykin_common.health_checks.urls")),
+    ]

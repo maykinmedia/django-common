@@ -37,10 +37,7 @@ Update your settings accordingly:
 
 .. code-block:: python
 
-    from maykin_common.health_checks import (
-        default_health_check_apps,
-        default_health_check_subsets,
-    )
+    from maykin_common.health_checks import default_health_check_apps
 
     INSTALLED_APPS = [
         ...,
@@ -48,10 +45,6 @@ Update your settings accordingly:
         "maykin_common.health_checks.celery",  # optional, add if you use Celery
         ...
     ]
-
-    HEALTH_CHECK = {
-        "SUBSETS": default_health_check_subsets,
-    }
 
 and your root ``urls.py``:
 
