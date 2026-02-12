@@ -16,6 +16,7 @@ non-kubernetes container runtime (such as Docker or Podman).
 
 import importlib.util
 import os
+from collections.abc import Iterator, Mapping
 from typing import Literal, assert_never
 from uuid import uuid4
 
@@ -23,12 +24,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 
 from opentelemetry import metrics, trace
-from opentelemetry.instrumentation.celery import CeleryInstrumentor
-from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
-from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
-from opentelemetry.instrumentation.redis import RedisInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
@@ -62,13 +58,28 @@ type ExportProtocol = Literal["grpc", "http/protobuf"]
 
 DEFAULT_PROTOCOL: ExportProtocol = "grpc"
 
-PACKAGE_INSTRUMENTOR_MAPPING: dict[str, type[BaseInstrumentor]] = {
-    "django": DjangoInstrumentor,
-    "psycopg": PsycopgInstrumentor,
-    "redis": RedisInstrumentor,
-    "celery": CeleryInstrumentor,
-    "requests": RequestsInstrumentor,
+PACKAGE_INSTRUMENTOR_MAPPING: Mapping[str, str] = {
+    "celery": "opentelemetry.instrumentation.celery.CeleryInstrumentor",
+    "django": "opentelemetry.instrumentation.django.DjangoInstrumentor",
+    "psycopg": "opentelemetry.instrumentation.psycopg.PsycopgInstrumentor",
+    "redis": "opentelemetry.instrumentation.redis.RedisInstrumentor",
+    "requests": "opentelemetry.instrumentation.requests.RequestsInstrumentor",
 }
+
+
+def _get_instrumentors() -> Iterator[type[BaseInstrumentor]]:
+    """
+    Lazily build the collecton of instrumentors suitable for the environment.
+
+    This ensures the instrumentors are only imported when the expected dependencies
+    are present.
+    """
+    for package_name, dotted_path in PACKAGE_INSTRUMENTOR_MAPPING.items():
+        is_installed = importlib.util.find_spec(package_name) is not None
+        if not is_installed:
+            continue
+        instrumentor_cls: type[BaseInstrumentor] = import_string(dotted_path)
+        yield instrumentor_cls
 
 
 def setup_otel() -> None:
@@ -92,11 +103,8 @@ def setup_otel() -> None:
     # set up instrumenters that (usually) monkeypatch modules or inject the right
     # wrappers/middleware etc.
 
-    # the instrumentor is a singleton, so it's effectively global
-    for package, instrumentor_class in PACKAGE_INSTRUMENTOR_MAPPING.items():
-        if not is_available(package):
-            continue
-
+    # each instrumentor is a singleton, so it's effectively global
+    for instrumentor_class in _get_instrumentors():
         instrumentor = instrumentor_class()
         if not instrumentor.is_instrumented_by_opentelemetry:
             instrumentor.instrument()
@@ -204,8 +212,3 @@ def aggregate_resource(resource: Resource) -> Resource:
     return get_aggregated_resources(
         detectors=[ContainerResourceDetector()], initial_resource=resource
     )
-
-
-def is_available(package_name: str) -> bool:
-    """Check if package is installed."""
-    return importlib.util.find_spec(package_name) is not None
