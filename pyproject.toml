@@ -51,6 +51,7 @@ tests = [
     "pytest-cov",
     "pytest-playwright",
     "tox",
+    "chardet<6",
     "ruff",
     "pyright",
     "django-stubs",
