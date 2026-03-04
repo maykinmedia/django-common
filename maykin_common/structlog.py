@@ -6,6 +6,10 @@ Maykin projects use ``structlog`` and the Django integration to get structured l
 
 from datetime import UTC, datetime
 
+from django.conf import settings
+
+from structlog.typing import EventDict, WrappedLogger
+
 try:
     import uwsgi  # pyright: ignore[reportMissingModuleSource] uwsgi magic...
 except ImportError:
@@ -34,3 +38,11 @@ class LogVars:
             now = datetime.now(tz=UTC)
             uwsgi.set_logvar("iso8601timestamp", now.isoformat())
         return self.application(environ, start_response)
+
+
+def drop_user_agent_in_dev(
+    logger: WrappedLogger, method_name: str, event_dict: EventDict
+):  # pragma: no cover
+    if settings.DEBUG and "user_agent" in event_dict:
+        del event_dict["user_agent"]
+    return event_dict
