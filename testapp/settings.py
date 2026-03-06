@@ -15,6 +15,11 @@ try:
 except ImportError:
     axes = None
 
+try:
+    import django_yubin
+except ImportError:
+    django_yubin = None
+
 BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
@@ -49,6 +54,11 @@ INSTALLED_APPS = [
 # ensure migrations run for some tests that rely on axes
 if axes is not None:
     INSTALLED_APPS.insert(-2, "axes")
+
+if django_yubin:
+    MAILER_USE_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+    INSTALLED_APPS.insert(-2, "django_yubin")
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

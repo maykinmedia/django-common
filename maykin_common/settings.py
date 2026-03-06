@@ -104,6 +104,17 @@ that a connection with the broker is established and tasks can be processed.
 When the worker shuts down, the file is unlinked.
 """
 
+YUBIN_LOCK_PATH: Path = Path("/tmp") / "send_mail"
+"""
+Path of the lockfile used to prevent resending in the yubin engine
+"""
+
+YUBIN_LOCK_WAIT_TIMEOUT: int = 0
+"""
+The time yubin engine waits (in seconds) to try to acquire the lockfile before aborting
+"""
+
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -119,6 +130,8 @@ type SettingName = Literal[
     "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE",
     "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS",
     "MKN_HEALTH_CHECKS_WORKER_READINESS_FILE",
+    "YUBIN_LOCK_PATH",
+    "YUBIN_LOCK_WAIT_TIMEOUT",
 ]
 
 
