@@ -9,7 +9,8 @@ from __future__ import annotations
 import csv
 import io
 from collections.abc import Callable, Sequence
-from typing import Literal, Never, assert_never, overload
+from dataclasses import dataclass
+from typing import Any, Literal, Never, assert_never, overload
 
 from decouple import Csv, Undefined, config as _config, undefined
 
@@ -17,7 +18,14 @@ __all__ = ["config"]
 
 
 @overload
-def config(option: str) -> str: ...
+def config(
+    option: str,
+    *,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
+) -> str: ...
 
 
 # discourage passing a str default with split=True
@@ -28,6 +36,10 @@ def config[T](
     default: str,
     split: Literal[True],
     cast: Callable[[str], T] | Undefined = undefined,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
 ) -> Never: ...
 
 
@@ -38,6 +50,10 @@ def config[T](
     default: Sequence[T],
     split: Literal[True],
     cast: Callable[[str], T] | Undefined = undefined,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
 ) -> list[T]: ...
 
 
@@ -48,6 +64,10 @@ def config(
     default: Undefined = undefined,
     split: Literal[True],
     cast: Undefined = undefined,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
 ) -> list[str]: ...
 
 
@@ -58,25 +78,61 @@ def config[T](
     default: Undefined = undefined,
     split: Literal[True],
     cast: Callable[[str], T],
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
 ) -> list[T]: ...
 
 
 @overload
-def config(option: str, *, default: None) -> str | None: ...
-
-
-@overload
-def config[T](option: str, *, default: T | Undefined = undefined) -> T: ...
-
-
-# because we can't express difference / negation types: object \ None
-@overload
-def config(option: str, *, default: None, cast: Callable) -> Never: ...
+def config(
+    option: str,
+    *,
+    default: None,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
+) -> str | None: ...
 
 
 @overload
 def config[T](
-    option: str, *, default: str | Undefined = undefined, cast: Callable[[str], T]
+    option: str,
+    *,
+    default: T | Undefined = undefined,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
+) -> T: ...
+
+
+# because we can't express difference / negation types: object \ None
+@overload
+def config(
+    option: str,
+    *,
+    default: None,
+    cast: Callable,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
+) -> Never: ...
+
+
+@overload
+def config[T](
+    option: str,
+    *,
+    default: str | Undefined = undefined,
+    cast: Callable[[str], T],
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
 ) -> T: ...
 
 
@@ -86,6 +142,10 @@ def config[T](
     default: T | Sequence[T] | None | str | Undefined = undefined,
     split: bool = False,
     cast: Callable[[str], T] | Undefined = undefined,
+    help_text: str = "",
+    group: str | None = None,
+    add_to_docs: bool = True,
+    auto_display_default: bool = True,
 ) -> str | None | T | Sequence[T]:
     """
     Pull a config parameter from the environment.
@@ -117,7 +177,34 @@ def config[T](
         ...     default="123",
         ...     cast=lambda v: int(v) if v is not None else None,
         ... )  # typed as int | None
+
+    Several parameters are available to generate documentation for environment variables
+    with Sphinx directives provided by this library:
+
+    help_text : str
+        The description of this environment variable.
+    group : str, optional
+        The name of the group this environment variable belongs to.
+        Defaults to "Required" or "Optional" depending on whether a ``default``
+        is passed.
+    add_to_docs : bool, default ``True``
+        Indicates whether this environment variable should be displayed in the
+        documentation.
+    auto_display_default : bool, default ``True``
+        Indicates whether the documentation directives should display the specified
+        default. Can be set to ``False`` if you want to manually specify a default.
     """
+
+    variable = EnvironmentVariable(
+        name=option,
+        default=default,
+        help_text=help_text,
+        group=group,
+        auto_display_default=auto_display_default,
+    )
+
+    if add_to_docs:
+        ENVVAR_REGISTRY[option] = variable
 
     if split:
         assert isinstance(default, Undefined | Sequence), (
@@ -185,3 +272,27 @@ def _dumps(given_default: Sequence) -> str:
     fd.seek(0)
     default = fd.read()
     return default
+
+
+ENVVAR_REQUIRED_GROUP = "Required"
+ENVVAR_OPTIONAL_GROUP = "Optional"
+
+
+@dataclass
+class EnvironmentVariable:
+    name: str
+    default: Any
+    help_text: str
+    group: str | None = None
+    auto_display_default: bool = True
+
+    def __post_init__(self):
+        if not self.group:
+            self.group = (
+                ENVVAR_REQUIRED_GROUP
+                if isinstance(self.default, Undefined)
+                else ENVVAR_OPTIONAL_GROUP
+            )
+
+
+ENVVAR_REGISTRY: dict[str, EnvironmentVariable] = {}
