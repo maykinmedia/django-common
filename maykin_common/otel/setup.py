@@ -113,7 +113,7 @@ def setup_otel() -> None:
     # e.g. in celery workers with a process pool that fork other processes. Detecting
     # if we're running in a celery master or worker process is not obvious, so instead
     # we look at an explicit environment variable.
-    defer_setup: bool = config("_OTEL_DEFER_SETUP", default=False)
+    defer_setup: bool = config("_OTEL_DEFER_SETUP", default=False, add_to_docs=False)
 
     # in a uwsgi worker, defer the otel initialization until after the processes have
     # forked
@@ -175,7 +175,7 @@ def _setup_otel() -> None:
 
 def load_exporters():
     protocol: ExportProtocol = config(
-        OTEL_EXPORTER_OTLP_PROTOCOL, default=DEFAULT_PROTOCOL
+        OTEL_EXPORTER_OTLP_PROTOCOL, default=DEFAULT_PROTOCOL, add_to_docs=False
     )
     match protocol:
         case "grpc":
@@ -202,7 +202,9 @@ def load_exporters():
 
 def aggregate_resource(resource: Resource) -> Resource:
     _enable_resource_detector: bool = config(
-        "_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR", default=False
+        "_OTEL_ENABLE_CONTAINER_RESOURCE_DETECTOR",
+        default=False,
+        add_to_docs=False,
     )
     if not _enable_resource_detector:
         return resource
