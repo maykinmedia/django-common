@@ -15,6 +15,11 @@ def enqueue(message: Message, log_message: str | None = None) -> bool:
     """
     if not message.can_be_enqueued():
         message.add_log("Message can not be enqueued in it's current status")
+        logger.exception(
+            "Message can not be enqueued in it's current status",
+            extra={"email_message": message},
+        )
+
         return False
 
     # mark as queued instead of creating a new task
@@ -70,8 +75,4 @@ def queue_email_message(
     )
     message.add_log("Message created")
 
-    if enqueue(message, "Enqueued from a Backend or django-yubin itself."):
-        return 1
-    else:
-        logger.exception("Error enqueuing an email", extra={"email_message": message})
-        return 0
+    return int(enqueue(message, "Enqueued from a Backend or django-yubin itself."))

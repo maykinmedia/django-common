@@ -1,3 +1,5 @@
+from django.core.exceptions import ImproperlyConfigured
+
 import pytest
 
 from maykin_common.yubin.engine import send_all
@@ -13,11 +15,13 @@ def test_send_all(settings):
     Fixes coverage
     """
 
-    settings.YUBIN_LOCK_WAIT_TIMEOUT = 10
-    send_all()
-
     settings.YUBIN_LOCK_WAIT_TIMEOUT = None
-    send_all()
+    with pytest.raises(ImproperlyConfigured):
+        send_all()
 
     settings.YUBIN_LOCK_WAIT_TIMEOUT = -1
+    with pytest.raises(ImproperlyConfigured):
+        send_all()
+
+    settings.YUBIN_LOCK_WAIT_TIMEOUT = 10
     send_all()

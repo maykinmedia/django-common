@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+import fcntl
+import os
 from io import StringIO
-from os import utime
+from multiprocessing import Process
 from pathlib import Path
 
 from django.core.management import call_command
@@ -106,19 +107,19 @@ def test_send_all_mails(
     django_capture_on_commit_callbacks: DjangoCaptureOnCommitCallbacks,
 ):
 
-    _ = create_message(
+    create_message(
         to_address="test1@example.com",
         subject="Test Subject 1",
         body="<p>Test message 1</p>",
         status=Message.STATUS_QUEUED,
     )
-    _ = create_message(
+    create_message(
         to_address="test2@example.com",
         subject="Test Subject 2",
         body="<p>Test message 2</p>",
         status=Message.STATUS_CREATED,
     )
-    _ = create_message(
+    create_message(
         to_address="test3@example.com",
         subject="Test Subject 3",
         body="<p>Test message 3</p>",
@@ -147,7 +148,6 @@ def test_send_all_mails_lockfile(
         status=Message.STATUS_QUEUED,
     )
 
-    lock_file.touch()
     lock = FileLock(lock_file)
     lock.acquire()
 
@@ -156,13 +156,13 @@ def test_send_all_mails_lockfile(
         assert Message.objects.filter(status=Message.STATUS_QUEUED).count() == 1
 
         with django_capture_on_commit_callbacks(execute=True):
+            # should fail to acquire the lock and get deadlock detection
             call_command("send_all_mail")
 
         message.refresh_from_db()
         assert message.status == Message.STATUS_QUEUED
 
 
-@pytest.mark.skip(reason="cannot yet? force release a lockfile")
 def test_send_all_mails_lockfile_stale(
     django_capture_on_commit_callbacks: DjangoCaptureOnCommitCallbacks, lock_file: Path
 ):
@@ -172,20 +172,22 @@ def test_send_all_mails_lockfile_stale(
         body="<p>Test message 1</p>",
         status=Message.STATUS_QUEUED,
     )
+    lock_file.touch()
 
-    lock = FileLock(lock_file)
+    def create_lock_file(lock_file_path: Path) -> None:
+        """
+        Create a lock file without releasing.
+        """
+        fd = os.open(lock_file_path, os.O_RDWR | os.O_TRUNC)
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
-    with lock:
-        old_timestamp: int = int(
-            (datetime.now() - timedelta(hours=1, minutes=1)).timestamp()
-        )
-        utime(lock_file, (old_timestamp, old_timestamp))
+    p = Process(target=create_lock_file, args=(lock_file,))
+    p.start()
+    assert os.getpid() != p.pid
+    p.join()
 
-        assert lock.is_locked
-        assert Message.objects.filter(status=Message.STATUS_QUEUED).count() == 1
+    with django_capture_on_commit_callbacks(execute=True):
+        call_command("send_all_mail")
 
-        with django_capture_on_commit_callbacks(execute=True):
-            call_command("send_all_mail")
-
-        message.refresh_from_db()
-        assert message.status == Message.STATUS_SENT
+    message.refresh_from_db()
+    assert message.status == Message.STATUS_SENT
