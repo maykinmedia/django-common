@@ -62,6 +62,9 @@ def queue_email_message(
         )
 
     if not email_message.recipients():
+        logger.warning(
+            "No recipients for email message", extra={"email_message": email_message}
+        )
         return 0
 
     message = Message.objects.create(

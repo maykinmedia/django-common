@@ -2,7 +2,6 @@ import logging
 import time
 from functools import partial
 
-from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 
 from django_yubin.engine import send_db_message
@@ -23,11 +22,6 @@ def send_all() -> None:
 
     logger.debug("Acquiring lock...")
     try:
-        timeout = get_setting("YUBIN_LOCK_WAIT_TIMEOUT")
-        if type(timeout) is not int or timeout < 0:
-            raise ImproperlyConfigured(
-                "YUBIN_LOCK_WAIT_TIMEOUT must be a non negative integer"
-            )
         with lock.acquire(blocking=False):
             logger.debug("Lock acquired.")
             start_time = time.time()
