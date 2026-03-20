@@ -28,7 +28,7 @@ def send_all() -> None:
             raise ImproperlyConfigured(
                 "YUBIN_LOCK_WAIT_TIMEOUT must be a non negative integer"
             )
-        with lock.acquire(timeout):
+        with lock.acquire(blocking=False):
             logger.debug("Lock acquired.")
             start_time = time.time()
 

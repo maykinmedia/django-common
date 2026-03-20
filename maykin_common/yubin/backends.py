@@ -13,9 +13,9 @@ class QueuedEmailBackend(BaseEmailBackend):
     Copied of django_yubin.backends.QueuedEmailBackend replacing queue_email_message
     """
 
-    def send_messages(self, email_messages: Iterable[EmailMessage]):
+    def send_messages(self, email_messages: Iterable[EmailMessage]) -> int:
         """
-        Add new messages to the email queue.
+        Add new messages to the email queue, return the number of messages queued.
 
         The ``email_messages`` argument should be one or more instances
         of Django's core mail ``EmailMessage`` class.
