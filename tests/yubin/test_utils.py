@@ -6,7 +6,7 @@ import pytest
 from django_yubin.models import Log, Message
 
 from maykin_common.yubin.utils import enqueue, queue_email_message
-from tests.yubin.utils import create_message
+from .utils import create_message
 
 pytestmark = [
     pytest.mark.django_db,

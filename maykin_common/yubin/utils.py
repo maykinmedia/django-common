@@ -14,10 +14,10 @@ def enqueue(message: Message, log_message: str | None = None) -> bool:
     Sends the task to enqueue the message on commit.
     """
     if not message.can_be_enqueued():
-        message.add_log("Message can not be enqueued in it's current status")
-        logger.exception(
-            "Message can not be enqueued in it's current status",
-            extra={"email_message": message},
+        message.add_log("Message can not be enqueued in its current status")
+        logger.warning(
+            "message_queueing_failed",
+            extra={"email_message": message, "current_status": message.status},
         )
 
         return False

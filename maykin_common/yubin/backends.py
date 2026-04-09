@@ -3,14 +3,15 @@ from collections.abc import Iterable
 from django.core.mail import EmailMessage
 from django.core.mail.backends.base import BaseEmailBackend
 
-from maykin_common.yubin.utils import queue_email_message
+from .utils import queue_email_message
 
 
 class QueuedEmailBackend(BaseEmailBackend):
     """
-    Un-celeries your QueuedEmailBackend
+   Queue emails without dispatching a celery task.
 
-    Copied of django_yubin.backends.QueuedEmailBackend replacing queue_email_message
+    Copied from :class:`django_yubin.backends.QueuedEmailBackend`. It replaces the
+    ``queue_email_message`` usage with our own variant.
     """
 
     def send_messages(self, email_messages: Iterable[EmailMessage]) -> int:

@@ -8,7 +8,6 @@ De-celeried Django Yubin
 
     Added yubin celery cronjob bypass.
 
-
 Re-writes parts of `Django Yubin`_ to bypass the need for celery tasks to queue and send emails.
 
 Quickstart (tl;dr)
@@ -32,11 +31,11 @@ Update your settings accordingly:
     ]
 
     # use this instead of django-yubins backend
-     settings.EMAIL_BACKEND = "maykin_common.yubin.backends.QueuedEmailBackend"
+     EMAIL_BACKEND = "maykin_common.yubin.backends.QueuedEmailBackend"
      MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # the same setting from Django-yubin
 
 Now using django's ``send_mail`` will create and save a queued yubin ``Message`` without using the ``send_email`` task.
-Then management commands and cronjob can be used send and retry emails without using celery.
+Then management commands and cronjobs can be used to send and retry emails without celery.
 
 
 Management Commands
@@ -51,9 +50,8 @@ delete_old_emails
 
     ./manage.py delete_old_emails --days 90
 
-Delete old `Messages` before older than a certain number of days.
+Delete `Message` instances that are older than a certain number of days.
 By default this is 90 days but can be changed using ``--days`` argument.
-
 
 retry_emails
 ------------
@@ -63,8 +61,7 @@ retry_emails
     ./manage.py retry_emails --max-retries 0
 
 Updates retryable `Messages` by changing their status back to queued. By default it will not allow retries
-but this can be change with the ``--max-retries`` or ``-m`` arguments
-
+but this can be changed with the ``--max-retries`` or ``-m`` arguments
 
 send_all_mail
 -------------
@@ -73,7 +70,6 @@ send_all_mail
 
     ./manage.py send_all_mail
 
-Sends all queued `Messages`
-
+Sends all queued `Messages`.
 
 .. _Django Yubin: https://django-yubin.readthedocs.io/en/latest/

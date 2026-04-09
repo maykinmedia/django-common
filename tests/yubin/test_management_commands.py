@@ -12,7 +12,7 @@ from filelock import FileLock
 from freezegun import freeze_time
 from pytest_django import DjangoCaptureOnCommitCallbacks
 
-from tests.yubin.utils import create_message
+from .utils import create_message
 
 pytestmark = [
     pytest.mark.django_db,

@@ -171,11 +171,13 @@ Open Telemetry
 
 See :ref:`otel` to configure metrics, traces and logging.
 
-De-celeried Django Yubin
+Celery workarounds
 ------------------------
 
-See :ref:`yubin` for django-yubin celery bypass
+For projects that don't use Celery and don't want to add that infrastructure, there are some
+workarounds available for commonly used third party libraries that rely on it.
 
+* See :ref:`yubin` for django-yubin workarounds.
 
 Views
 -----

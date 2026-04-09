@@ -8,22 +8,24 @@ from django_yubin.engine import send_db_message
 from django_yubin.models import Message
 from filelock import FileLock, Timeout
 
-from maykin_common.settings import get_setting
+from .settings import get_setting
 
 logger = logging.getLogger(__name__)
 
 
 def send_all() -> None:
     """
-    Runs the equivalent of a send_email task done in the original Message.enqueue
+    Query all the queued messages and attempt to deliver them.
+    
+    This is the equivalent of the original :func:`django_yubin.tasks.send_email`.
     """
 
     lock = FileLock(get_setting("YUBIN_LOCK_PATH"))
 
-    logger.debug("Acquiring lock...")
+    logger.debug("acquiring_lock", extra={"path": str(...)})
     try:
         with lock.acquire(blocking=False):
-            logger.debug("Lock acquired.")
+            logger.debug("lock_acquired")
             start_time = time.time()
 
             for message in Message.objects.filter(status=Message.STATUS_QUEUED):
@@ -34,10 +36,10 @@ def send_all() -> None:
                         log_message="Sending email",
                     )
                 )
-            logger.debug("Releasing lock...")
+            logger.debug("releasing_lock")
 
-        logger.debug("Lock released.")
-        logger.debug("Completed in %.2f seconds.", (time.time() - start_time))
+        logger.debug("lock_released")
+        logger.debug("email_sending_completed", extra={"duration": time.time() - start_time})
 
     except Timeout:
-        logger.debug("Waiting for the lock timed out. Exiting.")
+        logger.debug("lock_acquiry_failed")

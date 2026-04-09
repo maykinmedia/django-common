@@ -106,7 +106,7 @@ When the worker shuts down, the file is unlinked.
 
 YUBIN_LOCK_PATH: Path = Path("/tmp") / "send_mail"
 """
-Path of the lockfile used to prevent resending in the yubin engine
+Path to the lockfile used to prevent race conditions when sending queued messages.
 """
 
 type SettingName = Literal[
