@@ -10,8 +10,9 @@ logger = logging.getLogger(__name__)
 
 def enqueue(message: Message, log_message: str | None = None) -> bool:
     """
-    Un-celeries your Message.enqueue
-    Sends the task to enqueue the message on commit.
+    Marks a message as queued returning True if successful otherwise False
+
+    Removes celery from the original :func:`Message.enqueue`
     """
     if not message.can_be_enqueued():
         message.add_log("Message can not be enqueued in its current status")
@@ -30,11 +31,14 @@ def enqueue(message: Message, log_message: str | None = None) -> bool:
 
 def retry_messages(max_retries: int = 3) -> tuple[int, int]:
     """
-    Un-celeries your Message.retry_messages
+    Retries messages that have failed to send and
+    returns a tuple of total tries and failed tries
+
+    Removes celery from the original :func:`Message.retry_messages`
     """
 
     enqueued = 0
-    messages = Message.objects.retryable(max_retries)  # type: ignore
+    messages = Message.objects.defer("_message_data").retryable(max_retries)  # type: ignore
     for message in messages:
         enqueued += enqueue(message, "Retry sending the email.")
     failed = len(messages) - enqueued
@@ -45,8 +49,6 @@ def queue_email_message(
     email_message: EmailMessage, fail_silently: bool = False
 ) -> int:
     """
-    Un-celeries your django_yubin.queue_email_message
-
     Add new messages to the email queue.
 
     The ``email_message`` argument should be an instance of Django's core mail
@@ -54,6 +56,8 @@ def queue_email_message(
 
     The ``fail_silently`` argument is not used and is only provided to match
     the signature of the ``EmailMessage.send`` function which it may emulate.
+
+     Removes celery from the original :func:`django_yubin.queue_email_message`
     """
 
     if settings.MAILER_TEST_MODE and settings.MAILER_TEST_EMAIL:
@@ -62,9 +66,7 @@ def queue_email_message(
         )
 
     if not email_message.recipients():
-        logger.warning(
-            "No recipients for email message", extra={"email_message": email_message}
-        )
+        logger.warning("no_recipients_added", extra={"email_message": email_message})
         return 0
 
     message = Message.objects.create(

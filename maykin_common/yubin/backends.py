@@ -8,7 +8,7 @@ from .utils import queue_email_message
 
 class QueuedEmailBackend(BaseEmailBackend):
     """
-   Queue emails without dispatching a celery task.
+    Queue emails without dispatching a celery task.
 
     Copied from :class:`django_yubin.backends.QueuedEmailBackend`. It replaces the
     ``queue_email_message`` usage with our own variant.

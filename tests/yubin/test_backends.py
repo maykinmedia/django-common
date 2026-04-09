@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.core.mail import send_mail
 
 import pytest
@@ -8,30 +10,23 @@ pytestmark = [
 ]
 
 
-@pytest.fixture(autouse=True)
-def install_django_yubin_settings(settings):
-    settings.INSTALLED_APPS = [
-        *settings.INSTALLED_APPS,
-        "maykin_common.yubin",
-    ]
-
-    settings.EMAIL_BACKEND = "maykin_common.yubin.backends.QueuedEmailBackend"
-
-
-def test_send_email(settings):
+def test_send_email_uses_maykin_common_backend(settings):
     """
-    Test that django's send_mail() queues a yubin Message
+    Assert that django's send_mail() queues a yubin Message
     instead of creating a celery task
     """
 
     assert settings.EMAIL_BACKEND == "maykin_common.yubin.backends.QueuedEmailBackend"
 
-    send_mail(
-        "Test Subject",
-        "Test Message",
-        "sender@example.com",
-        ["recipient_1@example.com", "recipient_2@example.com"],
-    )
+    with patch("django_yubin.tasks.send_email") as mock_task_send_email:
+        send_mail(
+            "Test Subject",
+            "Test Message",
+            "sender@example.com",
+            ["recipient_1@example.com", "recipient_2@example.com"],
+        )
+
+    assert not mock_task_send_email.called
 
     assert Message.objects.count() == 1
 

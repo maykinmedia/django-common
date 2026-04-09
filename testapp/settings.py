@@ -10,14 +10,14 @@ if importlib.util.find_spec("health_check") is not None:
 else:
     default_health_check_apps = []
 
-try:
+if importlib.util.find_spec("axes") is not None:
     import axes
-except ImportError:
+else:
     axes = None
 
-try:
+if importlib.util.find_spec("django_yubin") is not None:
     import django_yubin
-except ImportError:
+else:
     django_yubin = None
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -58,6 +58,7 @@ if axes is not None:
 if django_yubin:
     MAILER_USE_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
     INSTALLED_APPS.insert(-2, "django_yubin")
+    INSTALLED_APPS.insert(-2, "maykin_common.yubin")
 
 
 MIDDLEWARE = [

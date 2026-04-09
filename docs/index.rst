@@ -48,8 +48,8 @@ Features
    health_checks
    otel
    apis
-   yubin
    settings
+   yubin
    reference/index
    changelog
 

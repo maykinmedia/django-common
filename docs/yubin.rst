@@ -31,12 +31,18 @@ Update your settings accordingly:
     ]
 
     # use this instead of django-yubins backend
-     EMAIL_BACKEND = "maykin_common.yubin.backends.QueuedEmailBackend"
-     MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # the same setting from Django-yubin
+    EMAIL_BACKEND = "maykin_common.yubin.backends.QueuedEmailBackend"
+    MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend" # the same setting from Django-yubin
 
 Now using django's ``send_mail`` will create and save a queued yubin ``Message`` without using the ``send_email`` task.
 Then management commands and cronjobs can be used to send and retry emails without celery.
 
+.. warning::
+
+    This does not monkeypatch the original yubin ``Message`` methods and ``Message.enqueue(...)``
+    and ``Message.retry_messages(...)`` will still use the original celery tasks.
+
+A proper monkeypatch might be added in the future.
 
 Management Commands
 ===================

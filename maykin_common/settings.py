@@ -104,7 +104,7 @@ that a connection with the broker is established and tasks can be processed.
 When the worker shuts down, the file is unlinked.
 """
 
-YUBIN_LOCK_PATH: Path = Path("/tmp") / "send_mail"
+MKN_YUBIN_LOCK_PATH: Path = Path("/tmp") / "send_mail"
 """
 Path to the lockfile used to prevent race conditions when sending queued messages.
 """
@@ -124,7 +124,7 @@ type SettingName = Literal[
     "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_LIVENESS_FILE",
     "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS",
     "MKN_HEALTH_CHECKS_WORKER_READINESS_FILE",
-    "YUBIN_LOCK_PATH",
+    "MKN_YUBIN_LOCK_PATH",
 ]
 
 

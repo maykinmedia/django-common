@@ -56,7 +56,7 @@ tests = [
     "django-stubs",
     "decouple-types",
     "redis",
-    "freezegun",
+    "time-machine",
 ]
 docs = [
     "sphinx",
