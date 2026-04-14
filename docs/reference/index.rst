@@ -27,6 +27,12 @@ Python API reference.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Documentation helpers
+
+   documentation_helpers
+
+.. toctree::
+   :maxdepth: 1
    :caption: Axes
 
    throttling

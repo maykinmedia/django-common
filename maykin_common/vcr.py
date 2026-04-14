@@ -28,7 +28,7 @@ from typing import Any, ClassVar, Protocol, override
 from django.test import SimpleTestCase, TestCase, TransactionTestCase, tag
 
 import requests.exceptions
-from vcr.cassette import Cassette
+from vcr.cassette import Cassette, CassetteContextDecorator
 from vcr.config import RecordMode
 from vcr.request import Request
 from vcr.unittest import VCR, VCRMixin as _VCRMixin
@@ -160,7 +160,9 @@ class VCRMixin(_VCRMixin):
             raise exception()
 
         clean_vcr = self._get_vcr(**kwargs | {"before_record_request": raise_exception})
-        return clean_vcr.use_cassette(self._get_cassette_name())
+        context_decorator = clean_vcr.use_cassette(self._get_cassette_name())
+        assert isinstance(context_decorator, CassetteContextDecorator)
+        return context_decorator
 
 
 @tag("vcr")
