@@ -5,7 +5,7 @@ from docutils.core import publish_doctree
 from docutils.parsers.rst import directives
 
 import maykin_common.config
-from maykin_common.config import config
+from maykin_common.config import DocumentationParams, config
 from maykin_common.documentation.config_directives import (
     ConfigAllParamsDirective,
     ConfigGroupDirective,
@@ -38,7 +38,11 @@ def clean_registry():
 
 
 def test_config_param():
-    config("DISABLE_2FA", help_text="disable 2fa", default=False)
+    config(
+        "DISABLE_2FA",
+        default=False,
+        documentation=DocumentationParams(help_text="disable 2fa"),
+    )
 
     rst = textwrap.dedent("""
         .. config-param:: DISABLE_2FA
@@ -52,7 +56,11 @@ def test_config_param():
 
 
 def test_config_param_override_default():
-    config("DISABLE_2FA", help_text="disable 2fa", default=False)
+    config(
+        "DISABLE_2FA",
+        default=False,
+        documentation=DocumentationParams(help_text="disable 2fa"),
+    )
 
     rst = textwrap.dedent("""
         .. config-param:: DISABLE_2FA
@@ -69,9 +77,10 @@ def test_config_param_override_default():
 def test_config_param_do_not_display_default():
     config(
         "DISABLE_2FA",
-        help_text="disable 2fa",
         default=False,
-        auto_display_default=False,
+        documentation=DocumentationParams(
+            help_text="disable 2fa", auto_display_default=False
+        ),
     )
 
     rst = textwrap.dedent("""
@@ -87,7 +96,9 @@ def test_config_param_do_not_display_default():
 
 
 def test_config_param_default_empty_string():
-    config("SUBPATH", help_text="subpath", default="")
+    config(
+        "SUBPATH", default="", documentation=DocumentationParams(help_text="subpath")
+    )
 
     rst = textwrap.dedent("""
         .. config-param:: SUBPATH
@@ -117,7 +128,7 @@ def test_config_param_missing_help_text():
 def test_config_param_no_default(monkeypatch):
     monkeypatch.setenv("SOME_VAR", "foo")
 
-    config("SOME_VAR", help_text="some var")
+    config("SOME_VAR", documentation=DocumentationParams(help_text="some var"))
 
     rst = textwrap.dedent("""
         .. config-param:: SOME_VAR
@@ -145,8 +156,16 @@ def test_config_param_variable_does_not_exist(monkeypatch):
 
 
 def test_config_group():
-    config("DB_USER", help_text="db username.", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username.", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
 
     rst = textwrap.dedent("""
         .. config-group:: Database
@@ -163,8 +182,16 @@ def test_config_group():
 
 
 def test_config_group_cannot_use_members_groups_and_exclude_groups_together():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
 
     rst = textwrap.dedent("""
         .. config-group:: Database
@@ -177,14 +204,22 @@ def test_config_group_cannot_use_members_groups_and_exclude_groups_together():
 
 
 def test_config_group_do_not_add_var_to_docs():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
     config(
         "VAR_TO_IGNORE",
-        help_text="ignore",
-        group="Database",
         default="bar",
-        add_to_docs=False,
+        documentation=DocumentationParams(
+            help_text="ignore", group="Database", add_to_docs=False
+        ),
     )
 
     rst = textwrap.dedent("""
@@ -202,10 +237,26 @@ def test_config_group_do_not_add_var_to_docs():
 
 
 def test_config_group_members():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
-    config("PARAM_TO_EXCLUDE1", help_text="exclude", group="Database", default="bar")
-    config("PARAM_TO_EXCLUDE2", help_text="exclude", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE1",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude", group="Database"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE2",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude", group="Database"),
+    )
 
     rst = textwrap.dedent("""
         .. config-group:: Database
@@ -223,10 +274,26 @@ def test_config_group_members():
 
 
 def test_config_group_exclude_params():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
-    config("PARAM_TO_EXCLUDE1", help_text="exclude", group="Database", default="bar")
-    config("PARAM_TO_EXCLUDE2", help_text="exclude", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE1",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude", group="Database"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE2",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude", group="Database"),
+    )
 
     rst = textwrap.dedent("""
         .. config-group:: Database
@@ -249,16 +316,27 @@ def test_config_group_exclude_params():
 
 
 def test_config_all_params():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
     config(
         "ALLOWED_HOSTS",
-        help_text="allowed hosts",
-        group="Required",
         split=True,
         default="",
+        documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
 
     rst = textwrap.dedent("""
         .. config-all-params::
@@ -280,16 +358,27 @@ def test_config_all_params():
 
 
 def test_config_all_params_cannot_use_members_groups_and_exclude_groups_together():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
     config(
         "ALLOWED_HOSTS",
-        help_text="allowed hosts",
-        group="Required",
         split=True,
         default="",
+        documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
 
     rst = textwrap.dedent("""
         .. config-all-params::
@@ -302,19 +391,42 @@ def test_config_all_params_cannot_use_members_groups_and_exclude_groups_together
 
 
 def test_config_all_params_exclude_groups():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
     config(
         "ALLOWED_HOSTS",
-        help_text="allowed hosts",
-        group="Required",
         split=True,
         default="",
+        documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
-    config("PARAM_TO_EXCLUDE1", help_text="exclude", group="Database", default="bar")
-    config("PARAM_TO_EXCLUDE2", help_text="exclude", default="bar")
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE1",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude", group="Database"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE2",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude"),
+    )
 
     rst = textwrap.dedent("""
         .. config-all-params::
@@ -331,16 +443,27 @@ def test_config_all_params_exclude_groups():
 
 
 def test_config_all_params_members_groups():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
     config(
         "ALLOWED_HOSTS",
-        help_text="allowed hosts",
-        group="Required",
         split=True,
         default="",
+        documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
 
     rst = textwrap.dedent("""
         .. config-all-params::
@@ -361,12 +484,36 @@ def test_config_all_params_members_groups():
 
 
 def test_config_all_params_exclude_params():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
-    config("SESSION_COOKIE_AGE", help_text="session cookie age", default=1234)
-    config("PARAM_TO_EXCLUDE1", help_text="exclude", group="Database", default="bar")
-    config("PARAM_TO_EXCLUDE2", help_text="exclude", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
+    config(
+        "SESSION_COOKIE_AGE",
+        default=1234,
+        documentation=DocumentationParams(help_text="session cookie age"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE1",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude", group="Database"),
+    )
+    config(
+        "PARAM_TO_EXCLUDE2",
+        default="bar",
+        documentation=DocumentationParams(help_text="exclude"),
+    )
 
     rst = textwrap.dedent("""
         .. config-all-params::
@@ -387,20 +534,28 @@ def test_config_all_params_exclude_params():
 
 
 def test_config_all_params_do_not_add_param_to_docs():
-    config("DB_USER", help_text="db username", group="Database", default="foo")
-    config("DB_PASSWORD", help_text="db password", group="Database", default="bar")
+    config(
+        "DB_USER",
+        default="foo",
+        documentation=DocumentationParams(help_text="db username", group="Database"),
+    )
+    config(
+        "DB_PASSWORD",
+        default="bar",
+        documentation=DocumentationParams(help_text="db password", group="Database"),
+    )
     config(
         "ALLOWED_HOSTS",
-        help_text="allowed hosts",
-        group="Required",
         split=True,
         default="",
+        documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
     config(
         "SESSION_COOKIE_AGE",
-        help_text="session cookie age",
         default=1234,
-        add_to_docs=False,
+        documentation=DocumentationParams(
+            help_text="session cookie age", add_to_docs=False
+        ),
     )
 
     rst = textwrap.dedent("""

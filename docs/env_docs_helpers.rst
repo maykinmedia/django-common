@@ -6,23 +6,44 @@ Environment variable documentation helpers
 
 Any environment variables that are loaded using :func:`maykin_common.config.config`,
 can be documented using the documentation helpers (unless ``add_to_docs`` is explicitly set to ``False``).
-Documentation per environment variable can be added by providing a ``help_text`` and
-(optionally) a ``group`` to document the environment variable under.
+Documentation per environment variable can be added by providing the ``documentation``
+parameter, which has the following attributes:
 
+* ``help_text``: the description of the environment variable.
+* ``group``: the name of the group to list this environment variable under
+  (defaults to ``Required`` if no default is specified, otherwise ``Optional``).
+* ``add_to_docs``: whether or not this environment variable should be included in the docs (default ``True``)
+* ``auto_display_default``: whether or not the default specified to the ``config`` helper
+  should be displayed in the documentation (default ``True``)
 
 .. code:: python
 
-    from maykin_common.config_helpers import config
+    from maykin_common.config_helpers import config, DocumentationParams
 
     ALLOWED_HOSTS = config(
         "ALLOWED_HOSTS",
         default="",
         split=True,
-        help_text=(
-            "a comma separated (without spaces!) list of domains that serve "
-            "the installation. Used to protect against Host header attacks."
-        ),
-        group="Required",
+        documentation=DocumentationParams(
+            help_text=(
+                "a comma separated (without spaces!) list of domains that serve "
+                "the installation. Used to protect against Host header attacks."
+            ),
+            group="Required",
+        )
+    )
+
+To exclude an environment variable from the documentation, the following shorthand
+can be used:
+
+.. code:: python
+
+    from maykin_common.config_helpers import config, no_doc
+
+    VARIABLE_TO_BE_EXCLUDED = config(
+        "VARIABLE_TO_BE_EXCLUDED",
+        default="",
+        documentation=no_doc
     )
 
 In order to document environment variables that are defined in this way, there are three
