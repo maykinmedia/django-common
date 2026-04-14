@@ -1,7 +1,5 @@
 """
 Utilities to read and process configuration for a project.
-
-.. todo:: Incorporate the Team Bron documentation options for parameters.
 """
 
 from __future__ import annotations
@@ -14,18 +12,41 @@ from typing import Any, Literal, Never, assert_never, overload
 
 from decouple import Csv, Undefined, config as _config, undefined
 
-__all__ = ["config"]
+__all__ = ["config", "DocumentationParams"]
+
+
+@dataclass(slots=True)
+class DocumentationParams:
+    """
+    Dataclass to define the parameters for documentation generation for environment
+    variables loaded via the :func:`maykin_common.config.config` helper
+
+    help_text : str
+        The description of this environment variable.
+    group : str, optional
+        The name of the group this environment variable belongs to.
+        Defaults to "Required" or "Optional" depending on whether a ``default``
+        is passed.
+    add_to_docs : bool, default ``True``
+        Indicates whether this environment variable should be displayed in the
+        documentation.
+    auto_display_default : bool, default ``True``
+        Indicates whether the documentation directives should display the specified
+        default. Can be set to ``False`` if you want to manually specify a default.
+    """
+
+    help_text: str = ""
+    group: str | None = None
+    add_to_docs: bool = True
+    auto_display_default: bool = True
+
+
+"""Shorthand to not include an environment variable in generated documentation"""
+no_doc = DocumentationParams(add_to_docs=False)
 
 
 @overload
-def config(
-    option: str,
-    *,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
-) -> str: ...
+def config(option: str, *, documentation: DocumentationParams | None = None) -> str: ...
 
 
 # discourage passing a str default with split=True
@@ -36,10 +57,7 @@ def config[T](
     default: str,
     split: Literal[True],
     cast: Callable[[str], T] | Undefined = undefined,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> Never: ...
 
 
@@ -50,10 +68,7 @@ def config[T](
     default: Sequence[T],
     split: Literal[True],
     cast: Callable[[str], T] | Undefined = undefined,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> list[T]: ...
 
 
@@ -64,10 +79,7 @@ def config(
     default: Undefined = undefined,
     split: Literal[True],
     cast: Undefined = undefined,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> list[str]: ...
 
 
@@ -78,22 +90,13 @@ def config[T](
     default: Undefined = undefined,
     split: Literal[True],
     cast: Callable[[str], T],
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> list[T]: ...
 
 
 @overload
 def config(
-    option: str,
-    *,
-    default: None,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    option: str, *, default: None, documentation: DocumentationParams | None = None
 ) -> str | None: ...
 
 
@@ -102,10 +105,7 @@ def config[T](
     option: str,
     *,
     default: T | Undefined = undefined,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> T: ...
 
 
@@ -116,10 +116,7 @@ def config(
     *,
     default: None,
     cast: Callable,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> Never: ...
 
 
@@ -129,10 +126,7 @@ def config[T](
     *,
     default: str | Undefined = undefined,
     cast: Callable[[str], T],
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> T: ...
 
 
@@ -142,10 +136,7 @@ def config[T](
     default: T | Sequence[T] | None | str | Undefined = undefined,
     split: bool = False,
     cast: Callable[[str], T] | Undefined = undefined,
-    help_text: str = "",
-    group: str | None = None,
-    add_to_docs: bool = True,
-    auto_display_default: bool = True,
+    documentation: DocumentationParams | None = None,
 ) -> str | None | T | Sequence[T]:
     """
     Pull a config parameter from the environment.
@@ -178,32 +169,24 @@ def config[T](
         ...     cast=lambda v: int(v) if v is not None else None,
         ... )  # typed as int | None
 
-    Several parameters are available to generate documentation for environment variables
-    with Sphinx directives provided by this library:
+    The ``documentation`` parameter is available to generate documentation for
+    environment variables with Sphinx directives provided by this library:
 
-    help_text : str
-        The description of this environment variable.
-    group : str, optional
-        The name of the group this environment variable belongs to.
-        Defaults to "Required" or "Optional" depending on whether a ``default``
-        is passed.
-    add_to_docs : bool, default ``True``
-        Indicates whether this environment variable should be displayed in the
-        documentation.
-    auto_display_default : bool, default ``True``
-        Indicates whether the documentation directives should display the specified
-        default. Can be set to ``False`` if you want to manually specify a default.
+    documentation (:class:`maykin_common.config.DocumentationParams`)
     """
 
-    variable = EnvironmentVariable(
-        name=option,
-        default=default,
-        help_text=help_text,
-        group=group,
-        auto_display_default=auto_display_default,
-    )
+    if not documentation:
+        # Instantiate the defaults
+        documentation = DocumentationParams()
 
-    if add_to_docs:
+    if documentation.add_to_docs:
+        variable = EnvironmentVariable(
+            name=option,
+            default=default,
+            help_text=documentation.help_text,
+            group=documentation.group,
+            auto_display_default=documentation.auto_display_default,
+        )
         ENVVAR_REGISTRY[option] = variable
 
     if split:
@@ -278,7 +261,7 @@ ENVVAR_REQUIRED_GROUP = "Required"
 ENVVAR_OPTIONAL_GROUP = "Optional"
 
 
-@dataclass
+@dataclass(slots=True)
 class EnvironmentVariable:
     name: str
     default: Any
