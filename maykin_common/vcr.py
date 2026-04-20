@@ -160,7 +160,7 @@ class VCRMixin(_VCRMixin):
             raise exception()
 
         clean_vcr = self._get_vcr(**kwargs | {"before_record_request": raise_exception})
-        return clean_vcr.use_cassette(self._get_cassette_name())
+        return clean_vcr.use_cassette(self._get_cassette_name())  # pyright: ignore[reportReturnType] upstream inferred type is wrong
 
 
 @tag("vcr")
