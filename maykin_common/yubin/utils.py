@@ -1,0 +1,83 @@
+import logging
+
+from django.core.mail import EmailMessage
+
+from django_yubin import _set_message_test_mode, settings
+from django_yubin.models import Message
+
+logger = logging.getLogger(__name__)
+
+
+def enqueue(message: Message, log_message: str | None = None) -> bool:
+    """
+    Marks a message as queued returning True if successful otherwise False
+
+    Removes celery from the original :func:`Message.enqueue`
+    """
+    if not message.can_be_enqueued():
+        message.add_log("Message can not be enqueued in its current status")
+        logger.warning(
+            "message_queueing_failed",
+            extra={"email_message": message, "current_status": message.status},
+        )
+
+        return False
+
+    # mark as queued instead of creating a new task
+    message.mark_as(Message.STATUS_QUEUED, log_message)
+
+    return True
+
+
+def retry_messages(max_retries: int = 3) -> tuple[int, int]:
+    """
+    Retries messages that have failed to send and
+    returns a tuple of total tries and failed tries
+
+    Removes celery from the original :func:`Message.retry_messages`
+    """
+
+    enqueued = 0
+    messages = Message.objects.defer("_message_data").retryable(max_retries)  # type: ignore
+    for message in messages:
+        enqueued += enqueue(message, "Retry sending the email.")
+    failed = len(messages) - enqueued
+    return enqueued, failed
+
+
+def queue_email_message(
+    email_message: EmailMessage, fail_silently: bool = False
+) -> int:
+    """
+    Add new messages to the email queue.
+
+    The ``email_message`` argument should be an instance of Django's core mail
+    ``EmailMessage`` class.
+
+    The ``fail_silently`` argument is not used and is only provided to match
+    the signature of the ``EmailMessage.send`` function which it may emulate.
+
+     Removes celery from the original :func:`django_yubin.queue_email_message`
+    """
+
+    if settings.MAILER_TEST_MODE and settings.MAILER_TEST_EMAIL:
+        email_message = _set_message_test_mode(
+            email_message, settings.MAILER_TEST_EMAIL
+        )
+
+    if not email_message.recipients():
+        logger.warning("no_recipients_added", extra={"email_message": email_message})
+        return 0
+
+    message = Message.objects.create(
+        to_address=",".join(email_message.to),
+        cc_address=",".join(email_message.cc),
+        bcc_address=",".join(email_message.bcc),
+        from_address=email_message.from_email,
+        subject=email_message.subject,
+        message_data=email_message.message().as_string(),
+        storage=settings.MAILER_STORAGE_BACKEND,
+    )
+    message.add_log("Message created")
+
+    return int(enqueue(message, "Enqueued from a Backend or django-yubin itself."))

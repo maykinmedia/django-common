@@ -58,6 +58,12 @@ Python API reference.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Celery Bypass
+
+   yubin
+
+.. toctree::
+   :maxdepth: 1
    :caption: Tests
 
    tests
