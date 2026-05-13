@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, ClassVar
 
 from django import forms
@@ -97,7 +99,7 @@ class PreventPrivilegeEscalationMixin(AdminMixinBase[UserModelT]):
 
     This mixin prevents such mechanisms.
 
-    Example usage, your ``admin.py`` for your (custom) user model:
+    Example usage, in your ``admin.py`` for your (custom) user model:
 
     .. code-block:: python
 
