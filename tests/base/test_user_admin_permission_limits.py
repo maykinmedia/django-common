@@ -8,7 +8,7 @@ protections against this, now implemented in maykin-common.
 
 from collections.abc import Callable
 
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Group, Permission, User
 from django.test import Client
 from django.urls import reverse
 
@@ -158,6 +158,29 @@ def test_can_change_user_as_user_with_more_permissions(
     )
 
     assert response.status_code == 302
+
+
+def test_cannot_give_own_user_more_permissions(
+    client: Client,
+    staff_user_with_auth_permissions: User,
+):
+    group = Group.objects.create(name="all permissions")
+    group.permissions.set(Permission.objects.all())
+    client.force_login(user=staff_user_with_auth_permissions)
+    url = reverse("admin:auth_user_change", args=(staff_user_with_auth_permissions.pk,))
+
+    response = client.post(
+        url,
+        {
+            "username": "example",
+            "date_joined_0": "2022-01-01",
+            "date_joined_1": "12:00:00",
+            "groups": str(group.pk),
+            "_save": "1",
+        },
+    )
+
+    assert response.status_code != 302
 
 
 def test_can_change_any_user_password_as_superuser(
