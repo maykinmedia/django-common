@@ -49,6 +49,7 @@ Features
    otel
    apis
    settings
+   yubin
    reference/index
    changelog
 

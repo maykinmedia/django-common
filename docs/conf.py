@@ -47,6 +47,7 @@ autodoc_mock_imports = [
     "vcr",
     "opentelemetry",
     "health_check",
+    "django_yubin",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
