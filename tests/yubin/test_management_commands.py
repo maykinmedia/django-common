@@ -4,6 +4,7 @@ from io import StringIO
 from multiprocessing import Process
 from pathlib import Path
 
+from django import VERSION as DJANGO_VERSION
 from django.core.management import call_command
 
 import pytest
@@ -94,6 +95,11 @@ def test_delete_old_output_days_param():
     assert Message.objects.count() == 1
 
 
+@pytest.mark.skipif(
+    DJANGO_VERSION >= (6, 0),
+    reason="django-yubin appears broken on Django 6.0+, producing multiple "
+    "Content-Transfer-Encoding headers",
+)
 def test_send_all_mails():
 
     create_message(
@@ -149,6 +155,11 @@ def test_send_all_mails_lockfile(
         assert message.status == Message.STATUS_QUEUED
 
 
+@pytest.mark.skipif(
+    DJANGO_VERSION >= (6, 0),
+    reason="django-yubin appears broken on Django 6.0+, producing multiple "
+    "Content-Transfer-Encoding headers",
+)
 def test_send_all_mails_lockfile_stale(lock_file: Path):
     message = create_message(
         to_address="test1@example.com",
