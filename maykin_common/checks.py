@@ -56,12 +56,11 @@ def check_privilege_escalation_prevention_enabled(
     """
     Test that the user account privilege escalation protections are enabled.
     """
-    run_check = (
-        app_configs is None
-        or any(c.name in ("maykin_common", "django.contrib.admin") for c in app_configs)
-        and apps.is_installed("django.contrib.admin")
+    app_check_requested = app_configs is None or any(
+        c.name in ("maykin_common", "django.contrib.admin") for c in app_configs
     )
-    if not run_check:
+    admin_installed = apps.is_installed("django.contrib.admin")
+    if not (app_check_requested and admin_installed):
         return []
 
     # look up which admin class is used for the user model
