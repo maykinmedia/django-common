@@ -24,6 +24,18 @@ You'll always want to install the base package, e.g.:
 
     uv pip install maykin-common
 
+
+And make sure to add it to ``INSTALLED_APPS``:
+
+.. code-block:: python
+
+    INSTALLED_APPS = [
+        ...,
+        "maykin_common",
+        ...
+    ]
+
+
 However, the usefulness increases with each extra. Each one of them is described below.
 
 .. tip:: default-project is pre-configured with the typical set of extras that apply

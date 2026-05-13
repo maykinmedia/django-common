@@ -13,7 +13,7 @@ def test_check_missing_init_files(settings):
     assert errors == [
         Warning(
             f"Directory {Path(__file__).resolve().parent}/missing_init does not "
-            "contain an `__init__.py` file missing_init",
+            "contain an `__init__.py` file missing_init.",
             hint="Consider adding this module to make sure tests are picked up",
             id="maykin.W001",
         )
