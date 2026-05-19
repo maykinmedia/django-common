@@ -156,6 +156,9 @@ Reading settings from the environment
 
 Use the :func:`maykin_common.config.config` helper.
 
+This configuration helper can be used together with Sphinx directives to generate documentation
+for environment variables, see :ref:`env_docs_helpers` for more information.
+
 Health checks
 -------------
 

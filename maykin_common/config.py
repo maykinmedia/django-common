@@ -1,7 +1,5 @@
 """
 Utilities to read and process configuration for a project.
-
-.. todo:: Incorporate the Team Bron documentation options for parameters.
 """
 
 from __future__ import annotations
@@ -9,15 +7,48 @@ from __future__ import annotations
 import csv
 import io
 from collections.abc import Callable, Sequence
-from typing import Literal, Never, assert_never, overload
+from dataclasses import dataclass
+from typing import Any, Literal, Never, assert_never, overload
 
 from decouple import Csv, Undefined, config as _config, undefined
 
-__all__ = ["config"]
+__all__ = ["config", "DocumentationParams"]
+
+
+@dataclass(slots=True)
+class DocumentationParams:
+    """
+    Dataclass to define the parameters for documentation generation for environment
+    variables loaded via the :func:`maykin_common.config.config` helper
+    """
+
+    help_text: str = ""
+    """
+    The description of this environment variable.
+    """
+    group: str | None = None
+    """
+    The name of the group this environment variable belongs to.
+    Defaults to "Required" or "Optional" depending on whether a ``default`` is passed.
+    """
+    add_to_docs: bool = True
+    """
+    Indicates whether this environment variable should be displayed in the
+    documentation.
+    """
+    auto_display_default: bool = True
+    """
+    Indicates whether the documentation directives should display the specified
+    default. Can be set to ``False`` if you want to manually specify a default.
+    """
+
+
+no_doc = DocumentationParams(add_to_docs=False)
+"""Shorthand to not include an environment variable in generated documentation"""
 
 
 @overload
-def config(option: str) -> str: ...
+def config(option: str, *, documentation: DocumentationParams | None = None) -> str: ...
 
 
 # discourage passing a str default with split=True
@@ -28,6 +59,7 @@ def config[T](
     default: str,
     split: Literal[True],
     cast: Callable[[str], T] | Undefined = undefined,
+    documentation: DocumentationParams | None = None,
 ) -> Never: ...
 
 
@@ -38,6 +70,7 @@ def config[T](
     default: Sequence[T],
     split: Literal[True],
     cast: Callable[[str], T] | Undefined = undefined,
+    documentation: DocumentationParams | None = None,
 ) -> list[T]: ...
 
 
@@ -48,6 +81,7 @@ def config(
     default: Undefined = undefined,
     split: Literal[True],
     cast: Undefined = undefined,
+    documentation: DocumentationParams | None = None,
 ) -> list[str]: ...
 
 
@@ -58,25 +92,43 @@ def config[T](
     default: Undefined = undefined,
     split: Literal[True],
     cast: Callable[[str], T],
+    documentation: DocumentationParams | None = None,
 ) -> list[T]: ...
 
 
 @overload
-def config(option: str, *, default: None) -> str | None: ...
-
-
-@overload
-def config[T](option: str, *, default: T | Undefined = undefined) -> T: ...
-
-
-# because we can't express difference / negation types: object \ None
-@overload
-def config(option: str, *, default: None, cast: Callable) -> Never: ...
+def config(
+    option: str, *, default: None, documentation: DocumentationParams | None = None
+) -> str | None: ...
 
 
 @overload
 def config[T](
-    option: str, *, default: str | Undefined = undefined, cast: Callable[[str], T]
+    option: str,
+    *,
+    default: T | Undefined = undefined,
+    documentation: DocumentationParams | None = None,
+) -> T: ...
+
+
+# because we can't express difference / negation types: object \ None
+@overload
+def config(
+    option: str,
+    *,
+    default: None,
+    cast: Callable,
+    documentation: DocumentationParams | None = None,
+) -> Never: ...
+
+
+@overload
+def config[T](
+    option: str,
+    *,
+    default: str | Undefined = undefined,
+    cast: Callable[[str], T],
+    documentation: DocumentationParams | None = None,
 ) -> T: ...
 
 
@@ -86,6 +138,7 @@ def config[T](
     default: T | Sequence[T] | None | str | Undefined = undefined,
     split: bool = False,
     cast: Callable[[str], T] | Undefined = undefined,
+    documentation: DocumentationParams | None = None,
 ) -> str | None | T | Sequence[T]:
     """
     Pull a config parameter from the environment.
@@ -117,7 +170,26 @@ def config[T](
         ...     default="123",
         ...     cast=lambda v: int(v) if v is not None else None,
         ... )  # typed as int | None
+
+    The ``documentation`` parameter is available to generate documentation for
+    environment variables with Sphinx directives provided by this library:
+
+    :param documentation: See :class:`maykin_common.config.DocumentationParams`
     """
+
+    if not documentation:
+        # Instantiate the defaults
+        documentation = DocumentationParams()
+
+    if documentation.add_to_docs:
+        variable = EnvironmentVariable(
+            name=option,
+            default=default,
+            help_text=documentation.help_text,
+            group=documentation.group,
+            auto_display_default=documentation.auto_display_default,
+        )
+        ENVVAR_REGISTRY[option] = variable
 
     if split:
         assert isinstance(default, Undefined | Sequence), (
@@ -185,3 +257,27 @@ def _dumps(given_default: Sequence) -> str:
     fd.seek(0)
     default = fd.read()
     return default
+
+
+ENVVAR_REQUIRED_GROUP = "Required"
+ENVVAR_OPTIONAL_GROUP = "Optional"
+
+
+@dataclass(slots=True)
+class EnvironmentVariable:
+    name: str
+    default: Any
+    help_text: str
+    group: str | None = None
+    auto_display_default: bool = True
+
+    def __post_init__(self):
+        if not self.group:
+            self.group = (
+                ENVVAR_REQUIRED_GROUP
+                if isinstance(self.default, Undefined)
+                else ENVVAR_OPTIONAL_GROUP
+            )
+
+
+ENVVAR_REGISTRY: dict[str, EnvironmentVariable] = {}
