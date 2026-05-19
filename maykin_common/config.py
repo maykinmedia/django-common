@@ -20,29 +20,31 @@ class DocumentationParams:
     """
     Dataclass to define the parameters for documentation generation for environment
     variables loaded via the :func:`maykin_common.config.config` helper
-
-    help_text : str
-        The description of this environment variable.
-    group : str, optional
-        The name of the group this environment variable belongs to.
-        Defaults to "Required" or "Optional" depending on whether a ``default``
-        is passed.
-    add_to_docs : bool, default ``True``
-        Indicates whether this environment variable should be displayed in the
-        documentation.
-    auto_display_default : bool, default ``True``
-        Indicates whether the documentation directives should display the specified
-        default. Can be set to ``False`` if you want to manually specify a default.
     """
 
     help_text: str = ""
+    """
+    The description of this environment variable.
+    """
     group: str | None = None
+    """
+    The name of the group this environment variable belongs to.
+    Defaults to "Required" or "Optional" depending on whether a ``default`` is passed.
+    """
     add_to_docs: bool = True
+    """
+    Indicates whether this environment variable should be displayed in the
+    documentation.
+    """
     auto_display_default: bool = True
+    """
+    Indicates whether the documentation directives should display the specified
+    default. Can be set to ``False`` if you want to manually specify a default.
+    """
 
 
-"""Shorthand to not include an environment variable in generated documentation"""
 no_doc = DocumentationParams(add_to_docs=False)
+"""Shorthand to not include an environment variable in generated documentation"""
 
 
 @overload
@@ -172,7 +174,7 @@ def config[T](
     The ``documentation`` parameter is available to generate documentation for
     environment variables with Sphinx directives provided by this library:
 
-    documentation (:class:`maykin_common.config.DocumentationParams`)
+    :param documentation: See :class:`maykin_common.config.DocumentationParams`
     """
 
     if not documentation:
