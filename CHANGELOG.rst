@@ -2,6 +2,32 @@
 Changelog
 =========
 
+0.19.0 (2026-05-20)
+===================
+
+Feature release.
+
+**💥 Breaking changes**
+
+* Dropped support for Django 4.2.
+
+**New features**
+
+* Confirmed support for Django 6.0.
+* Added custom django-yubin email backend for projects without Celery.
+* Added sphinx directives to generate envvar documentation from the ``config`` helper.
+* [#18] Ported the user account privilege escalation protections in the admin from
+  default project.
+
+**Project maintenance**
+
+* Dropped the (testing) chardet dependency.
+* Removed references to the ``coverage`` extra which no longer exists and was tripping
+  up tox.
+* Suppressed an upstream type error that trips Pyright.
+* Skip some yubin-related failing tests on Django 6.0+, see #74 for progress.
+* Improved supply chain security in our Github Actions usage, added Zizmor.
+
 0.18.0 (2026-02-12)
 ===================
 
