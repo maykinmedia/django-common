@@ -1,7 +1,7 @@
 Shared Django utilities
 =======================
 
-:Version: 0.18.0
+:Version: 0.19.0
 
 |build-status| |code-quality| |ruff| |coverage| |docs|
 
