@@ -45,6 +45,33 @@ However, the usefulness increases with each extra. Each one of them is described
 
        uv pip install maykin-common[axes,mfa,health-checks,cli]
 
+In existing projects
+--------------------
+
+When adding maykin-common to existing projects that were generated from default project,
+you may need some additional installation steps.
+
+Add the privilege escalation mixin
+""""""""""""""""""""""""""""""""""
+
+Locate ``accounts/admin.py`` in your project and replace the custom ``UserAdmin`` there
+with:
+
+.. code-block:: python
+
+    ...
+    from maykin_common.accounts.admin import PreventPrivilegeEscalationMixin
+    ...
+
+
+    @admin.register(User)
+    class UserAdmin(PreventPrivilegeEscalationMixin, _UserAdmin):
+        hijack_success_url = reverse_lazy("root")  # if hijack is used of course
+
+
+You can delete the custom ``UserChangeForm`` and the ``get_form`` /
+``user_change_password`` methods, that's covered by the mixin now.
+
 MFA
 ---
 
