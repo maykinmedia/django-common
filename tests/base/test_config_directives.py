@@ -50,7 +50,7 @@ def test_config_param():
 
     doc = parse_rst(rst)
 
-    expected = "* DISABLE_2FA: disable 2fa. Defaults to: False.<br>"
+    expected = "DISABLE_2FA: disable 2fa. Defaults to: False.<br>"
 
     assert expected == doc
 
@@ -69,7 +69,7 @@ def test_config_param_override_default():
 
     doc = parse_rst(rst)
 
-    expected = "* DISABLE_2FA: disable 2fa. Defaults to: True.<br>"
+    expected = "DISABLE_2FA: disable 2fa. Defaults to: True.<br>"
 
     assert expected == doc
 
@@ -90,7 +90,7 @@ def test_config_param_do_not_display_default():
 
     doc = parse_rst(rst)
 
-    expected = "* DISABLE_2FA: disable 2fa.<br>"
+    expected = "DISABLE_2FA: disable 2fa.<br>"
 
     assert expected == doc
 
@@ -106,7 +106,7 @@ def test_config_param_default_empty_string():
 
     doc = parse_rst(rst)
 
-    expected = "* SUBPATH: subpath. Defaults to: (empty string).<br>"
+    expected = "SUBPATH: subpath. Defaults to: (empty string).<br>"
 
     assert expected == doc
 
@@ -120,7 +120,7 @@ def test_config_param_missing_help_text():
 
     doc = parse_rst(rst)
 
-    expected = "* DISABLE_2FA:  Defaults to: False.<br>"
+    expected = "DISABLE_2FA:  Defaults to: False.<br>"
 
     assert expected == doc
 
@@ -136,12 +136,12 @@ def test_config_param_no_default(monkeypatch):
 
     doc = parse_rst(rst)
 
-    expected = "* SOME_VAR: some var.<br>"
+    expected = "SOME_VAR: some var.<br>"
 
     assert expected == doc
 
 
-def test_config_param_variable_does_not_exist(monkeypatch):
+def test_config_param_variable_does_not_exist():
     rst = textwrap.dedent("""
         .. config-param:: NON_EXISTENT_VAR
     """)
@@ -174,8 +174,9 @@ def test_config_group():
     doc = parse_rst(rst)
 
     expected = (
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>"
+        "DB_USER: db username. Defaults to: foo.<br>"
+        "\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
     assert expected == doc
@@ -229,8 +230,9 @@ def test_config_group_do_not_add_var_to_docs():
     doc = parse_rst(rst)
 
     expected = (
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>"
+        "DB_USER: db username. Defaults to: foo.<br>"
+        "\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
     assert expected == doc
@@ -266,8 +268,9 @@ def test_config_group_members():
     doc = parse_rst(rst)
 
     expected = (
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>"
+        "DB_USER: db username. Defaults to: foo.<br>"
+        "\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
     assert expected == doc
@@ -303,8 +306,9 @@ def test_config_group_exclude_params():
     doc = parse_rst(rst)
 
     expected = (
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>"
+        "DB_USER: db username. Defaults to: foo.<br>"
+        "\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
     assert expected == doc
@@ -329,7 +333,7 @@ def test_config_all_params():
     config(
         "ALLOWED_HOSTS",
         split=True,
-        default="",
+        default=[],
         documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
     config(
@@ -346,12 +350,12 @@ def test_config_all_params():
 
     expected = (
         "Required\n\n"
-        "* ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
+        "ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
         "Database\n\n"
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>\n\n"
+        "DB_USER: db username. Defaults to: foo.<br>\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>\n\n"
         "Optional\n\n"
-        "* SESSION_COOKIE_AGE: session cookie age. Defaults to: 1234.<br>"
+        "SESSION_COOKIE_AGE: session cookie age. Defaults to: 1234.<br>"
     )
 
     assert expected == doc
@@ -371,7 +375,7 @@ def test_config_all_params_cannot_use_members_groups_and_exclude_groups_together
     config(
         "ALLOWED_HOSTS",
         split=True,
-        default="",
+        default=[],
         documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
     config(
@@ -404,7 +408,7 @@ def test_config_all_params_exclude_groups():
     config(
         "ALLOWED_HOSTS",
         split=True,
-        default="",
+        default=[],
         documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
     config(
@@ -436,7 +440,7 @@ def test_config_all_params_exclude_groups():
     doc = parse_rst(rst)
 
     expected = (
-        "Required\n\n* ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>"
+        "Required\n\nALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>"
     )
 
     assert expected == doc
@@ -456,7 +460,7 @@ def test_config_all_params_members_groups():
     config(
         "ALLOWED_HOSTS",
         split=True,
-        default="",
+        default=[],
         documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
     config(
@@ -474,10 +478,10 @@ def test_config_all_params_members_groups():
 
     expected = (
         "Required\n\n"
-        "* ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
+        "ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
         "Database\n\n"
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>"
+        "DB_USER: db username. Defaults to: foo.<br>\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
     assert expected == doc
@@ -524,10 +528,10 @@ def test_config_all_params_exclude_params():
 
     expected = (
         "Database\n\n"
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>\n\n"
+        "DB_USER: db username. Defaults to: foo.<br>\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>\n\n"
         "Optional\n\n"
-        "* SESSION_COOKIE_AGE: session cookie age. Defaults to: 1234.<br>"
+        "SESSION_COOKIE_AGE: session cookie age. Defaults to: 1234.<br>"
     )
 
     assert expected == doc
@@ -547,7 +551,7 @@ def test_config_all_params_do_not_add_param_to_docs():
     config(
         "ALLOWED_HOSTS",
         split=True,
-        default="",
+        default=[],
         documentation=DocumentationParams(help_text="allowed hosts", group="Required"),
     )
     config(
@@ -567,10 +571,10 @@ def test_config_all_params_do_not_add_param_to_docs():
 
     expected = (
         "Required\n\n"
-        "* ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
+        "ALLOWED_HOSTS: allowed hosts. Defaults to: (empty string).<br>\n\n"
         "Database\n\n"
-        "* DB_USER: db username. Defaults to: foo.<br>"
-        "* DB_PASSWORD: db password. Defaults to: bar.<br>"
+        "DB_USER: db username. Defaults to: foo.<br>\n\n"
+        "DB_PASSWORD: db password. Defaults to: bar.<br>"
     )
 
     assert expected == doc
