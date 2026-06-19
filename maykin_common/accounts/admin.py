@@ -13,6 +13,7 @@ from .privilege_escalation_prevention import (
     check_max_user_permissions,
     check_privilege_escalation_attempt,
 )
+from .typing import PermissionAwareUser
 
 # yes, this means all the rest is *private* API
 __all__ = ["PreventPrivilegeEscalationMixin"]
@@ -33,7 +34,7 @@ else:
 
 
 class PreventPrivilegeEscalationFormMixin(FormMixinBase):
-    current_user: ClassVar[AbstractUser]
+    current_user: ClassVar[PermissionAwareUser]
     """
     The user of the current admin request, i.e. the authenticated user making changes.
 
@@ -54,6 +55,7 @@ class PreventPrivilegeEscalationFormMixin(FormMixinBase):
     def clean(self):
         super().clean()
         target_user = self.instance
+        assert isinstance(target_user, PermissionAwareUser)
 
         user_permissions = self.cleaned_data.get(
             "user_permissions", Permission.objects.none()
@@ -151,8 +153,9 @@ class PreventPrivilegeEscalationMixin(AdminMixinBase[UserModelT]):
 
     def user_change_password(self, request: HttpRequest, id: str, form_url: str = ""):
         target_user = self.get_object(request, unquote(id))
-        assert isinstance(target_user, AbstractUser)
-        assert isinstance(request.user, AbstractUser)
+        assert isinstance(target_user, PermissionAwareUser)
+        assert isinstance(request.user, PermissionAwareUser)
+
         try:
             check_max_user_permissions(
                 acting_user=request.user, target_user=target_user

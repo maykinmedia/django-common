@@ -1,12 +1,14 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet, Value
 from django.db.models.functions import Concat
 from django.utils.translation import gettext as _
 
+from .typing import PermissionAwareUser
+
 
 def check_privilege_escalation_attempt(
-    acting_user: AbstractUser,
+    acting_user: PermissionAwareUser,
     other_permissions: QuerySet[Permission],
     other_groups: QuerySet[Group],
     other_is_superuser: bool,
@@ -58,8 +60,8 @@ def check_privilege_escalation_attempt(
 
 def check_max_user_permissions(
     *,
-    acting_user: AbstractUser,
-    target_user: AbstractUser,
+    acting_user: PermissionAwareUser,
+    target_user: PermissionAwareUser,
 ) -> None:
     """
     Ensure that the target user does not have more permissions than the acting user.
