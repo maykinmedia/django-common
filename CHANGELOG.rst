@@ -2,6 +2,15 @@
 Changelog
 =========
 
+0.19.1 (2026-06-23)
+===================
+
+Bugfix release.
+
+* Fixed envvar documentation generation to output bullet lists.
+* Fixed crash due to wrong ``User`` base class assertion being used.
+* Fixed typing/import linting setup and bug in test case.
+
 0.19.0 (2026-05-20)
 ===================
 
