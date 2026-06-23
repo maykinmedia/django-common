@@ -8,7 +8,7 @@ import csv
 import io
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal, Never, assert_never, overload
+from typing import Literal, Never, assert_never, overload
 
 from decouple import Csv, Undefined, config as _config, undefined
 
@@ -266,7 +266,7 @@ ENVVAR_OPTIONAL_GROUP = "Optional"
 @dataclass(slots=True)
 class EnvironmentVariable:
     name: str
-    default: Any
+    default: object
     help_text: str
     group: str | None = None
     auto_display_default: bool = True

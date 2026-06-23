@@ -23,7 +23,7 @@ import os
 from collections.abc import Callable, Collection
 from contextlib import AbstractContextManager
 from pathlib import Path
-from typing import Any, ClassVar, Protocol, override
+from typing import ClassVar, Protocol, override
 
 from django.test import SimpleTestCase, TestCase, TransactionTestCase, tag
 
@@ -52,7 +52,7 @@ class _VCRTestCase(Protocol):
     def _get_cassette_name(self) -> str: ...
     def _get_vcr(self, **kwargs) -> VCR: ...
     # TypedDict is almost as cursed as Protocol :(
-    def _get_vcr_kwargs(self, **kwargs) -> dict[str, Any]: ...
+    def _get_vcr_kwargs(self, **kwargs) -> dict[str, object]: ...
 
 
 class VCRMixin(_VCRMixin):
@@ -152,7 +152,7 @@ class VCRMixin(_VCRMixin):
         # change the tests (iff it doesn't do anything with the Error arguments).
 
         kwargs = self._get_vcr_kwargs()
-        hook: _VCRBRRHook = kwargs.get("before_record_request") or (lambda _: None)
+        hook: _VCRBRRHook = kwargs.get("before_record_request") or (lambda _: None)  # pyright: ignore[reportAssignmentType]
 
         def raise_exception(request):
             # perform configured hook first

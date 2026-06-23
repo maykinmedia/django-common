@@ -1,6 +1,5 @@
-from typing import Any
-
 from django import template
+from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 
@@ -21,7 +20,7 @@ def show_version_info():
 
 
 @register.simple_tag(takes_context=True)
-def show_environment_info(context: dict[str, Any]) -> str:
+def show_environment_info(context: dict[str, object]) -> str:
     """
     Template that show the current ENVIRONMENT to an authenticated user.
 
@@ -29,7 +28,9 @@ def show_environment_info(context: dict[str, Any]) -> str:
     """
     if not get_setting("SHOW_ENVIRONMENT"):
         return ""
-    if (user := context.get("user")) is None or not user.is_authenticated:
+    user = context.get("user")
+    assert isinstance(user, None | AbstractBaseUser | AnonymousUser)
+    if user is None or not user.is_authenticated:
         return ""
 
     style_tokens = {
