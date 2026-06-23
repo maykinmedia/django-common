@@ -64,9 +64,9 @@ def document_param(
     :arg default: an optional override for the default of the environment variable
     :returns: the node with a list item to document the environment variable
     """
-    para = nodes.inline()
+    para = nodes.paragraph()
 
-    result = f"* ``{var.name}``: "
+    result = f"``{var.name}``: "
 
     if var.help_text:
         result += var.help_text
@@ -78,9 +78,17 @@ def document_param(
     if var.auto_display_default:
         # Use explicitly provided default to override the default defined in code
         default_value = default if default is not undefined else var.default
-        if default_value is not undefined:
-            text = "(empty string)" if default_value == "" else str(default_value)
-            result += f" Defaults to: ``{text}``."
+        match default_value:
+            case Undefined():
+                pass
+            case "" | []:
+                result += " Defaults to: ``(empty string)``."
+            case str(text):
+                result += f" Defaults to: ``{text}``."
+            case [*values]:
+                result += f" Defaults to: ``{','.join(map(str, values))}``."
+            case other:
+                result += f" Defaults to: ``{other}``."
 
     # Make sure the line is rendered as rST
     vl = ViewList()
@@ -91,7 +99,9 @@ def document_param(
     # TODO cleaner way to do this?
     para += nodes.raw("", "<br>", format="html")
 
-    return para
+    item = nodes.list_item()
+    item += para
+    return item
 
 
 def document_group(
@@ -104,10 +114,10 @@ def document_group(
     :arg state: the reStructuredText state machine state
     :returns: the node with list items to document the environment variables
     """
-    para = nodes.paragraph()
+    bullet_list = nodes.bullet_list()
     for var in group:
-        para += document_param(var, state)
-    return para
+        bullet_list += document_param(var, state)
+    return bullet_list
 
 
 class ConfigParamDirective(Directive):
