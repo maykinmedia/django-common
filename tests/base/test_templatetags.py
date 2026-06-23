@@ -14,7 +14,7 @@ def _render_environment_info(context=None):
     return tpl.render(Context(context or {})).strip()
 
 
-def test_environment_disabled(settings):
+def test_environment_disabled(settings, admin_user: User):
     settings.SHOW_ENVIRONMENT = False
 
     # without user
@@ -22,11 +22,11 @@ def test_environment_disabled(settings):
     assert result == ""
 
     # with user
-    result = _render_environment_info({"user": User})
+    result = _render_environment_info({"user": admin_user})
     assert result == ""
 
 
-def test_environment_enabled(settings):
+def test_environment_enabled(settings, admin_user: User):
     settings.SHOW_ENVIRONMENT = True
     settings.ENVIRONMENT_BACKGROUND_COLOR = "orange"
     settings.ENVIRONMENT_FOREGROUND_COLOR = "black"
@@ -38,7 +38,7 @@ def test_environment_enabled(settings):
 
     # with user
 
-    result = _render_environment_info({"user": User})
+    result = _render_environment_info({"user": admin_user})
     assert result != ""
     assertInHTML("my super duper env", result)
 

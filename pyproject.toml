@@ -171,6 +171,10 @@ extend-select = [
     "F",   # pyflakes
     "PERF",# perflint
     "B",   # flake8-bugbear
+    "TID251",# tidy-imports
+    "TID253",
+    # RUFF specific rules
+    "RUF018", # assignment in assert
 ]
 
 [tool.ruff.lint.isort]
@@ -186,3 +190,7 @@ section-order = [
 
 [tool.ruff.lint.isort.sections]
 "django" = ["django"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"typing.cast".msg = "Casting is an anti-pattern, use `assert isinstance(...)` instead, or suppress the error."
+"typing.Any".msg = "Any is an anti-pattern, use a real type instead, or if that's not possible, use 'object'."
