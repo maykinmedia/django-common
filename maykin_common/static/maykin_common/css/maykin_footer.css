@@ -1,0 +1,18 @@
+.maykin_footer {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'branding'
+    'version-info'
+  ;
+  row-gap: 4px;
+
+  .maykin_footer__branding {
+    grid-area: branding;
+  }
+
+  .maykin_footer__version-info {
+    grid-area: version-info;
+  }
+}

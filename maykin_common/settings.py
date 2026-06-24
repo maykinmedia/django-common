@@ -3,6 +3,8 @@ from typing import Literal
 
 from django.conf import settings
 
+from .branding import ProductDefinition
+
 GOOGLE_ANALYTICS_ID = None
 """
 Google analytics id added to the request context.
@@ -109,6 +111,11 @@ MKN_YUBIN_LOCK_PATH: Path = Path("/tmp") / "send_mail"
 Path to the lockfile used to prevent race conditions when sending queued messages.
 """
 
+MKN_BRANDING_PRODUCT_DEFINITION: ProductDefinition | None = None
+"""
+Metadata of the white label product as developed by Maykin.
+"""
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -125,6 +132,7 @@ type SettingName = Literal[
     "MKN_HEALTH_CHECKS_WORKER_EVENT_LOOP_PROBE_FREQUENCY_SECONDS",
     "MKN_HEALTH_CHECKS_WORKER_READINESS_FILE",
     "MKN_YUBIN_LOCK_PATH",
+    "MKN_BRANDING_PRODUCT_DEFINITION",
 ]
 
 

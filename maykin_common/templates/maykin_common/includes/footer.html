@@ -1,0 +1,16 @@
+{% load static maykin_common %}
+{# Standard/default admin footer layout for our projects #}
+{# Django 5.2 already has an outer <footer id="footer"> element #}
+
+<link rel="stylesheet" href="{% static 'maykin_common/css/maykin_footer.css' %}">
+<div class="maykin_footer">
+    <div class="maykin_footer__branding">
+        {% show_product_branding %}
+    </div>
+
+    {% if user.is_authenticated and user.is_staff %}
+        <div class="maykin_footer__version-info">
+            {% show_version_info %}
+        </div>
+    {% endif %}
+</div>

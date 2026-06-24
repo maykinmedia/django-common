@@ -8,6 +8,17 @@ from maykin_common.settings import get_setting
 register = template.Library()
 
 
+@register.inclusion_tag("maykin_common/includes/product_branding.html")
+def show_product_branding():
+    """
+    Template displaying the product branding.
+    """
+    product_definition = get_setting("MKN_BRANDING_PRODUCT_DEFINITION")
+    return {
+        "product_definition": product_definition,
+    }
+
+
 @register.inclusion_tag("maykin_common/includes/version_info.html")
 def show_version_info():
     """
