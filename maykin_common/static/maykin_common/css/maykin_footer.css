@@ -1,3 +1,4 @@
+/* Footer parent container, contains the branding and version information */
 .maykin_footer {
   display: grid;
   grid-template-columns: 1fr;
@@ -14,4 +15,51 @@
     padding-inline: 20px;
     padding-block: 15px;
   }
+}
+
+/* Product branding row in the footer  */
+.product-branding {
+  color: var(--body-quiet-color);
+
+  display: flex;
+  flex-direction: row;
+  column-gap: 1em;
+  align-items: center;
+
+  a:not(:has(img)) {
+    color: var(--body-quiet-color);
+    text-decoration: underline;
+  }
+
+  .product-branding__part {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 4px;
+  }
+
+  .product-branding__logo {
+
+    &.product-branding__logo--maykin {
+      max-block-size: var(--mkn-product-branding-logo-maykin-max-block-size, 24px);
+    }
+
+    &.product-branding__logo--favicon {
+      max-block-size: var(--mkn-product-branding-logo-favicon-max-block-size, 24px);
+    }
+  }
+
+  .product-branding__logo-link {
+    line-height: 0;
+  }
+}
+
+/* Version information in the footer.  */
+
+.version {
+  color: var(--body-fg);
+  font-size: smaller;
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
 }
