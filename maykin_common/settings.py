@@ -3,7 +3,7 @@ from typing import Literal
 
 from django.conf import settings
 
-from .branding import DerivedProductDefinition, ProductDefinition
+from .branding import ProductDefinition
 
 GOOGLE_ANALYTICS_ID = None
 """
@@ -116,7 +116,7 @@ MKN_BRANDING_PRODUCT_DEFINITION: ProductDefinition | None = None
 Metadata of the white label product as developed by Maykin.
 """
 
-MKN_BRANDING_DERIVED_PRODUCT_DEFINITION: DerivedProductDefinition | None = None
+MKN_BRANDING_DERIVED_PRODUCT_DEFINITION: ProductDefinition | None = None
 """
 Metadata of the derived product.
 """

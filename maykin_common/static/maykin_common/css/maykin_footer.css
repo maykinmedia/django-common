@@ -23,19 +23,12 @@
 
   display: flex;
   flex-direction: row;
-  column-gap: 1em;
+  column-gap: 4px;
   align-items: center;
 
   a:not(:has(img)) {
     color: var(--body-quiet-color);
     text-decoration: underline;
-  }
-
-  .product-branding__part {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    column-gap: 4px;
   }
 
   .product-branding__logo {
