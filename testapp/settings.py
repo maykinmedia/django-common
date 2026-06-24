@@ -1,3 +1,4 @@
+import importlib.metadata
 import importlib.util
 from pathlib import Path
 
@@ -74,7 +75,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -104,6 +105,12 @@ DJANGO_PROJECT_DIR = BASE_DIR
 LOGIN_URLS = [reverse_lazy("admin:login")]
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"
+
+#
+# CUSTOM maykin-common settings
+#
+RELEASE = importlib.metadata.version("maykin_common")
+GIT_SHA = "(unset)"
 
 #
 # CUSTOM health check settings

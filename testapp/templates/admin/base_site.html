@@ -1,0 +1,9 @@
+{% extends "admin/base_site.html" %}
+{% load static maykin_common %}
+
+{# Django 5.2 puts this block inside the <footer id="footer"> element #}
+{% block footer %}
+    {% if user.is_authenticated and user.is_staff %}
+        {% show_version_info %}
+    {% endif %}
+{% endblock %}
