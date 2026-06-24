@@ -1,9 +1,9 @@
 .version {
   color: var(--body-fg);
-  padding: 0 30px;
   font-size: smaller;
   display: flex;
   flex-direction: column;
+  row-gap: 4px;
 }
 
 .env-info {
