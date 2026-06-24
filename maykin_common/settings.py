@@ -3,7 +3,7 @@ from typing import Literal
 
 from django.conf import settings
 
-from .branding import ProductDefinition
+from .branding import DerivedProductDefinition, ProductDefinition
 
 GOOGLE_ANALYTICS_ID = None
 """
@@ -116,6 +116,11 @@ MKN_BRANDING_PRODUCT_DEFINITION: ProductDefinition | None = None
 Metadata of the white label product as developed by Maykin.
 """
 
+MKN_BRANDING_DERIVED_PRODUCT_DEFINITION: DerivedProductDefinition | None = None
+"""
+Metadata of the derived product.
+"""
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -133,6 +138,7 @@ type SettingName = Literal[
     "MKN_HEALTH_CHECKS_WORKER_READINESS_FILE",
     "MKN_YUBIN_LOCK_PATH",
     "MKN_BRANDING_PRODUCT_DEFINITION",
+    "MKN_BRANDING_DERIVED_PRODUCT_DEFINITION",
 ]
 
 

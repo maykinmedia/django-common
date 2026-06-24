@@ -5,6 +5,8 @@ from django.utils.safestring import mark_safe
 
 from maykin_common.settings import get_setting
 
+from ..branding import DerivedProductDefinition, ProductDefinition
+
 register = template.Library()
 
 
@@ -13,9 +15,21 @@ def show_product_branding():
     """
     Template displaying the product branding.
     """
-    product_definition = get_setting("MKN_BRANDING_PRODUCT_DEFINITION")
+    product_definition: ProductDefinition | None = get_setting(
+        "MKN_BRANDING_PRODUCT_DEFINITION"
+    )
+    derived_product_definition: DerivedProductDefinition | None = get_setting(
+        "MKN_BRANDING_DERIVED_PRODUCT_DEFINITION"
+    )
+
+    if derived_product_definition is not None:
+        assert product_definition is not None, (
+            "Both derived and white label product definitions must be provided"
+        )
+        derived_product_definition.derived_from = product_definition
+
     return {
-        "product_definition": product_definition,
+        "product_definition": derived_product_definition or product_definition,
     }
 
 

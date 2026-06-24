@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.urls import reverse_lazy
 
-from maykin_common.branding import ProductDefinition
+from maykin_common.branding import DerivedProductDefinition, ProductDefinition
 from maykin_common.config import config
 
 if importlib.util.find_spec("health_check") is not None:
@@ -146,5 +146,11 @@ MKN_HEALTH_CHECKS_WORKER_READINESS_FILE = config(
 MKN_BRANDING_PRODUCT_DEFINITION = ProductDefinition(
     name="Maykin Common",
     repository_link="https://github.com/maykinmedia/django-common",
+    logo_path="maykin_common/ico/favicon-32x32.png",
+)
+
+MKN_BRANDING_DERIVED_PRODUCT_DEFINITION = DerivedProductDefinition(
+    name="Derived Common",
+    hyperlink="https://github.com/maykinmedia/django-common",
     logo_path="maykin_common/ico/favicon-32x32.png",
 )

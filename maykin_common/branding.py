@@ -1,5 +1,5 @@
 import textwrap
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from django.templatetags.static import static
@@ -50,11 +50,11 @@ class ProductDefinition:
 
     logo_path: str = ""
     """
-    (Relative) path to the static asset of the fagicon logo.
+    (Relative) path to the static asset of the favicon logo.
 
     The path is fed into the ``{% static %}`` template tag, so the asset should be
     included in your staticfiles. The file should be favicon-sized. CSS will apply
-    maximum block and inline sizes too.
+    maximum block sizes too.
     """
 
     def as_html(self) -> SafeString:
@@ -96,4 +96,67 @@ class ProductDefinition:
             product_logo=logo_markup,
             product_name=name,
             maykin=get_maykin_logo(),
+        )
+
+
+@dataclass
+class DerivedProductDefinition:
+    """
+    Metadata about the product derived from the white-label product.
+    """
+
+    name: str
+    """
+    Custom name for the product.
+    """
+
+    hyperlink: str = ""
+    """
+    Optional hyperlink, will make the product name clickable if provided.
+    """
+
+    logo_path: str = ""
+    """
+    (Relative) path to the static asset of the favicon logo.
+
+    The path is fed into the ``{% static %}`` template tag, so the asset should be
+    included in your staticfiles. The file should be favicon-sized. CSS will apply
+    maximum block sizes too.
+    """
+
+    derived_from: ProductDefinition | None = field(init=False, default=None)
+
+    def as_html(self) -> SafeString:
+        """
+        Build up the complex HTML structure while making sure to escape untrusted input.
+        """
+        logo_markup: SafeString | Literal[""] = (
+            format_html(
+                """
+            <img
+                src="{src}"
+                alt="{alt}"
+                class="product-branding__logo product-branding__logo--favicon"
+            >""",
+                src=static(path),
+                alt=_("Favicon of the product {name}").format(name=self.name),
+            )
+            if (path := self.logo_path)
+            else ""
+        )
+
+        name: SafeString = escape(self.name)
+        if href := self.hyperlink:
+            name = format_html(
+                '<a href="{href}" target="_blank" rel="noopener nofollower">{name}</a>',
+                href=href,
+                name=name,
+            )
+
+        assert self.derived_from is not None
+        return format_html(
+            _("{product_logo} <span>{product_name}, powered by</span> {powered_by}"),
+            product_logo=logo_markup,
+            product_name=name,
+            powered_by=self.derived_from.as_html(),
         )
