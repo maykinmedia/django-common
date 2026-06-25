@@ -1,6 +1,14 @@
 from django.test.client import RequestFactory
 
+import pytest
+
 from maykin_common.context_processors import settings as context_processors_settings
+
+
+@pytest.fixture(autouse=True)
+def empty_release_settings(settings):
+    settings.RELEASE = None
+    settings.GIT_SHA = None
 
 
 def test_settings(settings):
