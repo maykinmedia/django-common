@@ -18,7 +18,7 @@ parameter, which has the following attributes:
 
 .. code:: python
 
-    from maykin_common.config_helpers import config, DocumentationParams
+    from maykin_common.config import config, DocumentationParams
 
     ALLOWED_HOSTS = config(
         "ALLOWED_HOSTS",
@@ -38,7 +38,7 @@ can be used:
 
 .. code:: python
 
-    from maykin_common.config_helpers import config, no_doc
+    from maykin_common.config import config, no_doc
 
     VARIABLE_TO_BE_EXCLUDED = config(
         "VARIABLE_TO_BE_EXCLUDED",
