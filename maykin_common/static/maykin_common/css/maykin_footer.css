@@ -34,7 +34,7 @@
   .product-branding__logo {
 
     &.product-branding__logo--maykin {
-      max-block-size: var(--mkn-product-branding-logo-maykin-max-block-size, 24px);
+      max-block-size: var(--mkn-product-branding-logo-maykin-max-block-size, 20px);
     }
 
     &.product-branding__logo--favicon {
