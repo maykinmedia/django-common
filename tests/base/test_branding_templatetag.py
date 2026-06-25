@@ -94,6 +94,29 @@ def test_logo_rendered_and_product_name_clickable_link(settings):
     )
 
 
+def test_logo_rendered_with_url_and_path_configured(settings):
+    settings.MKN_BRANDING_PRODUCT_DEFINITION = ProductDefinition(
+        name="Product name",
+        hyperlink="https://example.com",
+        logo_path="maykin_common/ico/favicon.png",
+        logo_url="/media/some-icon.png",
+    )
+    settings.MKN_BRANDING_DERIVED_PRODUCT_DEFINITION = None
+
+    result = _render_product_branding()
+
+    assertInHTML(
+        """
+        <img
+            src="/media/some-icon.png"
+            alt="Favicon of the product Product name"
+            class="product-branding__logo product-branding__logo--favicon"
+        >
+        """,
+        result,
+    )
+
+
 def test_minimal_product_definition_with_custom_product(settings):
     settings.MKN_BRANDING_PRODUCT_DEFINITION = ProductDefinition(name="Product name")
     settings.MKN_BRANDING_DERIVED_PRODUCT_DEFINITION = ProductDefinition(

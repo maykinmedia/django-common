@@ -57,13 +57,25 @@ class ProductDefinition:
     maximum block sizes too.
     """
 
+    logo_url: str = ""
+    """
+    URL to the logo asset/icon.
+
+    Can be a fully qualified URL, or an absolute path to an asset hosted by the
+    application. Note that you may need to tweak your Content-Security-Policy if using
+    a URL.
+
+    If both the logo URL and path are specified, the URL has precedence.
+    """
+
     def __post_init__(self):
         self.name = escape(self.name)
 
     def get_logo_markup(self) -> SafeString | Literal[""]:
-        if not (path := self.logo_path):
+        url = self.logo_url
+        path = self.logo_path
+        if not url and not path:
             return ""
-
         return format_html(
             """
         <img
@@ -71,7 +83,7 @@ class ProductDefinition:
             alt="{alt}"
             class="product-branding__logo product-branding__logo--favicon"
         >""",
-            src=static(path),
+            src=url or static(path),
             alt=_("Favicon of the product {name}").format(name=self.name),
         )
 
