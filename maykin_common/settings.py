@@ -114,11 +114,17 @@ Path to the lockfile used to prevent race conditions when sending queued message
 MKN_BRANDING_PRODUCT_DEFINITION: ProductDefinition | None = None
 """
 Metadata of the white label product as developed by Maykin.
+
+See :ref:`reference_branding` for details.
 """
 
 MKN_BRANDING_DERIVED_PRODUCT_DEFINITION: ProductDefinition | None = None
 """
 Metadata of the derived product.
+
+:attr:`MKN_BRANDING_PRODUCT_DEFINITION` must be defined for this to have any effect.
+
+See :ref:`reference_branding` for details.
 """
 
 type SettingName = Literal[
