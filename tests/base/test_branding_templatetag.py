@@ -1,9 +1,11 @@
 from collections.abc import Mapping
 
 from django.template import Context, Template
+from django.test import Client
+from django.urls import reverse
 
 import pytest
-from pytest_django.asserts import assertInHTML
+from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from maykin_common.branding import ProductDefinition
 
@@ -203,3 +205,18 @@ def test_renders_both_logos_and_links(settings):
         """,
         result,
     )
+
+
+def test_no_footer_displayed_on_admin_login_page(settings, client: Client):
+    settings.MKN_BRANDING_PRODUCT_DEFINITION = ProductDefinition(
+        name="Product name",
+        hyperlink="https://example.com/white-label",
+        logo_path="maykin_common/ico/favicon.png",
+    )
+    admin_login_url = reverse("admin:login")
+
+    response = client.get(admin_login_url)
+
+    assertTemplateUsed(response, "admin/login.html")
+    assertInHTML('<footer id="footer"></footer>', response.text)
+    assert "Product name" not in response.text
