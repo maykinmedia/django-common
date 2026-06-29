@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.19.1\n"
+"Project-Id-Version: 0.20.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20 03:51-0500\n"
+"POT-Creation-Date: 2026-06-29 07:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: accounts/privilege_escalation_prevention.py:38
+#: accounts/privilege_escalation_prevention.py:40
 msgid "You need to be superuser to create other superusers."
 msgstr "Je moet supergebruiker zijn om anderen supergebruiker te kunnen maken."
 
-#: accounts/privilege_escalation_prevention.py:55
+#: accounts/privilege_escalation_prevention.py:57
 msgid "You cannot create or update a user with more permissions than yourself."
-msgstr "Je kan geen gebruiker maken of bijwerken die meer rechten krijgt dan jezelf."
+msgstr ""
+"Je kan geen gebruiker maken of bijwerken die meer rechten krijgt dan jezelf."
+
+#: branding.py:87
+#, python-brace-format
+msgid "Favicon of the product {name}"
+msgstr "Favicon van het product {name}"
 
 #: templates/maykin_common/api/includes/footer.html:34
 #, python-format
@@ -82,3 +88,15 @@ msgstr "versie %(RELEASE)s"
 #, python-format
 msgid "GIT SHA: %(GIT_SHA)s"
 msgstr "GIT SHA: %(GIT_SHA)s"
+
+#: templatetags/maykin_common.py:36
+#, python-brace-format
+msgid "{product_logo} <span>{product_name}, developed by</span> {maykin}"
+msgstr "{product_logo} <span>{product_name}, ontwikkeld door</span> {maykin}"
+
+#: templatetags/maykin_common.py:47
+#, python-brace-format
+msgid "{product_logo} <span>{product_name}is powered by</span> {powered_by}"
+msgstr ""
+"{product_logo} <span>{product_name} is mogelijk gemaakt door</span> "
+"{powered_by}"

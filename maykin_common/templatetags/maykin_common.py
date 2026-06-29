@@ -44,7 +44,7 @@ def show_product_branding() -> SafeString | Literal[""]:
     )
     if derived_product_definition is not None:
         product_branding = format_html(
-            _("{product_logo} <span>{product_name}, powered by</span> {powered_by}"),
+            _("{product_logo} <span>{product_name}is powered by</span> {powered_by}"),
             product_logo=derived_product_definition.get_logo_markup(),
             product_name=derived_product_definition.get_name_markup(),
             powered_by=product_branding,
