@@ -2,7 +2,7 @@
 Changelog
 =========
 
-0.20.0 (2026-06-??)
+0.20.0 (2026-06-29)
 ===================
 
 Feature release.
@@ -26,6 +26,14 @@ Feature release.
 
 * The environment information CSS has moved from ``maykin_common/css/version.css`` to
   ``maykin_common/css/env-info.css``.
+
+**New features**
+
+* [#77] You can now display product branding in the admin footer.
+
+**Project maintenance**
+
+* Fixed some import paths in code samples in the documentation.
 
 0.19.1 (2026-06-23)
 ===================
