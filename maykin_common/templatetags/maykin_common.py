@@ -1,11 +1,59 @@
+from typing import Literal
+
 from django import template
 from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 from django.utils.html import escape, format_html
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeString, mark_safe
+from django.utils.translation import gettext as _
 
 from maykin_common.settings import get_setting
 
+from ..branding import ProductDefinition, get_maykin_logo
+
 register = template.Library()
+
+
+@register.simple_tag()
+def show_product_branding() -> SafeString | Literal[""]:
+    """
+    Render the product branding.
+
+    We always look at the white label product branding first and render that. If nothing
+    is configured, nothing at all is rendered.
+
+    If on top of the white label branding, there is custom product branding provided
+    too, we render that and use the white label branding for the "powered by" part.
+    """
+    product_definition: ProductDefinition | None = get_setting(
+        "MKN_BRANDING_PRODUCT_DEFINITION"
+    )
+    # the product definition is the minimum required information, it's not allowed to
+    # display custom branding without the white-label product information.
+    if product_definition is None:
+        return ""
+
+    product_branding = format_html(
+        _("{product_logo} <span>{product_name}, developed by</span> {maykin}"),
+        product_logo=product_definition.get_logo_markup(),
+        product_name=product_definition.get_name_markup(),
+        maykin=get_maykin_logo(),
+    )
+
+    derived_product_definition: ProductDefinition | None = get_setting(
+        "MKN_BRANDING_DERIVED_PRODUCT_DEFINITION"
+    )
+    if derived_product_definition is not None:
+        product_branding = format_html(
+            _("{product_logo} <span>{product_name}, powered by</span> {powered_by}"),
+            product_logo=derived_product_definition.get_logo_markup(),
+            product_name=derived_product_definition.get_name_markup(),
+            powered_by=product_branding,
+        )
+
+    return format_html(
+        '<div class="product-branding">{}</div>',
+        product_branding,
+    )
 
 
 @register.inclusion_tag("maykin_common/includes/version_info.html")

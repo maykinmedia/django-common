@@ -2,6 +2,31 @@
 Changelog
 =========
 
+0.20.0 (2026-06-??)
+===================
+
+Feature release.
+
+**💥 Breaking changes**
+
+* The version template used in the footer has been updated to no longer load the
+  ``version.css`` styles (which have been moved into ``maykin_footer.css``).
+
+  The recommended pattern now is to add this snippet to your
+  ``templates/admin/base_site.html`` template:
+
+  .. code-block:: django
+
+      {# Django 5.2 puts this block inside the <footer id="footer"> element #}
+      {% block footer %}
+          {% include "maykin_common/includes/footer.html" with user=user only %}
+      {% endblock %}
+
+  Which will include the branding and version information under the relevant conditions.
+
+* The environment information CSS has moved from ``maykin_common/css/version.css`` to
+  ``maykin_common/css/env-info.css``.
+
 0.19.1 (2026-06-23)
 ===================
 

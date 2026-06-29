@@ -1,8 +1,10 @@
+import importlib.metadata
 import importlib.util
 from pathlib import Path
 
 from django.urls import reverse_lazy
 
+from maykin_common.branding import ProductDefinition
 from maykin_common.config import config
 
 if importlib.util.find_spec("health_check") is not None:
@@ -74,7 +76,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -106,6 +108,12 @@ LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 CSRF_FAILURE_VIEW = "maykin_common.views.csrf_failure"
 
 #
+# CUSTOM maykin-common settings
+#
+RELEASE = importlib.metadata.version("maykin_common")
+GIT_SHA = "(unset)"
+
+#
 # CUSTOM health check settings
 #
 MKN_HEALTH_CHECKS_BEAT_LIVENESS_FILE: Path = config(
@@ -129,4 +137,20 @@ MKN_HEALTH_CHECKS_WORKER_READINESS_FILE = config(
     "MKN_HEALTH_CHECKS_WORKER_READINESS_FILE",
     default="/tmp/celery_worker_ready",
     cast=Path,
+)
+
+#
+# CUSTOM branding settings
+#
+
+MKN_BRANDING_PRODUCT_DEFINITION = ProductDefinition(
+    name="Maykin Common",
+    hyperlink="https://github.com/maykinmedia/django-common",
+    logo_path="maykin_common/ico/favicon-32x32.png",
+)
+
+MKN_BRANDING_DERIVED_PRODUCT_DEFINITION = ProductDefinition(
+    name="Derived Common",
+    hyperlink="https://github.com/maykinmedia/django-common",
+    logo_path="maykin_common/ico/favicon-32x32.png",
 )

@@ -18,6 +18,7 @@ Python API reference.
    api_reference
    accounts
    templatetags
+   branding
 
 .. toctree::
    :maxdepth: 1

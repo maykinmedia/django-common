@@ -1,0 +1,6 @@
+{% extends "admin/base_site.html" %}
+
+{# Django 5.2 puts this block inside the <footer id="footer"> element #}
+{% block footer %}
+    {% include "maykin_common/includes/footer.html" with user=user only %}
+{% endblock %}

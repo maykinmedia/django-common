@@ -1,11 +1,3 @@
-.version {
-  color: var(--body-fg);
-  padding: 0 30px;
-  font-size: smaller;
-  display: flex;
-  flex-direction: column;
-}
-
 .env-info {
   display: block;
   align-self: center;
