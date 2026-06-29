@@ -14,7 +14,7 @@ def get_maykin_logo() -> SafeString:
         <a
             href="https://maykin.nl/"
             target="_blank"
-            rel="noopener nofollower"
+            rel="noopener nofollow"
             class="product-branding__logo-link"
         >
             <img
@@ -92,7 +92,7 @@ class ProductDefinition:
         if not (href := self.hyperlink):
             return self.name
         return format_html(
-            '<a href="{href}" target="_blank" rel="noopener nofollower">{name}</a>',
+            '<a href="{href}" target="_blank" rel="noopener nofollow">{name}</a>',
             href=href,
             name=self.name,
         )

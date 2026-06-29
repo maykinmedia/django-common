@@ -88,7 +88,7 @@ def test_logo_rendered_and_product_name_clickable_link(settings):
     )
     assertInHTML(
         """
-        <a href="https://example.com" target="_blank" rel="noopener nofollower">
+        <a href="https://example.com" target="_blank" rel="noopener nofollow">
             Product name
         </a>
         """,
@@ -175,7 +175,7 @@ def test_renders_both_logos_and_links(settings):
         <a
             href="https://example.com/white-label"
             target="_blank"
-            rel="noopener nofollower"
+            rel="noopener nofollow"
         >
             Product name
         </a>
@@ -198,7 +198,7 @@ def test_renders_both_logos_and_links(settings):
         <a
             href="https://example.com/custom"
             target="_blank"
-            rel="noopener nofollower"
+            rel="noopener nofollow"
         >
             Custom name
         </a>
