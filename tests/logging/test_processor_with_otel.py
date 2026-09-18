@@ -1,17 +1,12 @@
-import importlib.util
 from copy import deepcopy
 
 import pytest
 import structlog
 
 from maykin_common.logging.processors import add_open_telemetry_spans
+from tests.utils import is_dependency_installed
 
 _test_logger = structlog.stdlib.get_logger("tests")
-
-
-def _dependency_installed(dependency: str):
-    module = importlib.util.find_spec(dependency)
-    return module is not None
 
 
 @pytest.fixture
@@ -41,7 +36,7 @@ def tracer_provider(span_exporter):
 
 
 @pytest.mark.skipif(
-    not _dependency_installed("opentelemetry"),
+    not is_dependency_installed("opentelemetry"),
     reason="The 'otel' extra is not installed",
 )
 def test_otel_spans_processor_in_recording_mode(tracer_provider):
@@ -58,7 +53,7 @@ def test_otel_spans_processor_in_recording_mode(tracer_provider):
 
 
 @pytest.mark.skipif(
-    not _dependency_installed("opentelemetry"),
+    not is_dependency_installed("opentelemetry"),
     reason="The 'otel' extra is not installed",
 )
 def test_otel_spans_processor_in_recording_mode_with_parent_span(tracer_provider):
@@ -79,7 +74,7 @@ def test_otel_spans_processor_in_recording_mode_with_parent_span(tracer_provider
 
 
 @pytest.mark.skipif(
-    not _dependency_installed("opentelemetry"),
+    not is_dependency_installed("opentelemetry"),
     reason="The 'otel' extra is not installed",
 )
 def test_otel_spans_processor_not_in_recording_mode():

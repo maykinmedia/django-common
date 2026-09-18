@@ -1,15 +1,11 @@
-import importlib.util
-
 import pytest
 
-
-def _dependency_installed(dependency: str):
-    module = importlib.util.find_spec(dependency)
-    return module is not None
+from tests.utils import is_dependency_installed
 
 
 @pytest.mark.skipif(
-    _dependency_installed("weasyprint"), reason="The 'pdf' extra seems to be installed"
+    is_dependency_installed("weasyprint"),
+    reason="The 'pdf' extra seems to be installed",
 )
 def test_pdf():
     with pytest.raises(ImportError):
@@ -17,7 +13,8 @@ def test_pdf():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("maykin_2fa"), reason="The 'mfa' extra seems to be installed"
+    is_dependency_installed("maykin_2fa"),
+    reason="The 'mfa' extra seems to be installed",
 )
 def test_2fa():
     with pytest.raises(ImportError):
@@ -25,7 +22,7 @@ def test_2fa():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("axes"), reason="The 'axes' extra seems to be installed"
+    is_dependency_installed("axes"), reason="The 'axes' extra seems to be installed"
 )
 def test_mixins():
     with pytest.raises(ImportError):
@@ -33,7 +30,7 @@ def test_mixins():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("opentelemetry"),
+    is_dependency_installed("opentelemetry"),
     reason="The 'otel' extra seems to be installed",
 )
 def test_otel():
@@ -59,7 +56,7 @@ def test_wsgi_middleware_always_works():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("structlog") or _dependency_installed("celery"),
+    is_dependency_installed("structlog", "celery"),
     reason="The 'structlog' extra or 'celery' seem to be installed",
 )
 def test_other_logging_modules_raise_importerror():

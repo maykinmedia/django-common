@@ -1,10 +1,9 @@
-import importlib.util
-
 import pytest
 import structlog
 
 from maykin_common.logging.celery import setup_celery_structlog
 from maykin_common.logging.config import structlog_configure_defaults
+from tests.utils import is_dependency_installed
 
 
 @pytest.fixture(autouse=True)
@@ -19,7 +18,7 @@ def test_can_configure_structlog_defaults():
 
 
 @pytest.mark.skipif(
-    importlib.util.find_spec("celery") is None, reason="Celery not installed"
+    is_dependency_installed("celery") is None, reason="Celery not installed"
 )
 def test_connect_celery_logging_receiver():
     """
