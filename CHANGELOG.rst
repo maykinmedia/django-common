@@ -2,6 +2,20 @@
 Changelog
 =========
 
+0.22.0 (2026-09-18)
+===================
+
+Feature release.
+
+**New features**
+
+* [#33] Maykin-common now ships with (opt-in) utilities for ``structlog``-based
+  structured logging, including Celery support.
+
+**Project maintenance**
+
+* Updated the Zizmor github action.
+
 0.21.0 (2026-09-10)
 ===================
 
