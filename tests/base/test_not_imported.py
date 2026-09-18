@@ -1,16 +1,11 @@
 import pytest
 
-
-def _dependency_installed(dependency: str):
-    try:
-        __import__(dependency)
-        return True
-    except ImportError:
-        return False
+from tests.utils import is_dependency_installed
 
 
 @pytest.mark.skipif(
-    _dependency_installed("weasyprint"), reason="The 'pdf' extra seems to be installed"
+    is_dependency_installed("weasyprint"),
+    reason="The 'pdf' extra seems to be installed",
 )
 def test_pdf():
     with pytest.raises(ImportError):
@@ -18,7 +13,8 @@ def test_pdf():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("maykin_2fa"), reason="The 'mfa' extra seems to be installed"
+    is_dependency_installed("maykin_2fa"),
+    reason="The 'mfa' extra seems to be installed",
 )
 def test_2fa():
     with pytest.raises(ImportError):
@@ -26,7 +22,7 @@ def test_2fa():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("axes"), reason="The 'axes' extra seems to be installed"
+    is_dependency_installed("axes"), reason="The 'axes' extra seems to be installed"
 )
 def test_mixins():
     with pytest.raises(ImportError):
@@ -34,9 +30,39 @@ def test_mixins():
 
 
 @pytest.mark.skipif(
-    _dependency_installed("opentelemetry"),
+    is_dependency_installed("opentelemetry"),
     reason="The 'otel' extra seems to be installed",
 )
 def test_otel():
     with pytest.raises(ImportError):
         import maykin_common.otel  # noqa: F401
+
+
+def test_wsgi_middleware_always_works():
+    from maykin_common.logging.wsgi import LogVars
+
+    def dummy_app(environ, respond):
+        respond("200 OK", [("Content-Type", "text/plain")])
+        return [b"dummy!"]
+
+    def start_response(status, headers, exc_info=None):
+        pass
+
+    application = LogVars(dummy_app)
+
+    response = application({}, start_response)
+
+    assert b"".join(response) == b"dummy!"
+
+
+@pytest.mark.skipif(
+    is_dependency_installed("structlog", "celery"),
+    reason="The 'structlog' extra or 'celery' seem to be installed",
+)
+def test_other_logging_modules_raise_importerror():
+    with pytest.raises(ImportError):
+        import maykin_common.logging.celery
+    with pytest.raises(ImportError):
+        import maykin_common.logging.config
+    with pytest.raises(ImportError):
+        import maykin_common.logging.processors  # noqa: F401
