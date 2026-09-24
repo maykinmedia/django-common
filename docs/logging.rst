@@ -386,6 +386,30 @@ Don't forget to add this logger name to your ``LOGGING`` setting:
         },
     }
 
+Accounts integration
+--------------------
+
+We recommended enabling the account-related audit logging, which will at minimum log
+user logins, logouts and login failures. Additional events are logged when optional
+libraries are installed:
+
+* django-axes: will also log lock out events
+* django-hijack: will log hijack start and end events
+
+The easiest way to integrate this is in the ``accounts`` app config:
+
+.. code-block:: python
+
+    from django.apps import AppConfig
+
+
+    class AccountsConfig(AppConfig):
+        name = "my_project.accounts"
+
+        def ready(self) -> None:
+            from maykin_common.accounts.audit import connect_signals
+
+            connect_signals()
 
 Other library integrations
 ==========================
