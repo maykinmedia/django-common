@@ -345,6 +345,72 @@ You can suppress these in your ``LOGGING`` setting with a logger entry:
         },
     }
 
+Audit logging
+=============
+
+Maykin-common ships a built-in audit logger sentinel that you can (and are encouraged to)
+re-use in your project code:
+
+.. code-block:: python
+
+    from maykin_common.logging.audit import audit_logger
+
+    audit_logger.info("application_initialized", duration=0.5432)
+
+It's a regular structlog logger.
+
+You must configure the logger name in your environment variables (**not**
+in Django settings!):
+
+.. code-block:: bash
+
+    export AUDIT_LOGGER_NAME=my_project_audit
+
+Don't forget to add this logger name to your ``LOGGING`` setting:
+
+.. code-block:: python
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": logging_formatters,
+        "handlers": ...,
+        "loggers": {
+            ...,
+            "my_project_audit": {
+                "handlers": ["console"],
+                "level": "DEBUG",  # DO NOT MODIFY or make configurable
+                "propagate": False,
+            },
+            ...,
+        },
+    }
+
+Accounts integration
+--------------------
+
+We recommended enabling the account-related audit logging, which will at minimum log
+user logins, logouts and login failures. Additional events are logged when optional
+libraries are installed:
+
+* django-axes: will also log lock out events
+* django-hijack: will log hijack start and end events
+
+The easiest way to integrate this is in the ``accounts`` app config:
+
+.. code-block:: python
+
+    from django.apps import AppConfig
+
+
+    class AccountsConfig(AppConfig):
+        name = "my_project.accounts"
+
+        def ready(self) -> None:
+            from maykin_common.accounts.audit import connect_signals
+
+            connect_signals()
+
 Other library integrations
 ==========================
 
