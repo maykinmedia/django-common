@@ -345,6 +345,51 @@ You can suppress these in your ``LOGGING`` setting with a logger entry:
         },
     }
 
+Audit logging
+=============
+
+Maykin-common ships a built-in audit logger sentinel that you can (and are encouraged to)
+re-use in your project code:
+
+.. code-block:: python
+
+    from maykin_common.logging.audit import audit_logger
+
+    audit_logger.info("application_initialized", duration=0.5432)
+
+It's a regular structlog logger.
+
+You must configure the logger name in your environment variables (**not**
+in Django settings!):
+
+.. code-block:: bash
+
+    export AUDIT_LOGGER_NAME=my_project_audit
+
+.. tip:: By convention, include the ``_audit`` suffix in the logger name for easier
+   integration in observability tools.
+
+Don't forget to add this logger name to your ``LOGGING`` setting:
+
+.. code-block:: python
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": logging_formatters,
+        "handlers": ...,
+        "loggers": {
+            ...,
+            "my_project_audit": {
+                "handlers": ["console"],
+                "level": "DEBUG",  # DO NOT MODIFY or make configurable
+                "propagate": False,
+            },
+            ...,
+        },
+    }
+
+
 Other library integrations
 ==========================
 
