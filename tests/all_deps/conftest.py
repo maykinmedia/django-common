@@ -15,3 +15,10 @@ def fixture_log_output():
 @pytest.fixture(autouse=True)
 def fixture_configure_structlog(log_output: LogCapture):
     structlog.configure(processors=[log_output])
+
+
+@pytest.fixture(scope="session", autouse=True)
+def connect_account_audit_signals():
+    from maykin_common.accounts.audit import connect_signals
+
+    connect_signals()
