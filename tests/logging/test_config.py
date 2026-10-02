@@ -18,7 +18,7 @@ def test_can_configure_structlog_defaults():
 
 
 @pytest.mark.skipif(
-    is_dependency_installed("celery") is None, reason="Celery not installed"
+    not is_dependency_installed("celery"), reason="Celery not installed"
 )
 def test_connect_celery_logging_receiver():
     """

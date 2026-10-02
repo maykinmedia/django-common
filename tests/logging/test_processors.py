@@ -8,7 +8,6 @@ from maykin_common.logging.processors import (
     add_open_telemetry_spans,
     drop_user_agent_in_dev,
 )
-from tests.utils import is_dependency_installed
 
 _test_logger = structlog.stdlib.get_logger("tests")
 
@@ -51,10 +50,6 @@ def test_do_drop_useragent(settings, event_dict: EventDict):
     assert updated_event_dict == event_dict
 
 
-@pytest.mark.skipif(
-    is_dependency_installed("opentelemetry"),
-    reason="The 'otel' extra seems to be installed",
-)
 def test_otel_spans_processor_does_not_crash_without_opentelemetry_installed():
     event_dict = {"event": "something_happened"}
 
