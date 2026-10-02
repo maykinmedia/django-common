@@ -22,6 +22,11 @@ if importlib.util.find_spec("django_yubin") is not None:
 else:
     django_yubin = None
 
+if importlib.util.find_spec("hijack") is not None:
+    import hijack
+else:
+    hijack = None
+
 BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
@@ -57,10 +62,14 @@ INSTALLED_APPS = [
 if axes is not None:
     INSTALLED_APPS.insert(-2, "axes")
 
-if django_yubin:
+if django_yubin is not None:
     MAILER_USE_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
     INSTALLED_APPS.insert(-2, "django_yubin")
     INSTALLED_APPS.insert(-2, "maykin_common.yubin")
+
+if hijack is not None:
+    INSTALLED_APPS.insert(-2, "hijack")
+    INSTALLED_APPS.insert(-2, "hijack.contrib.admin")
 
 
 MIDDLEWARE = [
@@ -71,6 +80,14 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    *(
+        mw
+        for mw in (
+            "hijack.middleware.HijackUserMiddleware" if hijack is not None else "",
+            "axes.middleware.AxesMiddleware" if axes is not None else "",
+        )
+        if mw
+    ),
 ]
 
 TEMPLATES = [
