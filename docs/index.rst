@@ -55,6 +55,18 @@ Features
    reference/index
    changelog
 
+Running tests locally
+=====================
+
+When you're developing/running tests locally with ``pytest`` without using ``tox``, you
+should make sure to install all optional dependencies or limit the tests being run:
+
+.. code-block:: bash
+
+    pytest tests/base
+
+Otherwise you'll get test failures or even test module import failures due to missing
+dependencies. You can find all the necessary dependencies in ``tox.ini``.
 
 Indices and tables
 ==================
