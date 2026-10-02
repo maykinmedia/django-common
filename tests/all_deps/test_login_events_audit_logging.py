@@ -17,13 +17,6 @@ pytestmark = [
 ]
 
 
-@pytest.fixture(scope="session", autouse=True)
-def connect_account_audit_signals():
-    from maykin_common.accounts.audit import connect_signals
-
-    connect_signals()
-
-
 @pytest.mark.django_db
 def test_login_event_is_logged(rf: RequestFactory, log_output: LogCapture):
     request = rf.post("/accounts/login", REMOTE_ADDR="192.168.0.42")
