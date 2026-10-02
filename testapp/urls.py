@@ -26,5 +26,5 @@ if importlib.util.find_spec("health_check") is not None:
 
 if importlib.util.find_spec("hijack") is not None:
     urlpatterns += [
-        path("admin/hijack/", include("hijack.urls")),
+        path("hijack/", include("hijack.urls")),
     ]
