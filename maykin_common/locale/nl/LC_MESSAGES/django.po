@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.22.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 07:42-0500\n"
+"POT-Creation-Date: 2026-10-09 08:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,21 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: accounts/privilege_escalation_prevention.py:40
+#: maykin_common/accounts/privilege_escalation_prevention.py:40
 msgid "You need to be superuser to create other superusers."
 msgstr "Je moet supergebruiker zijn om anderen supergebruiker te kunnen maken."
 
-#: accounts/privilege_escalation_prevention.py:57
+#: maykin_common/accounts/privilege_escalation_prevention.py:57
 msgid "You cannot create or update a user with more permissions than yourself."
 msgstr ""
 "Je kan geen gebruiker maken of bijwerken die meer rechten krijgt dan jezelf."
 
-#: branding.py:87
+#: maykin_common/branding.py:87
 #, python-brace-format
 msgid "Favicon of the product {name}"
 msgstr "Favicon van het product {name}"
 
-#: templates/maykin_common/api/includes/footer.html:34
+#: maykin_common/templates/maykin_common/api/includes/footer.html:34
 #, python-format
 msgid ""
 "Developed by %(website_link)s<br> within the %(opengem_link)s &copy; "
@@ -41,60 +41,72 @@ msgstr ""
 "Ontwikkeld door %(website_link)s<br> binnen het %(opengem_link)s &copy; "
 "%(copyright_year)s<br>"
 
-#: templates/maykin_common/api/includes/footer.html:38
+#: maykin_common/templates/maykin_common/api/includes/footer.html:38
 #, python-format
 msgid "commissioned by the %(client_link)s"
 msgstr "in opdracht van %(client_link)s"
 
-#: templates/maykin_common/api/includes/footer.html:51
+#: maykin_common/templates/maykin_common/api/includes/footer.html:51
 msgid "Other"
 msgstr "Overige"
 
-#: templates/maykin_common/api/includes/footer.html:55
+#: maykin_common/templates/maykin_common/api/includes/footer.html:55
 #, python-format
 msgid "Report %(issues_link)s for questions, bugs or wishes"
 msgstr "Open %(issues_link)s voor vragen, bugs of verzoeken"
 
-#: templates/maykin_common/api/includes/footer.html:60
+#: maykin_common/templates/maykin_common/api/includes/footer.html:60
 #, python-format
 msgid "Read more on %(cg_link)s"
 msgstr "Lees meer op %(cg_link)s"
 
-#: templates/maykin_common/api/index_base.html:112
-#: templates/maykin_common/api/index_component.html:24
+#: maykin_common/templates/maykin_common/api/index_base.html:112
+#: maykin_common/templates/maykin_common/api/index_component.html:24
 msgid "API docs (ReDoc)"
 msgstr "API docs (ReDoc)"
 
-#: templates/maykin_common/api/index_base.html:116
-#: templates/maykin_common/api/index_component.html:28
+#: maykin_common/templates/maykin_common/api/index_base.html:116
+#: maykin_common/templates/maykin_common/api/index_component.html:28
 msgid "Open API specification"
 msgstr "OpenAPI-specificatie"
 
-#: templates/maykin_common/api/index_base.html:128
-#: templates/maykin_common/api/index_component.html:48
+#: maykin_common/templates/maykin_common/api/index_base.html:128
+#: maykin_common/templates/maykin_common/api/index_component.html:48
 msgid "Administration"
 msgstr "Beheer"
 
-#: templates/maykin_common/api/index_component.html:40
+#: maykin_common/templates/maykin_common/api/index_component.html:40
 msgid "Notifications"
 msgstr "Notificaties"
 
-#: templates/maykin_common/includes/version_info.html:5
+#: maykin_common/templates/maykin_common/includes/version_info.html:5
 #, python-format
 msgid "version %(RELEASE)s"
 msgstr "versie %(RELEASE)s"
 
-#: templates/maykin_common/includes/version_info.html:9
+#: maykin_common/templates/maykin_common/includes/version_info.html:9
 #, python-format
 msgid "GIT SHA: %(GIT_SHA)s"
 msgstr "GIT SHA: %(GIT_SHA)s"
 
-#: templatetags/maykin_common.py:36
+#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:33
+msgid "Login with organization account"
+msgstr "Inloggen met organisatie-account"
+
+#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:36
+msgid "or"
+msgstr "of"
+
+#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:43
+msgid "Login with application account"
+msgstr "Inloggen met lokale account"
+
+#: maykin_common/templatetags/maykin_common.py:36
 #, python-brace-format
 msgid "{product_logo} <span>{product_name}, developed by</span> {maykin}"
 msgstr "{product_logo} <span>{product_name}, ontwikkeld door</span> {maykin}"
 
-#: templatetags/maykin_common.py:47
+#: maykin_common/templatetags/maykin_common.py:47
 #, python-brace-format
 msgid "{product_logo} <span>{product_name}is powered by</span> {powered_by}"
 msgstr ""
