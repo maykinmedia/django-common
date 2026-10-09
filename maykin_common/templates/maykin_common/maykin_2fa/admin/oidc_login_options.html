@@ -1,0 +1,60 @@
+{% comment %}
+    Inclusion template for the "maykin_2fa/login.html" template override to offer
+    additional login options over the standard username/password.
+
+    Requirements:
+
+    * mozilla-django-oidc-db dependency / installed app
+
+    Usage:
+
+    {% block login_form_container %}
+        {% include "maykin_common/maykin_2fa/admin/oidc_login_options.html" with block_super=block.super %}
+    {% endblock login_form_container %}
+
+    And load the custom CSS:
+
+    {% block extrastyle %}
+        {{ block.super }}
+        <link rel="stylesheet" href="{% static "maykin_common/css/admin_login.css" %}">
+    {% endblock %}
+
+    For more advanced configurations, consider vendoring it in your project or have a
+    chat with other projects/teams if it should be a Maykin-wide feature!
+{% endcomment %}
+{% load i18n mozilla_django_oidc_db %}
+
+{% get_oidc_admin_client as oidc_config %}
+{% if oidc_config.enabled %}
+
+    <div class="mkn-admin-login-options">
+
+        {# Do not present the alternative options in the MFA steps - the user already picked local user account at this point #}
+        {% if wizard.steps.current == 'auth' %}
+            <a href="{% url 'oidc_authentication_init' %}{% querystring %}" class="mkn-admin-login-options__login-option">
+                {% trans "Login with organization account" %}
+            </a>
+
+            <div class="mkn-admin-login-options__divider">
+                {% trans "or" %}
+            </div>
+        {% endif %}
+
+        <details
+            {% if form.is_bound or wizard.steps.current != 'auth' %}open{% endif %}
+            class="mkn-admin-login-options__local-user-login"
+        >
+            <summary class="mkn-admin-login-options__login-option">
+                {% trans "Login with application account" %}
+            </summary>
+
+            {{ block_super }}
+        </details>
+
+    </div>
+
+{% else %}
+
+    {{ block_super }}
+
+{% endif %}

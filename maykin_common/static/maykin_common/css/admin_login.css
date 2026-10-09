@@ -1,0 +1,53 @@
+/**
+ * Extra login links in admin login screen.
+ *
+ * Before adding additional CSS variables, check that they're defined in
+ * django/contrib/admin/static/admin/css/base.css
+ *
+ */
+.mkn-admin-login-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  .mkn-admin-login-options__divider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    &:after,
+    &:before {
+      content: '';
+      display: block;
+      border-bottom: 1px solid var(--border-color);
+      flex-grow: 1;
+    }
+  }
+
+  .mkn-admin-login-options__login-option {
+    display: block;
+    text-align: center;
+    color: var(--link-fg);
+    text-decoration: none;
+    transition:
+      color 0.15s,
+      background 0.15s;
+
+    &:focus {
+      color: var(--link-hover-color);
+      text-decoration: underline;
+    }
+
+    &:hover {
+      color: var(--link-hover-color);
+    }
+  }
+
+  .mkn-admin-login-options__local-user-login {
+    &[open] > summary {
+      display: none;
+    }
+  }
+}
