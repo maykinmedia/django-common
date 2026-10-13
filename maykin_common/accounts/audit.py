@@ -13,6 +13,7 @@ We always emit events for successful user log ins, log outs and login failures.
     Installing the audit hooks requires structlog to be set up.
 """
 
+from collections.abc import Callable
 from typing import Literal
 
 from django.apps import apps
@@ -25,6 +26,7 @@ from django.contrib.auth.signals import (
 from django.http import HttpRequest
 
 from ..logging.audit import audit_logger
+from ..settings import get_setting
 
 try:
     from axes.helpers import get_client_ip_address
@@ -33,6 +35,20 @@ except ImportError:
     # not very useful
     def get_client_ip_address(request: HttpRequest) -> str | None:
         return request.META.get("REMOTE_ADDR", None)
+
+
+def get_user_identifier(user: AbstractBaseUser) -> str:
+    """
+    Extract the (privacy-friendly) username/identifier of a user.
+
+    By default, the built-in ``get_username`` method is used, but if users have emails
+    as username or other potentially private data, you can use the
+    ``DJANGO_STRUCTLOG_USER_ID_FIELD``
+    """
+    callback: Callable[[AbstractBaseUser], str] = get_setting(
+        "MKN_LOGGING_GET_USERNAME"
+    )
+    return callback(user)
 
 
 #
@@ -52,7 +68,7 @@ def on_user_logged_in(
     """
     audit_logger.info(
         "user_logged_in",
-        username=user.get_username(),
+        username=get_user_identifier(user),
         login_path=request.path,
         ip_address=get_client_ip_address(request),
     )
@@ -72,7 +88,7 @@ def on_user_logged_out(
         return
     audit_logger.info(
         "user_logged_out",
-        username=user.get_username(),
+        username=get_user_identifier(user),
         logout_path=request.path,
         ip_address=get_client_ip_address(request),
     )
@@ -140,8 +156,8 @@ def on_hijack_started(
     """
     audit_logger.info(
         "hijack_started",
-        hijacker=hijacker.get_username(),
-        hijacked=hijacked.get_username(),
+        hijacker=get_user_identifier(hijacker),
+        hijacked=get_user_identifier(hijacked),
     )
 
 
@@ -158,8 +174,8 @@ def on_hijack_ended(
     """
     audit_logger.info(
         "hijack_ended",
-        hijacker=hijacker.get_username(),
-        hijacked=hijacked.get_username(),
+        hijacker=get_user_identifier(hijacker),
+        hijacked=get_user_identifier(hijacked),
     )
 
 

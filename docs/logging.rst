@@ -414,6 +414,15 @@ The easiest way to integrate this is in the ``accounts`` app config:
 
             connect_signals()
 
+
+.. tip:: If the Django user's ``username`` field contains potentially privacy-sensitive
+   data, you can change what's logged as the username through a setting:
+
+   .. code-block:: py
+
+       MKN_LOGGING_GET_USERNAME = lambda user: str(user.pk)
+
+
 Other library integrations
 ==========================
 

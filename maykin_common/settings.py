@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from django.conf import settings
 
 from .branding import ProductDefinition
+
+if TYPE_CHECKING:
+    from django.contrib.auth.base_user import AbstractBaseUser
 
 GOOGLE_ANALYTICS_ID = None
 """
@@ -127,6 +133,13 @@ Metadata of the derived product.
 See :ref:`reference_branding` for details.
 """
 
+MKN_LOGGING_GET_USERNAME: Callable[[AbstractBaseUser], str] = lambda user: (  # noqa: E731
+    user.get_username()
+)
+"""
+Callback to extract a 'username' of a user to use in (audit) logging.
+"""
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -145,6 +158,7 @@ type SettingName = Literal[
     "MKN_YUBIN_LOCK_PATH",
     "MKN_BRANDING_PRODUCT_DEFINITION",
     "MKN_BRANDING_DERIVED_PRODUCT_DEFINITION",
+    "MKN_LOGGING_GET_USERNAME",
 ]
 
 
