@@ -12,11 +12,25 @@ def test_module_import_celery():
     try:
         import maykin_common.logging.celery  # noqa: F401
     except ImportError:
-        pytest.fail("Module 'logging.config' is not imported correctly.")
+        pytest.fail("Module 'logging.celery' is not imported correctly.")
 
 
 def test_module_import_processors():
     try:
         import maykin_common.logging.processors  # noqa: F401
     except ImportError:
-        pytest.fail("Module 'logging.config' is not imported correctly.")
+        pytest.fail("Module 'logging.processors' is not imported correctly.")
+
+
+def test_can_import_audit_module():
+    try:
+        import maykin_common.logging.audit  # noqa: F401
+    except ImportError:
+        pytest.fail("Module 'maykin_common.logging.audit' is not imported correctly.")
+
+
+def test_can_import_accounts_audit_module():
+    try:
+        import maykin_common.accounts.audit  # noqa: F401
+    except ImportError:
+        pytest.fail("Module 'maykin_common.accounts.audit' is not imported correctly.")

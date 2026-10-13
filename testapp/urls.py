@@ -23,3 +23,8 @@ if importlib.util.find_spec("health_check") is not None:
     urlpatterns += [
         path("", include("maykin_common.health_checks.urls")),
     ]
+
+if importlib.util.find_spec("hijack") is not None:
+    urlpatterns += [
+        path("hijack/", include("hijack.urls")),
+    ]
