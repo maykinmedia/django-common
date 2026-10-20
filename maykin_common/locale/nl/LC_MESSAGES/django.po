@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.22.0\n"
+"Project-Id-Version: 0.23.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 08:34-0500\n"
+"POT-Creation-Date: 2026-10-20 09:15-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,15 +89,15 @@ msgstr "versie %(RELEASE)s"
 msgid "GIT SHA: %(GIT_SHA)s"
 msgstr "GIT SHA: %(GIT_SHA)s"
 
-#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:33
+#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:35
 msgid "Login with organization account"
 msgstr "Inloggen met organisatie-account"
 
-#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:36
+#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:39
 msgid "or"
 msgstr "of"
 
-#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:43
+#: maykin_common/templates/maykin_common/maykin_2fa/admin/oidc_login_options.html:48
 msgid "Login with application account"
 msgstr "Inloggen met lokale account"
 
