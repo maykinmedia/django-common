@@ -5,7 +5,7 @@ Admin login page
 ================
 
 In many projects, it's possible to login to the admin environment with Single Sign On
-via OpenID Connect, we typically provide through ``mozilla-django-oidc-db``. Most
+via OpenID Connect, which we typically provide through ``mozilla-django-oidc-db``. Most
 projects also use ``maykin-2fa`` to enforce multifactor authentication for admin users.
 
 ``maykin-common`` provides a template and CSS to declutter the login page and allow
@@ -19,7 +19,7 @@ Requirements
 You must have the following packages installed and enabled, as the utility brings their
 interaction together:
 
-* ``maykin-2fa``, version 2.2.0 or newer
+* ``maykin-2fa``, version 3.0.0 or newer
 * ``mozilla-django-oidc-db``, version 1.0 or newer
 
 Configuration
