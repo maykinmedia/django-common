@@ -2,6 +2,25 @@
 Changelog
 =========
 
+0.23.0 (2026-10-20)
+===================
+
+Feature release.
+
+**New features**
+
+* We now ship a ``structlog``-based audit logger in ``maykin_common.logging.audit``.
+* [#96] Added built-in audit logging for login-related actions.
+* [#101] Added re-usable tooling for the admin login screen when SSO via OpenID Connect
+  is also available.
+
+Note that all features are opt-in - please consult the documentation on how to enable
+these in existing projects.
+
+**Project maintenance**
+
+* Updated github actions dependencies.
+
 0.22.0 (2026-09-18)
 ===================
 
