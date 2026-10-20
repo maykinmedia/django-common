@@ -22,9 +22,10 @@ Python API reference.
 
 .. toctree::
    :maxdepth: 1
-   :caption: MFA
+   :caption: MFA / Admin
 
    django_two_factor_auth
+   admin_login
 
 .. toctree::
    :maxdepth: 1

@@ -75,7 +75,7 @@ pdf = [
 ]
 mfa = [
     "django-admin-index",
-    "maykin-2fa"
+    "maykin-2fa>=3.0.0"
 ]
 axes = [
     "django-axes"
