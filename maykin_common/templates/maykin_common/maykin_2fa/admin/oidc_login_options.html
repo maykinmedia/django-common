@@ -22,7 +22,7 @@
     For more advanced configurations, consider vendoring it in your project or have a
     chat with other projects/teams if it should be a Maykin-wide feature!
 {% endcomment %}
-{% load i18n mozilla_django_oidc_db %}
+{% load i18n static mozilla_django_oidc_db %}
 
 {% get_oidc_admin_client as oidc_config %}
 {% if oidc_config.enabled %}
@@ -53,6 +53,7 @@
 
     </div>
 
+    <script src="{% static 'maykin_common/js/admin-login.js' %}"></script>
 {% else %}
 
     {{ block_super }}
