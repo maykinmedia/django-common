@@ -72,6 +72,12 @@ Python API reference.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Content Security Policy
+
+   csp
+
+.. toctree::
+   :maxdepth: 1
    :caption: Tests
 
    tests
