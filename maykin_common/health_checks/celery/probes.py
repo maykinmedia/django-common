@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
-from celery import bootsteps
+from celery import Celery, bootsteps  # noqa: F401 -- used in a docstring example below
 from celery.apps.worker import Worker as _Worker
 from celery.beat import Service as BeatService
 from celery.signals import after_task_publish, beat_init, worker_ready, worker_shutdown
