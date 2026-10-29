@@ -148,6 +148,23 @@ assets (CSS/images/...) from disk rather than making network round trip.
 
 For details about the API, see :mod:`maykin_common.pdf`.
 
+.. _quickstart_csp:
+
+CSP
+---
+
+Install command:
+
+.. code-block:: bash
+
+    uv pip install maykin-common[csp]
+
+Wraps `django-csp <https://pypi.org/project/django-csp>`_ so that administrators can
+extend the Content Security Policy from the database, without a deploy. Your base
+policy stays in the settings - this only adds extra sources on top of it.
+
+See :ref:`csp` on how to set this up.
+
 .. _quickstart_vcr:
 
 VCR

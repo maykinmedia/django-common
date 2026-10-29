@@ -107,6 +107,9 @@ yubin = [
     "django-yubin>=2.0.0",
     "filelock",
 ]
+csp = [
+    "django-csp>=4.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["maykin_common*"]

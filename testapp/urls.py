@@ -28,3 +28,10 @@ if importlib.util.find_spec("hijack") is not None:
     urlpatterns += [
         path("hijack/", include("hijack.urls")),
     ]
+
+if importlib.util.find_spec("csp") is not None:
+    from .csp_views import csp_debug_view
+
+    urlpatterns += [
+        path("csp/", csp_debug_view, name="csp"),
+    ]

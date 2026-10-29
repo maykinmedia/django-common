@@ -32,6 +32,54 @@ msgstr ""
 msgid "Favicon of the product {name}"
 msgstr "Favicon van het product {name}"
 
+#: maykin_common/csp/apps.py:10
+msgid "Content Security Policy"
+msgstr "Content Security Policy"
+
+#: maykin_common/csp/models.py:82
+msgid "directive"
+msgstr "richtlijn"
+
+#: maykin_common/csp/models.py:85
+msgid "CSP header directive."
+msgstr "CSP header-richtlijn."
+
+#: maykin_common/csp/models.py:88
+msgid "value"
+msgstr "waarde"
+
+#: maykin_common/csp/models.py:90
+msgid "CSP header value."
+msgstr "CSP header-waarde."
+
+#: maykin_common/csp/models.py:94
+msgid "identifier"
+msgstr "identificatie"
+
+#: maykin_common/csp/models.py:102
+msgid ""
+"An optional free-form label recording where this entry came from. It is "
+"never sent to the browser."
+msgstr ""
+"Een optioneel, vrij in te vullen label dat vastlegt waar deze CSP-regel "
+"vandaan komt. Het wordt nooit naar de browser gestuurd."
+
+#: maykin_common/csp/models.py:104
+msgid "content type"
+msgstr "content type"
+
+#: maykin_common/csp/models.py:110
+msgid "object id"
+msgstr "object-id"
+
+#: maykin_common/csp/models.py:119
+msgid "CSP setting"
+msgstr "CSP-instelling"
+
+#: maykin_common/csp/models.py:120
+msgid "CSP settings"
+msgstr "CSP-instellingen"
+
 #: maykin_common/templates/maykin_common/api/includes/footer.html:34
 #, python-format
 msgid ""

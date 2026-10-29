@@ -27,6 +27,12 @@ if importlib.util.find_spec("hijack") is not None:
 else:
     hijack = None
 
+# the top-level `csp` package is django-csp, not `maykin_common.csp`
+if importlib.util.find_spec("csp") is not None:
+    import csp
+else:
+    csp = None
+
 BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 SECRET_KEY = "so-secret-i-cant-believe-you-are-looking-at-this"
@@ -70,6 +76,25 @@ if django_yubin is not None:
 if hijack is not None:
     INSTALLED_APPS.insert(-2, "hijack")
     INSTALLED_APPS.insert(-2, "hijack.contrib.admin")
+
+if csp is not None:
+    INSTALLED_APPS.insert(-2, "csp")
+    INSTALLED_APPS.insert(-2, "maykin_common.csp")
+    # The CSP middleware reads the directives from the database, so installing it
+    # globally would make every test that renders a view require database access.
+    # tests/csp enables it per test instead - hence silencing the check that tells you
+    # the middleware is missing. The /csp/ page applies it to that one view, so
+    # the behaviour can still be exercised by hand against a running server.
+    SILENCED_SYSTEM_CHECKS = ["maykin.W004"]
+
+    from csp.constants import SELF
+
+    CONTENT_SECURITY_POLICY = {
+        "DIRECTIVES": {
+            "default-src": [SELF],
+            "img-src": [SELF, "https://cdn.example.com"],
+        },
+    }
 
 
 MIDDLEWARE = [
