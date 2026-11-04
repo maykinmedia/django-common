@@ -40,6 +40,10 @@ extensions = [
 ]
 
 autodoc_mock_imports = [
+    # mocking "django" is why maykin_common.csp.models cannot be auto-documented:
+    # mocking strips TextChoices' real metaclass behaviour, so
+    # CSPSetting.directive's "choices=CSPDirective.choices" raises AttributeError at
+    # class-definition time. See docs/reference/csp.rst for the hand-written fields.
     "django",
     "weasyprint",
     "django_admin_index",
@@ -48,6 +52,7 @@ autodoc_mock_imports = [
     "opentelemetry",
     "health_check",
     "django_yubin",
+    "csp",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

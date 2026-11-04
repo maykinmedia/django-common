@@ -140,6 +140,28 @@ MKN_LOGGING_GET_USERNAME: Callable[[AbstractBaseUser], str] = lambda user: (  # 
 Callback to extract a 'username' of a user to use in (audit) logging.
 """
 
+MKN_CSP_CACHE_TIMEOUT: int = 60
+"""
+Number of seconds to cache the CSP directives managed in the database for.
+
+Used by :mod:`maykin_common.csp`, which reads these directives on every request. Use
+``0`` to disable caching and query the database each time. Irrespective of this
+timeout, the cache is invalidated whenever a CSP setting is created, modified or
+deleted.
+
+Caching indefinitely is deliberately not supported. The timeout is what lets the cache
+recover from writes that bypass those signals, such as ``queryset.update()``, data
+migrations, or edits made straight to the table.
+"""
+
+MKN_CSP_CACHE_ALIAS: str = "default"
+"""
+The alias of the cache backend used to store the database-managed CSP directives.
+
+Must be a key of the ``CACHES`` setting. Note that a local-memory cache is not shared
+between processes, so each worker keeps its own copy until the timeout expires.
+"""
+
 type SettingName = Literal[
     "GOOGLE_ANALYTICS_ID",
     "ENVIRONMENT",
@@ -159,6 +181,8 @@ type SettingName = Literal[
     "MKN_BRANDING_PRODUCT_DEFINITION",
     "MKN_BRANDING_DERIVED_PRODUCT_DEFINITION",
     "MKN_LOGGING_GET_USERNAME",
+    "MKN_CSP_CACHE_TIMEOUT",
+    "MKN_CSP_CACHE_ALIAS",
 ]
 
 

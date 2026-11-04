@@ -50,6 +50,7 @@ Features
    logging
    otel
    apis
+   csp
    settings
    yubin
    reference/index
