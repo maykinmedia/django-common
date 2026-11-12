@@ -1,0 +1,33 @@
+{% extends "master.html" %}
+
+{% block title %}CSP debug{% endblock %}
+
+{% block content %}
+    <h1>Content Security Policy</h1>
+
+    <h2>Response headers</h2>
+    {% for name, value in headers %}
+        <h3>{{ name }}</h3>
+        <pre>{{ value }}</pre>
+    {% empty %}
+        <p>
+            No CSP headers were set. Check that <code>CONTENT_SECURITY_POLICY</code> or
+            <code>CONTENT_SECURITY_POLICY_REPORT_ONLY</code> is configured - database
+            entries extend a policy, they do not create one.
+        </p>
+    {% endfor %}
+
+    <h2>Configured in settings</h2>
+    <h3>CONTENT_SECURITY_POLICY</h3>
+    <pre>{{ enforced }}</pre>
+    <h3>CONTENT_SECURITY_POLICY_REPORT_ONLY</h3>
+    <pre>{{ report_only }}</pre>
+
+    <h2>Merged in from the database</h2>
+    <pre>{{ from_database }}</pre>
+    <p>
+        Add or remove entries in
+        <a href="{% url 'admin:maykin_common_csp_cspsetting_changelist' %}">the admin</a>,
+        then reload. Changes show up immediately, since saving invalidates the cache.
+    </p>
+{% endblock %}

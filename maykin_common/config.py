@@ -158,9 +158,9 @@ def config[T](
 
     Examples::
 
-        >>> SECRET_KEY: str = config("SECRET_KEY")
+        >>> SECRET_KEY: str = config("SECRET_KEY")  # doctest: +SKIP
         >>> DB_NAME: str = config("DB_NAME", default="my-awesome-project")
-        >>> DB_PORT: int = config("DB_PORT", default=5432")
+        >>> DB_PORT: int = config("DB_PORT", default=5432)
         >>> SESSION_COOKIE_DOMAIN: str | None = config(
         ...     "SESSION_COOKIE_DOMAIN", default=None
         ... )
