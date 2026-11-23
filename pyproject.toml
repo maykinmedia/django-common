@@ -107,6 +107,9 @@ yubin = [
     "django-yubin>=2.0.0",
     "filelock",
 ]
+rest_framework = [
+    "djangorestframework"
+]
 
 [tool.setuptools.packages.find]
 include = ["maykin_common*"]
