@@ -57,6 +57,7 @@ tests = [
     "redis",
     "time-machine",
     "sphinx",
+    "factory_boy"
 ]
 docs = [
     "sphinx",
